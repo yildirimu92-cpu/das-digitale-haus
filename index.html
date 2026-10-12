@@ -1567,7 +1567,7 @@ svg.scene{min-width:640px}
       budget:tier===0?0:tier===1?250:1000,
       tik:tier===2,
       reno:craft?(tier===1?'Starter':tier===2?'Profi':'-'):'-'});
-    st.def=[mk(0),mk(1),mk(2),{...blankDef(),op:true,kb:b!=='resto'&&b==='beauty',loc:b==='resto'}];
+    st.def=[mk(0),mk(1),mk(2),{...blankDef(),op:true,kb:b!=='resto'&&b==='beauty',loc:false}];
     st.tier=['S','M','L','M'];
   }
   function setBranch(b){
