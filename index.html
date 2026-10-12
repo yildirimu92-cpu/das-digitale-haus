@@ -58,7 +58,7 @@ input.t:focus{border-color:var(--ink)}
 .board{background:var(--card);border:2px solid var(--ink);border-radius:18px;padding:10px;box-shadow:5px 5px 0 var(--ink);min-width:0}
 .boardhead{padding:6px 8px 2px;display:grid;gap:2px}
 .scene-wrap{overflow-x:auto}
-svg.scene{display:block;width:100%;min-width:640px;height:auto}
+svg.scene{display:block;width:100%;min-width:0;height:auto}
 .hint{color:var(--muted);font-size:13px;margin:8px 6px 2px}
 .hint b{color:var(--ink)}
 /* SVG sketch */
@@ -227,7 +227,7 @@ table.cmp{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeri
 .sumcard .fine{color:#5b6878;font-size:11.5px;margin-top:14px}
 details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
 .cmp td.l{text-align:left}
-.brand{display:block;height:36px;width:auto;background:#fff;border-radius:8px;padding:5px 8px;box-sizing:content-box;margin-bottom:10px}
+.brand{display:block;height:30px;width:auto;max-width:150px;object-fit:contain;background:#fff;border-radius:6px;padding:3px 5px;box-sizing:border-box;margin-bottom:10px}
 .ana{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;padding:6px 8px 8px}
 @media (max-width:860px){.ana{grid-template-columns:1fr}}
 .ana textarea{min-height:130px;resize:vertical;font-family:var(--ui)}
@@ -244,7 +244,7 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
 .pr .ms{width:726px;display:flex;flex-direction:column;gap:13px}
 .pr .hd{display:flex;justify-content:space-between;align-items:center;gap:16px;width:100%;min-width:0;flex:0 0 auto;box-sizing:border-box}
 .pr .hd>div{flex:1 1 auto;min-width:0;max-width:100%}
-.pr .hd img{display:block;flex:0 0 auto;height:auto;max-height:30px;max-width:112px;width:auto;object-fit:contain;background:#fff;border-radius:6px;padding:4px 6px;box-sizing:border-box}
+.pr .hd img{display:block;flex:0 0 auto;height:auto;max-height:24px;max-width:88px;width:auto;object-fit:contain;background:#fff;border-radius:6px;padding:4px 6px;box-sizing:border-box}
 .pr h1{font-family:"Kalam",cursive;font-weight:700;font-size:42px;margin:0;line-height:1.08;max-width:100%;overflow-wrap:anywhere}
 .pr h1 span{background:linear-gradient(transparent 55%,#ffdc4d 55%,#ffdc4d 88%,transparent 88%);padding:0 4px}
 .pr .meta{color:#5b6878;font-size:13px;margin-top:6px}
@@ -295,7 +295,7 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
       <p class="sub">Wie Kunden dich finden, zu dir kommen und bei dir buchen. Tippe im Bild auf ein Element, um es im gewählten Paket ein- oder auszuschalten.</p>
     </div>
     <div class="accountbar" style="flex:0 1 480px;min-width:min(100%,300px);margin-left:auto;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card)">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px"><strong style="font-size:13px">Konto & Cloud-Speicherung</strong><span class="note" style="margin:0">Supabase</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px"><strong style="font-size:13px">Konto</strong></div>
 <div id="dh-auth-fields" style="display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin-top:10px">
       <label class="field" style="flex:1 1 220px"><span class="label">E-Mail</span><input class="t" id="dh-email" type="email" autocomplete="username" placeholder="name@firma.ch"></label>
       <label class="field" style="flex:1 1 180px"><span class="label">Passwort</span><input class="t" id="dh-password" type="password" autocomplete="current-password" placeholder="Mindestens 8 Zeichen"></label>
@@ -338,13 +338,13 @@ h2{font-size:23px}
 .inputs,.sgrid{grid-template-columns:minmax(0,1fr)!important}
 .sessrow{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
 .field{width:100%;max-width:none!important}
-input.t,select.t{width:100%;min-height:42px}
+input.t,select.t{width:100%;min-width:0;max-width:100%;min-height:42px}input[type="date"].t{display:block;width:100%;min-width:0;max-width:100%;padding-inline:10px}
 .chips{gap:7px}
 .chip{max-width:100%;white-space:normal;text-align:left}
 .board{padding:8px}
 .boardhead{padding:6px}
 .scene-wrap{margin-inline:-2px}
-svg.scene{min-width:600px;width:600px;max-width:none}
+svg.scene{min-width:0;width:100%;max-width:100%}
 .mapgrid{grid-template-columns:minmax(0,1fr);padding:0}
 .mapbox{width:100%}
 .mapctl{position:static;justify-content:flex-end;padding:8px}
@@ -357,16 +357,16 @@ svg.scene{min-width:600px;width:600px;max-width:none}
 .two{gap:14px}
 .panel{padding:16px}
 .scene-wrap{overflow-x:auto}
-svg.scene{min-width:640px}
+svg.scene{min-width:0;width:100%;max-width:100%}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 </style>
   <!-- ========== GESPRÄCH ========== -->
-  <section class="sess" id="kundenstart" aria-label="Start: Kunde vorbereiten">
+  <section class="board sess" id="kundenstart" aria-label="Marktbearbeitung vorbereiten">
     <div class="boardhead" style="padding:4px 0 8px">
-      <p class="label">Start</p>
-      <h2>Start: Kunde vorbereiten</h2>
-      <p class="note">Gespeicherten Kunden öffnen oder eine neue Vorbereitung starten. Änderungen werden mit dem Kundendossier gespeichert.</p>
+      <p class="label">Kundenstrategie</p>
+      <h2>Marktbearbeitung vorbereiten</h2>
+      <p class="note">Kundengespräch, Zielregion und nächste Schritte vorbereiten.</p>
     </div>
     <div class="sessrow">
       <label class="field" style="flex:2 1 240px">
@@ -397,11 +397,11 @@ svg.scene{min-width:640px}
   <section class="board" aria-labelledby="ah">
     <div class="boardhead">
       <h2 id="ah">Website und Online-Auftritt prüfen</h2>
-      <p class="note">Website eintragen, automatisch prüfen und die Erkenntnisse für das digitale Haus übernehmen.</p>
+      <p class="note">Website prüfen und Erkenntnisse für das digitale Haus übernehmen.</p>
     </div>
     <div class="ana">
       <div class="side">
-        <div class="tagrow"><label class="field"><span class="label">Website</span><input class="t" id="a-url" type="url" inputmode="url" placeholder="www.beispiel.ch" autocomplete="off"></label><button class="btn primary" type="button" id="c-go" style="align-self:end">Check starten</button></div>
+        <div class="tagrow"><label class="field"><span class="label">Website</span><input class="t" id="a-url" type="url" inputmode="url" placeholder="www.beispiel.ch" autocomplete="off"></label><button class="btn primary" type="button" id="c-go" style="align-self:end">Website prüfen</button></div>
         <p class="sstat" id="c-stat"></p>
         <div class="links" id="a-links"></div>
         <details class="pdet">
@@ -2144,7 +2144,7 @@ svg.scene{min-width:640px}
 
   /* ---------- Supabase auth and private cloud storage ---------- */
   var DB=null, UID=null, saveT=null, setT=null, lastG='', LIST=[], cloudOk=false, cloudTried=false;
-  function stat(msg,cls){const el=$('s-stat');if(!msg){msg=!cloudOk?(cloudTried?'Bitte anmelden, um Gespräche geräteübergreifend zu speichern.':'Anmeldung wird geprüft …'):(st.cur.name.trim()?(st.cur.id?'Änderungen werden automatisch gespeichert.':'Noch nicht gespeichert.'):'Angemeldet. Kundennamen eintragen, dann speichern.');cls=cloudOk?'':(cloudTried?'bad':'');}if(el){el.textContent=msg;el.className='sstat'+(cls?' '+cls:'');}const cl=$('dh-cloud-label');if(cl&&cloudOk)cl.textContent='Cloud-Speicherung aktiv';}
+  function stat(msg,cls){const el=$('s-stat');if(!msg){msg=!cloudOk?(cloudTried?'Bitte anmelden, um Gespräche geräteübergreifend zu speichern.':'Anmeldung wird geprüft …'):(st.cur.name.trim()?(st.cur.id?'Änderungen werden automatisch gespeichert.':'Noch nicht gespeichert.'):'Angemeldet. Kundennamen eintragen, dann speichern.');cls=cloudOk?'':(cloudTried?'bad':'');}if(el){el.textContent=msg;el.className='sstat'+(cls?' '+cls:'');}const cl=$('dh-cloud-label');if(cl&&cloudOk)cl.textContent='Angemeldet';}
   function snapshot(){return JSON.parse(JSON.stringify({pk:st.pk,br:st.br,def:st.def,tier:st.tier,kw:st.kw,svc:st.svc||[],rub:st.rub||'',rabatt:st.rabatt||'',pts:st.pts||[],next:st.next||'',topic:st.topic||'',vol:st.vol||{},volMeta:st.volMeta||{},ki:st.ki||{q:'',r:''},zopt:st.zopt||{cmp:false,pot:false},pay:st.pay||{base:'12',ads:'1'},ana:st.ana||{url:'',hints:[],at:''},f:st.f,g:st.g,reg:st.reg,term:st.term}));}
   function scheduleCloud(){if(!cloudOk)return;clearTimeout(saveT);saveT=null;if(st.cur.name.trim())saveT=setTimeout(()=>{saveT=null;cloudSave();},1200);const gj=JSON.stringify(st.g);if(gj!==lastG){clearTimeout(setT);setT=setTimeout(saveSettings,1200);}}
   async function cloudSave(){
