@@ -114,7 +114,7 @@ exports.handler = async (event) => {
       const p=normalizeTerm(phrase);
       if(p.length<3||p.length>65||genericRe.test(p)||technicalRe.test(p)) return false;
       const tokens=p.split(/\s+/);
-      if(tokens.length>7) return false;
+      if(tokens.length>5) return false;
       const useful=tokens.filter(w=>!stopWords.has(w.toLocaleLowerCase('de-CH'))&&!/^\d+$/.test(w));
       return useful.length>=1;
     };
@@ -133,7 +133,7 @@ exports.handler = async (event) => {
       cleaned.split(/[|–—:;.!?•·]+/).map(x=>x.trim()).filter(Boolean).forEach(addKeyword);
     }
     const wordCounts = new Map();
-    const words = lower.match(/[\p{L}][\p{L}-]{2,}/gu) || [];
+    const words = lower.match(/[\p{L}]{4,}/gu) || [];
     for (const rawWord of words) {
       const word=rawWord.toLocaleLowerCase('de-CH').replace(/^-+|-+$/g,'');
       if(word.length<4||stopWords.has(word)||technicalRe.test(word)) continue;
