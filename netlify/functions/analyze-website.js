@@ -256,7 +256,7 @@ exports.handler = async (event) => {
     for(const m of html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
       try {
         const json = JSON.parse(m[1].trim());
-        businessLocation = findLocation(json,0,true) || findLocation(json,0,false);
+        businessLocation = findLocation(json,0,true);
       } catch {}
       if(businessLocation)break;
     }
