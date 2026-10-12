@@ -442,15 +442,15 @@ svg.scene{min-width:0;width:100%;max-width:100%}
       <span class="label">Startpunkt</span>
       <div class="chips" id="viewpk">
         <button class="chip" type="button" data-p="0">Basis</button>
-        <button class="chip" type="button" data-p="1">Feurig</button>
-        <button class="chip" type="button" data-p="2">Platzhirsch</button>
+        <button class="chip" type="button" data-p="1">Wachstum</button>
+        <button class="chip" type="button" data-p="2">Marktführer</button>
         <button class="chip" type="button" data-p="3">Individuell</button>
       </div>
       <div class="package-guide" id="package-guide">
         <article><strong>Basis</strong><p>Digitales Fundament: Online-Präsenz und Website. Geeignet, wenn zuerst die Grundlagen stimmen müssen.</p></article>
-        <article><strong>Feurig</strong><p>Mehr Nachfrage: Basis plus gezielte Werbung und passende Kontakt- oder Buchungswege.</p></article>
-        <article><strong>Platzhirsch</strong><p>Breitere Präsenz: stärkere Werbung und zusätzliche digitale Bausteine – wenn Nachfrage, Kundenwert und Kapazität dazu passen.</p></article>
-        <article><strong>Individuell</strong><p>Nur die Bausteine, die für diesen Betrieb sinnvoll sind.</p></article>
+        <article><strong>Wachstum</strong><p>Grundlagen plus gezielte Werbung und passende Kontakt- oder Buchungswege, um mehr Interessenten zu erreichen.</p></article>
+        <article><strong>Marktführer</strong><p>Breite digitale Präsenz mit zusätzlichen Werbekanälen und Kontaktmöglichkeiten für ambitionierte Wachstumsziele.</p></article>
+        <article><strong>Individuell zusammengestellt</strong><p>Massgeschneiderte Auswahl passender Bausteine – statt eines fixen Standardpakets.</p></article>
       </div>
     </div>
   </div>
@@ -1239,7 +1239,10 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     document.querySelectorAll('.el').forEach(g=>{ const on=set.has(g.dataset.id); g.classList.toggle('off',!on); g.setAttribute('aria-pressed',on); });
     const b=BR[st.br];
     $('door1').textContent=b.d[0]; $('door2').textContent=b.d[1]; $('doortool').textContent=b.tool;
-    $('qtext').textContent=st.term||'…';
+    const primary=selected()[0], town=primary&&primary[0]?String(primary[0]).replace(/\s+(?:ZH|BL|BE|LU|SG|AG|SO|TG|GR|VS|VD|GE|FR|NE|JU|TI|SH|SZ|ZG|NW|OW|GL|AR|AI|UR)\s*$/i,'').trim():'';
+    const industry=INDUSTRIES.find(x=>x.id===st.br)?.name||BR[st.br]?.q||'';
+    const searchPhrase=String(st.term||'').trim()||(industry&&town?industry+' '+town:industry||town||'');
+    $('qtext').textContent=searchPhrase;
     const n=PK[st.pk].flames, offs=n===0?[]:n===1?[0]:n===2?[-9,9]:[-14,0,14];
     $('flames').innerHTML=offs.map((x,i)=>{
       const s= i===Math.floor(offs.length/2)&&n>1 ? 1.25 : 1;
