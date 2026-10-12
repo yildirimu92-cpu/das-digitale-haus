@@ -1,0 +1,26 @@
+name: Website classifier tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'netlify/functions/lib/website-classifier.js'
+      - 'netlify/functions/analyze-website.js'
+      - 'tests/website-classifier.test.js'
+      - '.github/workflows/website-classifier-tests.yml'
+  pull_request:
+    paths:
+      - 'netlify/functions/lib/website-classifier.js'
+      - 'netlify/functions/analyze-website.js'
+      - 'tests/website-classifier.test.js'
+      - '.github/workflows/website-classifier-tests.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node --test tests/website-classifier.test.js
