@@ -893,6 +893,9 @@ svg.scene{min-width:640px}
   const INDUSTRIES = TAXONOMY.flatMap(([category,...names])=>names.map(name=>({
     id:name==='Coiffeur'?'beauty':name==='Restaurant'?'resto':slug(name),category,name
   }))).filter((x,i,a)=>a.findIndex(y=>y.id===x.id)===i);
+  // Allgemeine Handwerksbranche für Website-Scans, die mehrere Gewerke erkennen,
+  // ohne ein einzelnes Gewerk sicher bestimmen zu können.
+  if(!INDUSTRIES.some(x=>x.id==='craft')) INDUSTRIES.push({id:'craft',category:'Handwerk, Bau & Industrie',name:'Handwerk / Bau (allgemein)'});
   const BR = Object.fromEntries(INDUSTRIES.map(x=>[x.id,{
     d:x.id==='resto'?['Tisch','reservieren']:x.id==='beauty'?['Termin','buchen']:x.id==='craft'?['Offerte','anfragen']:['Anfrage','stellen'],
     tool:x.id==='resto'?'MyLOCALINA':x.id==='beauty'?'MyCOCKPIT':'Formular',
