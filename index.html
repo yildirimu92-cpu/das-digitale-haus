@@ -1558,14 +1558,14 @@ svg.scene{min-width:640px}
     st.tier=['S','M','L','M'];
   }
   function setBranch(b){
-    const prev=st.br;if(!BR[b])return;st.br=b;st.term=BR[st.br].q;$('term').value=st.term;if(st.ana&&st.ana.audit&&st.ana.audit.classificationStatus==='needs-selection')st.ana.audit.classificationStatus='confirmed';if(prev!==b)applyBranchDefaults(b);
+    const prev=st.br;if(!BR[b])return;const confirming=!!(st.ana&&st.ana.audit&&st.ana.audit.classificationStatus==='needs-selection');st.br=b;st.term=BR[st.br].q;$('term').value=st.term;if(confirming)st.ana.audit.classificationStatus='confirmed';if(prev!==b)applyBranchDefaults(b);
     const item=INDUSTRIES.find(x=>x.id===b);
     if(item){const cat=$('branche-kategorie'),sub=$('branche-unterkategorie'),search=$('branche-suche');if(cat)cat.value=item.category;if(sub){const arr=INDUSTRIES.filter(x=>x.category===item.category);sub.replaceChildren(...arr.map(x=>{const o=document.createElement('option');o.value=x.id;o.textContent=x.name;return o;}));sub.value=b;}if(search)search.value=item.name;}
     if(st.br==='resto'&&prev!=='resto')st.def.slice(0,3).forEach(x=>{if(x.kb){x.kb=false;x.loc=true;}});
     if(st.br!=='resto'&&prev==='resto')st.def.slice(0,3).forEach((x,i)=>{if(x.loc){x.loc=false;x.kb=DEF_DEF()[i].kb;}});
     if(isCraftBranch(st.br)&&!isCraftBranch(prev)){st.def[1].reno='Starter';st.def[2].reno='Profi';}
     if(!isCraftBranch(st.br)&&isCraftBranch(prev))st.def.slice(0,3).forEach(x=>{x.reno='-';});
-    save();update();renderKw();
+    save();update();renderKw();if(confirming)renderAna();
   }
   renderIndustryUI();
   $('term').addEventListener('input',e=>{ st.term=e.target.value; save(); renderScene(); });
