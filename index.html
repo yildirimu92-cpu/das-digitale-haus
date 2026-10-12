@@ -1215,8 +1215,8 @@ svg.scene{min-width:640px}
       if(!logo){
         logo=document.createElementNS('http://www.w3.org/2000/svg','image');
         logo.setAttribute('id','customer-logo');
-        logo.setAttribute('x','760'); logo.setAttribute('y','386');
-        logo.setAttribute('width','100'); logo.setAttribute('height','34');
+        logo.setAttribute('x','770'); logo.setAttribute('y','258');
+        logo.setAttribute('width','100'); logo.setAttribute('height','30');
         logo.setAttribute('preserveAspectRatio','xMidYMid meet');
         logo.setAttribute('href',logoUrl);
         // Insert before the house labels so the logo cannot cover their text.
@@ -1260,15 +1260,15 @@ svg.scene{min-width:640px}
     const row=(nm,sm,ctl,info)=>{ h+=`<div class="crow"><div class="nm">${nm}<small>${sm}</small></div><div>${ctl}${info?`<div class="extra note">${info}</div>`:''}</div></div>`; };
     row('Onlinepräsenz','Verzeichnisse, Navis, KI-Assistenten', seg('op',YN,d.op), d.op?`${fmt(n,0)} ${n===1?'Ortschaft':'Ortschaften'} aus der Karte${num(st.rub)>0?`, ${fmt(Math.round(num(st.rub)),0)} zusätzliche Rubriken`:''}`:'');
     row('Bewertungen & Soziale Medien','KI-Antworten, Beitragsplaner', seg('bsm',YN,d.bsm), d.bsm?'Stufe S: Gratis-Version. Ab M: KI-Antworten und Beitragsplaner (braucht Onlinepräsenz M).':'');
-    row('Kunden & Buchungen','MyCOCKPIT, Online-Termine, SMS', seg('kb',YN,d.kb), d.kb?'Ab M mit SMS-Bestätigungen, L mit Newsletter.':'');
-    row('Tischreservation','MyLOCALINA', seg('loc',YN,d.loc), '');
+    if(st.br!=='resto') row('Kunden & Buchungen','MyCOCKPIT, Online-Termine, SMS', seg('kb',YN,d.kb), d.kb?'Ab M mit SMS-Bestätigungen, L mit Newsletter.':'');
+    if(st.br==='resto') row('Tischreservation','MyLOCALINA', seg('loc',YN,d.loc), '');
     row('Website','MyWEBSITE, Grösse fest gewählt', seg('web',[['-','–'],['XS','XS'],['S','S'],['M','M'],['L','L']],d.web), d.web!=='-'?MODS[3].info[d.web]:'');
     row('Mail Hosting','E-Mail-Adressen', seg('mail',[['-','–'],['lite','Lite'],['std','Standard'],['pro','Professional']],d.mail), d.mail==='lite'?MAIL.lite.i:'');
     row('Webshop','digitalONE', seg('shop',YN,d.shop), '');
     row('advertiseONE','Werbekampagnen', seg('ads',YN,d.ads), '');
     if(d.ads) row('Werbebudget','Wunsch pro Monat, wird an die Stufe angepasst', seg('budget',BUDGETS.map(v=>[v,fmt(v,0)]),d.budget), '');
     row('advertiseONE TikTok','separates Produkt', seg('tik',YN,d.tik), d.tik ? `<span class="tikp">Preis pro Monat CHF <input class="t" id="tik-m" type="text" inputmode="decimal" value="${esc(st.g.tik)}" placeholder="eintragen"> Setup CHF <input class="t" id="tik-s" type="text" inputmode="decimal" value="${esc(st.g.tiks)}" placeholder="0"></span>${st.g.tik===''?' <b class="warn">Ohne Preis rechnet das Tool TikTok mit 0.</b>':''}` : '');
-    row('renovero','Handwerker-Plattform, Jahresabo', seg('reno',[['-','–'],['Presence','Presence'],['Starter','Starter'],['Profi','Profi mit KI']],d.reno), RENO[d.reno]?`${chf(RENO[d.reno].y)} pro Jahr: ${RENO[d.reno].i}`:'');
+    if(st.br==='craft') row('renovero','Handwerker-Plattform, Jahresabo', seg('reno',[['-','–'],['Presence','Presence'],['Starter','Starter'],['Profi','Profi mit KI']],d.reno), RENO[d.reno]?`${chf(RENO[d.reno].y)} pro Jahr: ${RENO[d.reno].i}`:'');
     $('cfg').innerHTML=h;
     $('presets').innerHTML = st.pk===3 ? PRESETS.map((x,k)=>`<button class="chip" type="button" data-k="${k}">${x.l}</button>`).join('') : '';
   }
@@ -1494,8 +1494,16 @@ svg.scene{min-width:640px}
     sub.onchange=()=>{const x=INDUSTRIES.find(x=>x.id===sub.value);if(x){search.value=x.name;setBranch(x.id);}renderHits();};
     search.oninput=renderHits;renderHits();
   }
+  function applyBranchDefaults(b){
+    const mk=(tier)=>({...blankDef(),op:true,bsm:tier>=1,web:tier===0?'S':tier===1?'M':'L',
+      kb:b!=='resto'&&tier>=1,loc:b==='resto'&&tier>=1,ads:tier>=1,budget:tier===2?750:250,
+      tik:tier===2&&['beauty','craft'].includes(b),
+      reno:b==='craft'?(tier===1?'Starter':tier===2?'Profi':'-'):'-'});
+    st.def=[mk(0),mk(1),mk(2),{...blankDef(),op:true,kb:b!=='resto'&&b==='beauty',loc:b==='resto'}];
+    st.tier=['S','M','L','M'];
+  }
   function setBranch(b){
-    const prev=st.br;if(!BR[b])return;st.br=b;st.term=BR[st.br].q;$('term').value=st.term;
+    const prev=st.br;if(!BR[b])return;st.br=b;st.term=BR[st.br].q;$('term').value=st.term;if(prev!==b)applyBranchDefaults(b);
     const item=INDUSTRIES.find(x=>x.id===b);
     if(item){const cat=$('branche-kategorie'),sub=$('branche-unterkategorie'),search=$('branche-suche');if(cat)cat.value=item.category;if(sub){const arr=INDUSTRIES.filter(x=>x.category===item.category);sub.replaceChildren(...arr.map(x=>{const o=document.createElement('option');o.value=x.id;o.textContent=x.name;return o;}));sub.value=b;}if(search)search.value=item.name;}
     if(st.br==='resto'&&prev!=='resto')st.def.slice(0,3).forEach(x=>{if(x.kb){x.kb=false;x.loc=true;}});
