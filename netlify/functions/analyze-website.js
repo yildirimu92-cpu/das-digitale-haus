@@ -96,10 +96,42 @@ exports.handler = async (event) => {
     hints.push(hasContact ? 'Kontaktweg oder Formular erkannt.' : 'Kein klarer Kontaktweg/Formular erkannt.');
     hints.push(hasBooking ? 'Hinweise auf Buchung oder Reservation gefunden.' : 'Keine klaren Buchungshinweise gefunden.');
     hints.push(hasSocial ? 'Mindestens ein Social-Media-Link erkannt.' : 'Keine bekannten Social-Media-Links erkannt.');
-    const keywords = ['coiffeur','friseur','kosmetik','massage','restaurant','café','cafe','sanitär','heizung','maler','gipser','schreinerei','dachdecker','gartenbau','treuhand','zahnarzt','physiotherapie','garage','autowerkstatt','hotel','anwalt','architekt','reinigung','umzug'];
-    const found = keywords.filter(k=>new RegExp(k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i').test(text));
+    // Extract useful business categories and search terms from visible page content.
+    // This is deterministic rule-based extraction, not an AI-generated interpretation.
+    const sourceText = [title, description, ...headings, text].filter(Boolean).join(' ').replace(/\\s+/g,' ').trim();
+    const lower = sourceText.toLocaleLowerCase('de-CH');
+    const rules = [
+      {terms:['diodenlaser','laserhaarentfernung','laser-haarentfernung','haarentfernung','dauerhafte haarentfernung','ipl'], svc:['Haarentfernung','Diodenlaser'], kw:['Haarentfernung','Diodenlaser','Laserhaarentfernung']},
+      {terms:['zahnbleaching','bleaching','zahnaufhellung','whitening'], svc:['Zahnbleaching'], kw:['Zahnbleaching','Zahnaufhellung']},
+      {terms:['kosmetik','kosmetikinstitut','gesichtsbehandlung','beauty'], svc:['Kosmetik'], kw:['Kosmetik','Kosmetikstudio','Beauty']},
+      {terms:['gesichtsbehandlung','facial'], svc:['Gesichtsbehandlung'], kw:['Gesichtsbehandlung']},
+      {terms:['maniküre','manicure','nagelstudio','nageldesign','gelnägel'], svc:['Maniküre','Nageldesign'], kw:['Nagelstudio','Nageldesign']},
+      {terms:['pediküre','pedicure','fusspflege','fusspflege','medizinische fusspflege'], svc:['Pediküre','Fusspflege'], kw:['Pediküre','Fusspflege']},
+      {terms:['wimpernverlängerung','lashlifting','wimpernlifting'], svc:['Wimpernbehandlungen'], kw:['Wimpernverlängerung','Lashlifting']},
+      {terms:['massage','klassische massage','sportmassage'], svc:['Massage'], kw:['Massage','Sportmassage']},
+      {terms:['coiffeur','friseur','haarschnitt','balayage','haarfarbe','haarfärben'], svc:['Haarschnitt','Färben'], kw:['Coiffeur','Friseur','Balayage']},
+      {terms:['zahnarzt','zahnmedizin','zahnklinik'], svc:['Zahnmedizin'], kw:['Zahnarzt','Zahnmedizin']},
+      {terms:['physiotherapie','physio','rehabilitation'], svc:['Physiotherapie'], kw:['Physiotherapie','Physio']},
+      {terms:['restaurant','mittagessen','speisekarte','menü'], svc:['Restaurant'], kw:['Restaurant','Mittagsmenü']},
+      {terms:['take-away','takeaway','lieferservice'], svc:['Take-away','Lieferservice'], kw:['Take-away','Lieferservice']},
+      {terms:['malerarbeiten','malergeschäft','malerbetrieb'], svc:['Malerarbeiten'], kw:['Maler','Malerarbeiten']},
+      {terms:['sanitär','sanitaer','heizung','wärmepumpe'], svc:['Sanitär- und Heizungsarbeiten'], kw:['Sanitär','Heizung','Wärmepumpe']},
+      {terms:['gartenpflege','gartenbau','gartenunterhalt'], svc:['Gartenpflege'], kw:['Gartenpflege','Gartenbau']},
+      {terms:['garage','autowerkstatt','fahrzeugservice'], svc:['Fahrzeugservice'], kw:['Garage','Autowerkstatt']}
+    ];
+    const services = [], keywords = [];
+    for (const rule of rules) {
+      if (rule.terms.some(term => lower.includes(term))) {
+        for (const item of rule.svc) if (!services.includes(item)) services.push(item);
+        for (const item of rule.kw) if (!keywords.includes(item)) keywords.push(item);
+      }
+    }
+    // Retain other recognizable industry terms as search terms.
+    const extraTerms = ['coiffeur','friseur','kosmetik','massage','restaurant','café','cafe','sanitär','heizung','maler','gipser','schreinerei','dachdecker','gartenbau','treuhand','zahnarzt','physiotherapie','garage','autowerkstatt','hotel','anwalt','architekt','reinigung','umzug'];
+    for (const term of extraTerms) if (lower.includes(term) && !keywords.includes(term)) keywords.push(term);
+    const inferredIndustry = rules.find(rule => rule.terms.some(term => lower.includes(term)));
     const observations = { title, description, headings:headings.slice(0,12), hasPhone, hasEmail, hasContact, forms, hasBooking, hasSocial, textExcerpt:text.slice(0,5000) };
-    return { statusCode:200, headers, body:JSON.stringify({ok:true,url:u.href,firma:'',branche:'andere',dienstleistungen:[],stichworte:found.slice(0,10),orte:[],beobachtungen:hints,observations,source:'automatischer HTML-Check',checkedAt:new Date().toISOString()}) };
+    return { statusCode:200, headers, body:JSON.stringify({ok:true,url:u.href,firma:'',branche:'andere',dienstleistungen:services.slice(0,20),stichworte:keywords.slice(0,20),orte:[],beobachtungen:hints,observations,source:'automatischer HTML-Check',checkedAt:new Date().toISOString()}) };
   } catch (e) {
     return { statusCode:400, headers, body:JSON.stringify({error:e.name==='AbortError'?'Die Website antwortet zu langsam. Bitte später erneut versuchen.':(e.message||'Website-Check fehlgeschlagen.')}) };
   }
