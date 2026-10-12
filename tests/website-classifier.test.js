@@ -55,3 +55,47 @@ test('fallback classifier reports low certainty when evidence is weak', () => {
   const result = fallbackClassification('Welcome to our homepage. Contact us for more information.', catalog);
   assert.ok(result.confidence < 0.65);
 });
+
+test('restaurant in Zug is classified without inheriting an unrelated publisher address', () => {
+  const html = `
+    <script type="application/ld+json">
+      {
+        "@context":"https://schema.org",
+        "@graph":[
+          {"@type":"WebPage","publisher":{"@type":"Organization","name":"Agency","address":{"@type":"PostalAddress","addressLocality":"Horgen"}}},
+          {"@type":"Restaurant","name":"Tuscany Italian Kitchen","address":{"@type":"PostalAddress","addressLocality":"Zug","postalCode":"6300","addressRegion":"ZG"}}
+        ]
+      }
+    </script>
+  `;
+  // The website extractor must prefer a business entity over publisher metadata.
+  const match = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+  const json = JSON.parse(match[1]);
+  function isBusinessEntity(value) {
+    const types = [].concat(value && value['@type'] || []).map(x => String(x).toLowerCase());
+    return types.some(t => /localbusiness|restaurant|foodestablishment|store|professionalservice|medicalbusiness|healthandbeautybusiness|automotivebusiness|educationalorganization|sportsactivitylocation|touristinformationcenter/.test(t));
+  }
+  function locationFromEntity(value) {
+    const address = value && value.address;
+    if (address && typeof address === 'object') return String(address.addressLocality || '').trim();
+    return typeof address === 'string' ? address.trim() : '';
+  }
+  function findBusinessLocation(value, depth=0) {
+    if (!value || depth > 10) return '';
+    if (Array.isArray(value)) {
+      for (const item of value) { const found=findBusinessLocation(item,depth+1); if(found)return found; }
+      return '';
+    }
+    if (typeof value !== 'object') return '';
+    if (isBusinessEntity(value)) {
+      const own = locationFromEntity(value);
+      if (own) return own;
+    }
+    for (const key of ['@graph','mainEntity','mainEntityOfPage','itemListElement','location','hasMap']) {
+      const found=findBusinessLocation(value[key],depth+1);
+      if(found)return found;
+    }
+    return '';
+  }
+  assert.equal(findBusinessLocation(json), 'Zug');
+});
