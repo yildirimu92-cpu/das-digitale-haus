@@ -668,14 +668,9 @@ svg.scene{min-width:640px}
         <div class="tagrow"><div class="tags" id="tg-kw"><input id="in-kw" type="text" placeholder="z. B. Balayage" aria-label="Stichwort hinzufügen" autocomplete="off"></div><button class="btn plus" type="button" data-add="kw" aria-label="Stichwort hinzufügen">+</button></div>
         <div class="chips sug" id="sg-kw"></div>
       </div>
-      <div class="field" style="border-top:1.5px dashed var(--line);padding-top:12px">
-        <span class="label">KI-Suche im Gespräch</span>
-        <p class="note">Stelle dieselbe Kundenfrage in ChatGPT oder Gemini. Ergänze die Frage und halte fest, ob der Betrieb genannt wird.</p>
-        <div class="links"><a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT öffnen</a><a href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini öffnen</a></div>
-        <input class="t" id="ki-q" type="text" placeholder="z. B. «Bestes Kosmetikstudio in Horgen?»" style="max-width:520px">
+      <div class="field" id="ki-search-legacy" hidden><input class="t" id="ki-q" type="text" placeholder="z. B. «Bestes Kosmetikstudio in Horgen?»" style="max-width:520px">
         <div class="seg" id="ki-r" style="justify-self:start"><button type="button" data-v="">Nicht getestet</button><button type="button" data-v="ja">Betrieb wird genannt</button><button type="button" data-v="nein">Betrieb wird nicht genannt</button></div>
-      </div>
-    </section>
+</div>    </section>
 
   </div>
 
@@ -1213,6 +1208,14 @@ svg.scene{min-width:640px}
       return `<g transform="translate(${x} 0) scale(${s})"><path class="flame1 flick" style="animation-delay:${i*.3}s" d="M0 0 C -14 -8 -12 -26 0 -40 C 3 -28 15 -22 11 -8 C 9 -2 5 0 0 0Z"/><path class="flame2" d="M0 0 C -6 -4 -6 -14 0 -22 C 2 -14 7 -10 5 -4 C 4 -1 2 0 0 0Z"/></g>`;
     }).join('');
     $('flag').style.display = st.pk===2?'':'none';
+    // Show the detected customer logo on the house illustration.
+    let logo=document.getElementById('customer-logo');
+    const logoUrl=st.ana&&st.ana.audit&&st.ana.audit.logoUrl;
+    if(logoUrl){
+      if(!logo){logo=document.createElementNS('http://www.w3.org/2000/svg','image');logo.setAttribute('id','customer-logo');logo.setAttribute('x','730');logo.setAttribute('y','370');logo.setAttribute('width','150');logo.setAttribute('height','58');logo.setAttribute('preserveAspectRatio','xMidYMid meet');logo.setAttribute('href',logoUrl);document.querySelector('svg.scene')?.appendChild(logo);}
+      else if(logo.getAttribute('href')!==logoUrl) logo.setAttribute('href',logoUrl);
+      logo.style.display='';
+    } else if(logo) logo.style.display='none';
     const c=eff(), sm=c.kb==='M'?num(st.g.smsM):c.kb==='L'?num(st.g.smsL):0;
     $('smsn').textContent = sm>0 ? `${fmt(sm,0)} SMS pro Monat inklusive` : 'SMS ab Stufe M inklusive';
     document.querySelectorAll('.pkname').forEach(e=>e.textContent=tierName(curTier()));
@@ -1585,7 +1588,7 @@ svg.scene{min-width:640px}
   function showWebsiteResult(result, source){
     const obs=Array.isArray(result.beobachtungen)?result.beobachtungen:[];
     const o=result.observations||{};
-    st.ana=Object.assign({},st.ana,{hints:obs,at:new Date().toLocaleString('de-CH',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),audit:{source,title:o.title||'',description:o.description||'',headings:o.headings||[],hasPhone:o.hasPhone,hasEmail:o.hasEmail,hasContact:o.hasContact,forms:o.forms,hasBooking:o.hasBooking,hasSocial:o.hasSocial}});
+    st.ana=Object.assign({},st.ana,{hints:obs,at:new Date().toLocaleString('de-CH',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),audit:{source,title:o.title||'',description:o.description||'',headings:o.headings||[],hasPhone:o.hasPhone,hasEmail:o.hasEmail,hasContact:o.hasContact,forms:o.forms,hasBooking:o.hasBooking,hasSocial:o.hasSocial,logoUrl:result.logoUrl||o.logoUrl||''}});
     if(Array.isArray(result.dienstleistungen)&&result.dienstleistungen.length) st.svc=[...new Set([...(st.svc||[]),...result.dienstleistungen])].slice(0,20);
     if(Array.isArray(result.stichworte)&&result.stichworte.length) st.kw=[...new Set([...(st.kw||[]),...result.stichworte])].slice(0,20);
     save(); renderAna(); renderKw(); update();
