@@ -622,6 +622,16 @@ svg.scene{min-width:640px}
       <h2>Wo willst du gefunden werden?</h2>
       <p class="note">Kantone antippen, einen Umkreis ziehen oder einzelne Orte wählen. Die Ortschaften zählen automatisch.</p>
     </div>
+    <div class="field" style="margin:0 0 12px">
+      <span class="label">Gebiet schnell auswählen</span>
+      <div class="chips" id="region-presets">
+        <button class="chip" type="button" data-region="ch" aria-pressed="false">Ganze Schweiz</button>
+        <button class="chip" type="button" data-region="de" aria-pressed="false">Deutschschweiz</button>
+        <button class="chip" type="button" data-region="fr" aria-pressed="false">Französische Schweiz</button>
+        <button class="chip" type="button" data-region="it" aria-pressed="false">Italienische Schweiz</button>
+      </div>
+      <p class="note">Die Auswahl aktiviert alle erfassten Ortschaften der jeweiligen Kantone. Einzelne Orte kannst du anschliessend abwählen.</p>
+    </div>
     <div class="mapgrid">
       <div class="mapbox">
         <svg class="map" id="map" viewBox="0 0 940 610" role="img" aria-label="Karte der Schweiz mit Kantonen und Ortschaften">
@@ -632,7 +642,7 @@ svg.scene{min-width:640px}
         </svg>
         <div class="mapctl">
           <button class="btn sm" type="button" id="m-fit">Auf Auswahl</button>
-          <button class="btn sm" type="button" id="m-all">Ganze Schweiz</button>
+          <button class="btn sm" type="button" id="m-all">Ganze Schweiz auswählen</button>
         </div>
       </div>
       <div class="side">
@@ -738,8 +748,8 @@ svg.scene{min-width:640px}
           <label class="field"><span class="label">Ortschaften inklusive</span><input class="t" id="g-in" type="text" inputmode="numeric"></label>
           <label class="field"><span class="label">MyLOCALINA / Monat</span><input class="t" id="g-loc" type="text" inputmode="decimal" placeholder="eintragen"></label>
           <label class="field"><span class="label">Einrichtung MyLOCALINA</span><input class="t" id="g-sloc" type="text" inputmode="decimal"></label>
-          <label class="field"><span class="label">advertiseONE TikTok / Monat</span><input class="t" id="g-tik" type="text" inputmode="decimal" placeholder="eintragen"></label>
-          <label class="field"><span class="label">Setup advertiseONE TikTok</span><input class="t" id="g-tiks" type="text" inputmode="decimal" placeholder="eintragen"></label>
+          <label class="field"><span class="label">advertiseONE TikTok-Budget / Monat</span><select class="t" id="g-tik"><option value="">Budget auswählen</option><option value="250">CHF 250 / Monat</option><option value="500">CHF 500 / Monat</option><option value="750">CHF 750 / Monat</option></select></label>
+          <label class="field"><span class="label">Setup advertiseONE TikTok</span><input class="t" id="g-tiks" type="text" value="250" readonly aria-readonly="true"></label>
           <label class="field"><span class="label">SMS inklusive Stufe M</span><input class="t" id="g-smsM" type="text" inputmode="numeric"></label>
           <label class="field"><span class="label">SMS inklusive Stufe L</span><input class="t" id="g-smsL" type="text" inputmode="numeric"></label>
         </div>
@@ -956,7 +966,7 @@ svg.scene{min-width:640px}
     {l:'Alles leeren', c:{}}
   ];
   const DEF_F = {q:'1000',c:'10',w:'30',v:'500',db:'',vis:['25','50','80']};
-  const DEF_G = {lz:'36', op:'50', in:'1', loc:'120', sloc:'250', nl:'', sshop:'', smsM:'100', smsL:'250',
+  const DEF_G = {lz:'36', op:'50', in:'1', loc:'120', sloc:'250', nl:'', sshop:'', smsM:'100', smsL:'250', tik:'250', tiks:'250',
     aS:'150', aM:'250', aL:'500', asS:'150', asM:'250', asL:'450', tik:'', tiks:'', bn:'', bt:'', be:''};
   const DEF_REG = ()=>({mode:'umkreis', cantons:[], center:null, radius:10, add:[], rem:[]});
   const KEY = 'digitales-haus.v3';
@@ -1099,6 +1109,8 @@ svg.scene{min-width:640px}
   function renderRegion(){
     const r=st.reg, s=selected(), ctr=r.mode==='umkreis' ? BYKEY.get(r.center) : null;
     document.querySelectorAll('#m-mode button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.m===r.mode));
+    const selectedCantons=new Set(r.cantons||[]);
+    document.querySelectorAll('#region-presets [data-region]').forEach(b=>{const a=REGION_CANTONS[b.dataset.region]||[];b.setAttribute('aria-pressed',r.mode==='kanton'&&a.length===selectedCantons.size&&a.every(x=>selectedCantons.has(x)));});
     $('m-r').closest('.field').hidden = r.mode!=='umkreis';
     $('m-q').placeholder = r.mode==='kanton' ? 'Ort oder Kanton, z. B. Luzern' : r.mode==='umkreis' ? 'Mitte suchen, z. B. Horgen' : 'Ort suchen, z. B. Horgen';
     $('m-r').value=r.radius; $('m-rv').textContent = r.radius>0 ? r.radius+' km' : 'aus';
@@ -1151,7 +1163,17 @@ svg.scene{min-width:640px}
   $('m-r').addEventListener('input',e=>{ st.reg.radius=+e.target.value; invalidate(); renderRegion(); });
   $('m-r').addEventListener('change',()=>{ regionChanged(true); });
   $('m-fit').addEventListener('click',fitSel);
-  $('m-all').addEventListener('click',()=>setVB(0,0,VBW,VBH));
+  const REGION_CANTONS={
+    ch:['ZH','BE','LU','UR','SZ','OW','NW','GL','ZG','FR','SO','BS','BL','SH','AR','AI','SG','GR','AG','TG','TI','VD','VS','NE','GE','JU'],
+    de:['ZH','BE','LU','UR','SZ','OW','NW','GL','ZG','SO','BS','BL','SH','AR','AI','SG','AG','TG'],
+    fr:['FR','VD','VS','NE','GE','JU'],
+    it:['TI','GR']
+  };
+  function selectRegion(key){
+    st.reg.mode='kanton';st.reg.cantons=[...REGION_CANTONS[key]];st.reg.center=null;st.reg.radius=0;st.reg.add=[];st.reg.rem=[];invalidate();renderRegion();fitSel();save();
+  }
+  document.querySelectorAll('#region-presets [data-region]').forEach(b=>b.addEventListener('click',()=>selectRegion(b.dataset.region)));
+  $('m-all').addEventListener('click',()=>selectRegion('ch'));
   $('m-clear').addEventListener('click',()=>{ const m=st.reg.mode; st.reg={...DEF_REG(), mode:m, center:m==='umkreis'?null:st.reg.center, radius:m==='umkreis'?0:st.reg.radius, cantons:m==='kanton'?[]:st.reg.cantons, add:m==='ort'?[]:st.reg.add, rem:[]}; regionChanged(false); setVB(0,0,VBW,VBH); });
   $('m-more').addEventListener('click',()=>{ showAll=!showAll; renderRegion(); });
   $('m-cch').addEventListener('click',e=>{
@@ -1830,7 +1852,7 @@ ${text.slice(0,40000)}`;
   async function saveSettings(){if(!cloudOk||!UID)return;const data=JSON.parse(JSON.stringify(st.g));lastG=JSON.stringify(st.g);try{const {error}=await DB.from('user_settings').upsert({user_id:UID,settings_data:data,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(error)throw error;}catch(e){console.error(e);stat('Einstellungen konnten nicht gespeichert werden.','bad');}}
   async function loadConversations(){if(!cloudOk||!UID)return;const {data,error}=await DB.from('conversations').select('*').eq('user_id',UID).order('updated_at',{ascending:false});if(error)throw error;LIST=(data||[]).map(x=>({id:x.id,name:x.customer_name,date:x.meeting_date||'',notes:x.notes||'',updated:new Date(x.updated_at).getTime(),pkg:x.package_data&&x.package_data.pkg,monthly:x.package_data&&x.package_data.monthly,state:x.analysis_data,website_url:x.website_url}));renderList();}
   function refreshSess(){$('s-name').value=st.cur.name;$('s-date').value=st.cur.date||'';$('s-notes').value=st.cur.notes||'';if(st.cur.notes)$('s-notes-d').open=true;stat();renderList();}
-  function refreshInputs(){$('term').value=st.term;['q','c','w','v'].forEach(k=>$('f-'+k).value=st.f[k]);document.querySelectorAll('.sgrid input').forEach(el=>{const k=GMAP[el.id];if(k)el.value=st.g[k];});renderKw();refreshSess();renderPts();renderAna();}
+  function refreshInputs(){$('term').value=st.term;['q','c','w','v'].forEach(k=>$('f-'+k).value=st.f[k]);document.querySelectorAll('.sgrid input, .sgrid select').forEach(el=>{const k=GMAP[el.id];if(k)el.value=st.g[k];});renderKw();refreshSess();renderPts();renderAna();}
   function renderList(){$('s-count').textContent=LIST.length?'('+LIST.length+')':'';const q=norm($('s-q').value.trim()),items=LIST.filter(x=>!q||norm(x.name||'').includes(q));$('s-items').innerHTML=items.length?items.map(x=>{const d=x.date?new Date(x.date+'T12:00').toLocaleDateString('de-CH'):'';return `<div class="sitem${x.id===st.cur.id?' cur':''}"><button type="button" class="open" data-id="${esc(x.id)}"><b>${esc(x.name||'Ohne Namen')}</b><span>${[d,x.pkg,x.monthly!=null?chf(x.monthly)+' / Monat':''].filter(Boolean).map(esc).join(' · ')}</span></button><button type="button" class="btn sm del" data-id="${esc(x.id)}">Löschen</button></div>`;}).join(''):`<p class="note">${LIST.length?'Kein Gespräch gefunden.':'Noch keine Gespräche gespeichert.'}</p>`;}
   function openConv(id){const x=LIST.find(i=>i.id===id);if(!x||!x.state)return;if(saveT){clearTimeout(saveT);saveT=null;if(st.cur.name.trim())cloudSave();}const s=JSON.parse(JSON.stringify(x.state));st.svc=[];st.kw=[];st.rub='';st.rabatt='';st.pts=[];st.next='';st.topic='';st.vol={};st.volMeta={};st.ki={q:'',r:''};st.zopt={cmp:false,pot:false};st.pay={base:'12',ads:'1'};st.ana={url:x.website_url||'',hints:[]};delete st.def;delete st.tier;Object.assign(st,s);migrate(st);st.cur={id:x.id,name:x.name||'',date:x.date||'',notes:x.notes||''};invalidate();refreshInputs();update();renderRegion();fitSel();try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}$('s-list').hidden=true;$('s-open').setAttribute('aria-expanded','false');stat('Geöffnet: '+st.cur.name,'ok');window.scrollTo({top:0,behavior:'smooth'});}
   $('s-name').addEventListener('input',e=>{st.cur.name=e.target.value;save();if(!cloudOk)stat();});$('s-date').addEventListener('input',e=>{st.cur.date=e.target.value;save();});$('s-notes').addEventListener('input',e=>{st.cur.notes=e.target.value;save();});$('s-save').addEventListener('click',()=>{clearTimeout(saveT);saveT=null;cloudSave();});$('s-open').addEventListener('click',()=>{const l=$('s-list');l.hidden=!l.hidden;$('s-open').setAttribute('aria-expanded',String(!l.hidden));if(!l.hidden)renderList();});$('s-q').addEventListener('input',renderList);
