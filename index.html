@@ -1277,7 +1277,7 @@ svg.scene{min-width:640px}
     row('advertiseONE','Werbekampagnen', seg('ads',YN,d.ads), '');
     if(d.ads) row('Werbebudget','Wunsch pro Monat, wird an die Stufe angepasst', seg('budget',BUDGETS.map(v=>[v,fmt(v,0)]),d.budget), '');
     row('advertiseONE TikTok','separates Produkt', seg('tik',YN,d.tik), d.tik ? `<span class="tikp">Preis pro Monat CHF <input class="t" id="tik-m" type="text" inputmode="decimal" value="${esc(st.g.tik)}" placeholder="eintragen"> Setup CHF <input class="t" id="tik-s" type="text" inputmode="decimal" value="${esc(st.g.tiks)}" placeholder="0"></span>${st.g.tik===''?' <b class="warn">Ohne Preis rechnet das Tool TikTok mit 0.</b>':''}` : '');
-    if(st.br==='craft') row('renovero','Handwerker-Plattform, Jahresabo', seg('reno',[['-','–'],['Presence','Presence'],['Starter','Starter'],['Profi','Profi mit KI']],d.reno), RENO[d.reno]?`${chf(RENO[d.reno].y)} pro Jahr: ${RENO[d.reno].i}`:'');
+    if(isCraftBranch(st.br)) row('renovero','Handwerker-Plattform, Jahresabo', seg('reno',[['-','–'],['Presence','Presence'],['Starter','Starter'],['Profi','Profi mit KI']],d.reno), RENO[d.reno]?`${chf(RENO[d.reno].y)} pro Jahr: ${RENO[d.reno].i}`:'');
     $('cfg').innerHTML=h;
     $('presets').innerHTML = st.pk===3 ? PRESETS.map((x,k)=>`<button class="chip" type="button" data-k="${k}">${x.l}</button>`).join('') : '';
   }
@@ -1516,7 +1516,15 @@ svg.scene{min-width:640px}
     sub.onchange=()=>{const x=INDUSTRIES.find(x=>x.id===sub.value);if(x){search.value=x.name;setBranch(x.id);}renderHits();};
     search.oninput=renderHits;renderHits();
   }
+  function isCraftBranch(b){
+    const item=INDUSTRIES.find(x=>x.id===b);
+    return b==='craft' || !!(item && (
+      item.category==='Handwerk, Bau & Industrie' ||
+      ['Gartenpflege','Gartenbau','Landschaftsbau','Reinigungsunternehmen','Umzugsunternehmen','Schädlingsbekämpfung','Schlüsseldienst','Solartechnik / Photovoltaik'].includes(item.name)
+    ));
+  }
   function applyBranchDefaults(b){
+    const craft=isCraftBranch(b);
     const mk=(tier)=>({...blankDef(),
       op:true,
       bsm:tier>=1,
@@ -1528,7 +1536,7 @@ svg.scene{min-width:640px}
       ads:tier>=1,
       budget:tier===0?0:tier===1?250:1000,
       tik:tier===2,
-      reno:b==='craft'?(tier===1?'Starter':tier===2?'Profi':'-'):'-'});
+      reno:craft?(tier===1?'Starter':tier===2?'Profi':'-'):'-'});
     st.def=[mk(0),mk(1),mk(2),{...blankDef(),op:true,kb:b!=='resto'&&b==='beauty',loc:b==='resto'}];
     st.tier=['S','M','L','M'];
   }
@@ -1538,8 +1546,8 @@ svg.scene{min-width:640px}
     if(item){const cat=$('branche-kategorie'),sub=$('branche-unterkategorie'),search=$('branche-suche');if(cat)cat.value=item.category;if(sub){const arr=INDUSTRIES.filter(x=>x.category===item.category);sub.replaceChildren(...arr.map(x=>{const o=document.createElement('option');o.value=x.id;o.textContent=x.name;return o;}));sub.value=b;}if(search)search.value=item.name;}
     if(st.br==='resto'&&prev!=='resto')st.def.slice(0,3).forEach(x=>{if(x.kb){x.kb=false;x.loc=true;}});
     if(st.br!=='resto'&&prev==='resto')st.def.slice(0,3).forEach((x,i)=>{if(x.loc){x.loc=false;x.kb=DEF_DEF()[i].kb;}});
-    if(st.br==='craft'&&prev!=='craft'){st.def[1].reno='Starter';st.def[2].reno='Profi';}
-    if(st.br!=='craft'&&prev==='craft')st.def.slice(0,3).forEach(x=>{x.reno='-';});
+    if(isCraftBranch(st.br)&&!isCraftBranch(prev)){st.def[1].reno='Starter';st.def[2].reno='Profi';}
+    if(!isCraftBranch(st.br)&&isCraftBranch(prev))st.def.slice(0,3).forEach(x=>{x.reno='-';});
     save();update();renderKw();
   }
   renderIndustryUI();
@@ -1831,6 +1839,21 @@ svg.scene{min-width:640px}
     return scriptP[src];
   }
   async function fontB64(file){ const b=new Uint8Array(await (await fetch(file)).arrayBuffer()); let s=''; for(let i=0;i<b.length;i+=0x8000) s+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000)); return btoa(s); }
+  async function imageAsDataUrl(url){
+    if(!url) return '';
+    try{
+      const response=await fetch(url,{mode:'cors',credentials:'omit'});
+      if(!response.ok) return '';
+      const blob=await response.blob();
+      if(!/^image\\/(png|jpeg|webp|gif|svg\\+xml)$/i.test(blob.type)) return '';
+      return await new Promise(resolve=>{
+        const reader=new FileReader();
+        reader.onload=()=>resolve(typeof reader.result==='string'?reader.result:'');
+        reader.onerror=()=>resolve('');
+        reader.readAsDataURL(blob);
+      });
+    }catch(e){ return ''; }
+  }
   async function houseImage(){
     const svg=document.querySelector('svg.scene'); if(!svg) return '';
     const clone=svg.cloneNode(true), a=[svg,...svg.querySelectorAll('*')], b=[clone,...clone.querySelectorAll('*')];
@@ -1838,6 +1861,14 @@ svg.scene{min-width:640px}
     a.forEach((el,i)=>{ const cs=getComputedStyle(el); b[i].setAttribute('style', props.map(k=>`${k}:${cs.getPropertyValue(k)}`).join(';')); });
     clone.querySelectorAll('.el.off').forEach(g=>g.remove());
     clone.querySelectorAll('rect[fill="transparent"]').forEach(r=>r.remove());
+    // Fremde Kundenlogos als Data-URL einbetten, damit PDF-/Canvas-Export nicht am CORS-Bild scheitert.
+    const logo=clone.querySelector('#customer-logo');
+    if(logo){
+      const source=logo.getAttribute('href')||logo.getAttribute('xlink:href')||'';
+      const embedded=await imageAsDataUrl(source);
+      if(embedded){ logo.setAttribute('href',embedded); logo.removeAttribute('xlink:href'); }
+      else logo.remove();
+    }
     let fonts=''; try{ const [f4,f7]=await Promise.all([fontB64('fonts/kalam-latin-400-normal.woff2'),fontB64('fonts/kalam-latin-700-normal.woff2')]);
       fonts=`@font-face{font-family:"Kalam";font-weight:400;src:url(data:font/woff2;base64,${f4}) format("woff2")}@font-face{font-family:"Kalam";font-weight:700;src:url(data:font/woff2;base64,${f7}) format("woff2")}`; }catch(e){}
     const st=document.createElementNS('http://www.w3.org/2000/svg','style'); st.textContent=fonts; clone.insertBefore(st, clone.firstChild);
