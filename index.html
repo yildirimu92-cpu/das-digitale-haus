@@ -278,6 +278,56 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
     </div>
   </header>
 
+  <!-- ========== KUNDENSTART / LOCALSEARCH ERKLÄRUNG ========== -->
+  <section class="panel" id="kundenstart" aria-labelledby="kundenstart-titel" style="gap:16px">
+    <div>
+      <p class="label">Gesprächseinstieg</p>
+      <h2 id="kundenstart-titel">Vom Eintrag zum digitalen Wachstum</h2>
+      <p class="sub">localsearch unterstützt Schweizer KMU dabei, online gefunden zu werden, Vertrauen aufzubauen und neue Anfragen zu gewinnen. Wähle den Kundentyp, damit du das Gespräch passend aufbauen kannst.</p>
+    </div>
+    <div class="two" style="gap:12px">
+      <button class="panel" type="button" id="kunde-bestand" aria-pressed="false" style="text-align:left;cursor:pointer">
+        <span class="label">Kundenweg 1</span>
+        <h2 style="font-size:22px">Bestehender Kunde</h2>
+        <span>Bestehende Einträge und Lösungen sichtbar machen, den heutigen Nutzen einordnen und nächste Entwicklungsmöglichkeiten aufzeigen.</span>
+      </button>
+      <button class="panel" type="button" id="kunde-neu" aria-pressed="false" style="text-align:left;cursor:pointer">
+        <span class="label">Kundenweg 2</span>
+        <h2 style="font-size:22px">Neuer Kunde</h2>
+        <span>Die aktuelle digitale Präsenz verstehen, Lücken erkennen und passende nächste Schritte erarbeiten.</span>
+      </button>
+    </div>
+    <div class="board">
+      <div class="boardhead">
+        <h2 style="font-size:22px">Das digitale Haus im Überblick</h2>
+        <p class="note">Ein Zusammenspiel aus Sichtbarkeit, Vertrauen und Kundengewinnung – abgestimmt auf den Betrieb.</p>
+      </div>
+      <div class="two" style="gap:10px;margin:10px 8px 8px">
+        <div style="border:1.5px solid var(--line);border-radius:12px;padding:12px">
+          <p class="label">1 · Gefunden werden</p>
+          <strong>Website · Einträge · Google · Werbung</strong>
+          <p class="note" style="margin-top:6px">Der Betrieb wird dort sichtbar, wo Menschen nach Leistungen suchen.</p>
+        </div>
+        <div style="border:1.5px solid var(--line);border-radius:12px;padding:12px">
+          <p class="label">2 · Vertrauen schaffen</p>
+          <strong>Bewertungen · Inhalte · Informationen</strong>
+          <p class="note" style="margin-top:6px">Aktuelle, überzeugende Informationen helfen bei der Entscheidung.</p>
+        </div>
+        <div style="border:1.5px solid var(--line);border-radius:12px;padding:12px">
+          <p class="label">3 · Anfragen gewinnen</p>
+          <strong>Kontakt · Buchungen · E-Shop</strong>
+          <p class="note" style="margin-top:6px">Interessierte können den nächsten Schritt einfach machen.</p>
+        </div>
+        <div style="border:1.5px solid var(--line);border-radius:12px;padding:12px">
+          <p class="label">4 · Kunden entwickeln</p>
+          <strong>Kundenmanagement · Automatisierung · KI</strong>
+          <p class="note" style="margin-top:6px">Digitale Lösungen unterstützen den Betrieb auch nach dem ersten Kontakt.</p>
+        </div>
+      </div>
+    </div>
+    <div id="kundenstart-hinweis" class="note" aria-live="polite">Bitte wähle einen Kundenweg. Die Auswahl dient aktuell als Gesprächsleitfaden; die bestehenden Analyse- und Produktfunktionen bleiben darunter verfügbar.</div>
+  </section>
+
   <!-- ========== GESPRÄCH ========== -->
   <section class="sess" aria-label="Kundengespräch">
     <div class="sessrow">
@@ -754,6 +804,19 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
 <script>
 (function(){
   const $ = id=>document.getElementById(id);
+  /* Gesprächseinstieg: Kundenweg im laufenden Gespräch auswählen */
+  const customerPath = { value: '' };
+  function chooseCustomerPath(value){
+    customerPath.value=value;
+    const existing=$('kunde-bestand'),fresh=$('kunde-neu'),hint=$('kundenstart-hinweis');
+    if(existing){existing.setAttribute('aria-pressed',String(value==='existing'));existing.style.borderColor=value==='existing'?'var(--ink)':'var(--line)';existing.style.boxShadow=value==='existing'?'3px 3px 0 var(--ink)':'none';}
+    if(fresh){fresh.setAttribute('aria-pressed',String(value==='new'));fresh.style.borderColor=value==='new'?'var(--ink)':'var(--line)';fresh.style.boxShadow=value==='new'?'3px 3px 0 var(--ink)':'none';}
+    if(hint)hint.textContent=value==='existing'
+      ?'Bestehender Kunde: Starte mit den vorhandenen localsearch-Lösungen. Ordne den bisherigen Nutzen ein und zeige danach konkrete nächste Entwicklungsmöglichkeiten.'
+      :'Neuer Kunde: Starte mit der heutigen Online-Präsenz und den Geschäftszielen. Leite daraus Lücken, Chancen und passende Lösungen ab.';
+  }
+  $('kunde-bestand')?.addEventListener('click',()=>chooseCustomerPath('existing'));
+  $('kunde-neu')?.addEventListener('click',()=>chooseCustomerPath('new'));
   const num = v=>{ const n=parseFloat(String(v??'').replace(/[’' ]/g,'').replace(',','.')); return isFinite(n)?n:0; };
   const fmt = (n,d)=>n.toLocaleString('de-CH',{maximumFractionDigits:d});
   const chf = n=>'CHF '+Math.round(n).toLocaleString('de-CH');
