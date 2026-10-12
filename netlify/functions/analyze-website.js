@@ -150,50 +150,64 @@ exports.handler = async (event) => {
       if(services.length>=12) break;
     }
     const keywords = keywordCandidates.slice(0,16);
-    // Detect a public business logo from structured data or image markup.
+    // Accept only logo candidates that are explicitly marked as a logo and hosted
+    // on the customer's own website domain. Never use og:image, favicons, avatars,
+    // social previews, or third-party platform/vendor assets as a customer logo.
     function absolutePublicImage(raw) {
       try {
         const x = new URL(String(raw || '').replace(/&amp;/g, '&'), u);
         if (!['http:', 'https:'].includes(x.protocol) || x.username || x.password) return '';
+        const pageHost = u.hostname.toLowerCase().replace(/^www\./, '');
+        const imageHost = x.hostname.toLowerCase().replace(/^www\./, '');
+        // Strict by design: same host or a subdomain of the customer's domain only.
+        if (imageHost !== pageHost && !imageHost.endsWith('.' + pageHost)) return '';
+        if (/^(?:facebook|instagram|linkedin|tiktok|youtube|google|googleusercontent|wix|squarespace|shopify|wordpress|webflow|canva|trustpilot|local\.ch|search\.ch)(?:\.|$)/i.test(imageHost)) return '';
+        if (/(?:avatar|favicon|apple-touch-icon|og-image|social-preview|share-image|placeholder|powered-by)/i.test(x.pathname)) return '';
         return x.href;
       } catch { return ''; }
     }
+    function logoMarked(tag) {
+      // Do not infer "logo" from src alone: asset URLs often contain vendor logos.
+      return /(?:alt|class|id|aria-label|data-testid)=["'][^"']*logo[^"']*["']/i.test(tag);
+    }
     let logoUrl = '';
-    // Prefer Organization/LocalBusiness JSON-LD logo values.
+    // Highest trust: a logo property attached to an Organization/LocalBusiness entity.
     for (const m of html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
       try {
         const parsed = JSON.parse(m[1].trim());
-        const nodes = Array.isArray(parsed) ? parsed : [parsed];
-        const stack = [...nodes];
+        const stack = Array.isArray(parsed) ? [...parsed] : [parsed];
         while (stack.length && !logoUrl) {
           const node = stack.shift();
           if (!node || typeof node !== 'object') continue;
-          if (node.logo) {
-            const candidate = typeof node.logo === 'string' ? node.logo : (node.logo.url || node.logo.contentUrl || '');
+          const types = Array.isArray(node['@type']) ? node['@type'] : [node['@type']];
+          const isBusinessEntity = types.some(type => /organization|localbusiness|professionalservice|store|medicalbusiness|automotivebusiness|foodestablishment/i.test(String(type || '')));
+          if (isBusinessEntity && node.logo) {
+            const candidate = typeof node.logo === 'string' ? node.logo :
+              (node.logo.url || node.logo.contentUrl || (node.logo['@id'] || ''));
             logoUrl = absolutePublicImage(candidate);
           }
           if (Array.isArray(node['@graph'])) stack.push(...node['@graph']);
+          if (Array.isArray(node['@list'])) stack.push(...node['@list']);
         }
       } catch {}
       if (logoUrl) break;
     }
-    // Fallback to image tags whose alt, class, id or src suggests a logo.
+    // Fallback only when image markup itself explicitly labels the asset as a logo.
     if (!logoUrl) {
       for (const m of html.matchAll(/<img\b[^>]*>/gi)) {
         const tag = m[0];
-        if (!/(?:alt|class|id|src)=["'][^"']*logo[^"']*["']/i.test(tag)) continue;
-        const src = (tag.match(/\bsrc=["']([^"']+)["']/i) || [])[1];
+        if (!logoMarked(tag)) continue;
+        const src = (tag.match(/\b(?:src|data-src|data-lazy-src)=["']([^"']+)["']/i) || [])[1];
         logoUrl = absolutePublicImage(src);
         if (logoUrl) break;
       }
     }
-    // Do not use og:image as a logo: it is often a campaign banner or social preview.
-    // Fallback to lazy-loaded image attributes only when their markup identifies a logo.
+    // Lazy-loaded images are allowed only with explicit logo labeling and a first-party URL.
     if (!logoUrl) {
       for (const m of html.matchAll(/<(?:img|source)\b[^>]*>/gi)) {
         const tag = m[0];
-        if (!/(?:alt|class|id|src|data-src|data-lazy-src)=["'][^"']*logo[^"']*["']/i.test(tag)) continue;
-        const src = (tag.match(/\b(?:src|data-src|data-lazy-src)=["']([^"']+)["']/i) || [])[1];
+        if (!logoMarked(tag)) continue;
+        const src = (tag.match(/\b(?:src|data-src|data-lazy-src|data-original)=["']([^"']+)["']/i) || [])[1];
         logoUrl = absolutePublicImage(src);
         if (logoUrl) break;
       }
