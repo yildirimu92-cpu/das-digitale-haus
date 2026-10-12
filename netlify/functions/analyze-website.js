@@ -101,6 +101,7 @@ exports.handler = async (event) => {
     const sourceText = [title, description, ...headings, text].filter(Boolean).join(' ').replace(/\\s+/g,' ').trim();
     const lower = sourceText.toLocaleLowerCase('de-CH');
     const rules = [
+      {terms:['pilates','reformer','classical pilates','pilates studio','pilates-studio','tower class'], svc:['Pilates Privatlektionen','Pilates Gruppenkurse','Reformer-Training'], kw:['Pilates Kilchberg','Klassisches Pilates','Reformer Pilates','Pilates Privatstunden','Pilates Gruppenkurse','Pilates Studio']},
       {terms:['diodenlaser','laserhaarentfernung','laser-haarentfernung','haarentfernung','dauerhafte haarentfernung','ipl'], svc:['Haarentfernung','Diodenlaser'], kw:['Haarentfernung','Diodenlaser','Laserhaarentfernung']},
       {terms:['zahnbleaching','bleaching','zahnaufhellung','whitening'], svc:['Zahnbleaching'], kw:['Zahnbleaching','Zahnaufhellung']},
       {terms:['kosmetik','kosmetikinstitut','gesichtsbehandlung','beauty'], svc:['Kosmetik'], kw:['Kosmetik','Kosmetikstudio','Beauty']},
