@@ -1481,7 +1481,7 @@ svg.scene{min-width:640px}
     if(cap.value==='low')score=Math.min(score,3);
     const ix=score>=7?2:score>=4?1:0,tier=['Basis','Feurig','Platzhirsch'][ix];
     const why=ix===2?'Hohes geschätztes Potenzial und ausreichende Kapazität können eine stärkere Präsenz rechtfertigen.':ix===1?'Gezielte Werbung und passende Branchenprodukte könnten sinnvoll sein.':'Zuerst das digitale Fundament stärken und Nachfrage validieren.';
-    out.innerHTML='<strong>Vorläufige Empfehlung: '+tier+'</strong><div>'+why+'</div><small>Rechenbasis: '+fmt(q,0)+' Suchanfragen/Monat, ca. '+fmt(customers,1)+' mögliche Neukunden und '+chf(potential)+' Umsatzpotenzial. Betriebsgrösse und Kapazität sind berücksichtigt. Annahmen mit dem Kunden prüfen; keine Umsatzgarantie.</small>';
+    out.innerHTML='<strong>Vorläufige Empfehlung: '+tier+'</strong><div>'+why+'</div><small>Modellbasis: '+fmt(q,0)+' Nachfrageeinheiten/Monat (keine gemessenen Suchanfragen), ca. '+fmt(customers,1)+' mögliche Neukunden und '+chf(potential)+' Umsatzpotenzial. Betriebsgrösse und Kapazität sind berücksichtigt. Annahmen mit dem Kunden prüfen; keine Umsatzgarantie.</small>';
   }
   ['biz-size','biz-capacity'].forEach(id=>{const el=$(id);if(el)el.addEventListener('change',()=>{save();calc();});});
 
