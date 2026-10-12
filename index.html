@@ -337,13 +337,15 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
   </section>
 
   <div class="bar">
-    <div class="field">
-      <span class="label">Branche</span>
-      <div class="chips" id="branche">
-        <button class="chip" type="button" data-b="beauty">Beauty &amp; Gesundheit</button>
-        <button class="chip" type="button" data-b="resto">Restaurant</button>
-        <button class="chip" type="button" data-b="craft">Handwerk &amp; Dienstleistung</button>
+    <div class="field" style="flex:1 1 420px;min-width:min(100%,320px)">
+      <span class="label">Branche des Kunden</span>
+      <input class="t" id="branche-suche" type="search" autocomplete="off" placeholder="Branche suchen, z. B. Sanitär, Restaurant, Architekt …" aria-label="Branche suchen">
+      <div class="inputs" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+        <label class="field"><span class="note">Oberkategorie</span><select class="t" id="branche-kategorie" aria-label="Oberkategorie"></select></label>
+        <label class="field"><span class="note">Unterbranche</span><select class="t" id="branche-unterkategorie" aria-label="Unterbranche"></select></label>
       </div>
+      <div id="branche-treffer" class="chips sug" aria-live="polite"></div>
+      <p class="note" id="branche-status">Branche auswählen. Die Auswahl beeinflusst Suchbegriffe, Empfehlungen und Potenzialannahmen.</p>
     </div>
     <label class="field" style="flex:1 1 220px;max-width:320px">
       <span class="label">Suchbegriff des Kunden</span>
@@ -781,11 +783,33 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
   const hasMail = c=> c.mail && c.mail!=='-';
   const PAID = l=> l==='S'||l==='M'||l==='L';
 
-  const BR = {
-    beauty:{d:['Termin','buchen'],tool:'MyCOCKPIT',q:'Coiffeur Horgen'},
-    resto:{d:['Tisch','reservieren'],tool:'MyLOCALINA',q:'Restaurant Zug'},
-    craft:{d:['Offerte','anfragen'],tool:'Formular',q:'Maler Adliswil'}
-  };
+  // Öffentliche localsearch/local.ch-Branchenstruktur plus Analyse-Unterbranchen.
+  // Für Vollständigkeit auf Eintragsebene später mit dem offiziellen internen Branchenexport abgleichen.
+  const TAXONOMY = [
+    ['Essen, Genuss & Gastronomie','Restaurant','Café','Bar','Take-away','Catering','Bäckerei / Konditorei','Metzgerei','Pizzeria','Hotel','Pension','Foodtruck','Lieferservice','Eisdiele','Confiserie','Weinhandlung','Lebensmittelgeschäft'],
+    ['Medizin, Ästhetik & Wellness','Arztpraxis','Zahnarzt','Dentalhygiene','Physiotherapie','Psychotherapie','Psychologie','Apotheke','Optiker','Hörakustik','Massage','Kosmetik','Coiffeur','Barbershop','Nagelstudio','Tattoo-Studio','Fitnessstudio','Personal Training','Hebamme','Tierarzt','Pflegeheim','Spitex','Ergotherapie','Naturheilkunde','Akupunktur','Chiropraktik','Dermatologie','Augenarzt','Gynäkologie','Kinderarzt','Logopädie'],
+    ['Handwerk, Bau & Industrie','Sanitär / Heizung','Elektroinstallationen','Architekturbüro','Bauunternehmen','Maler / Gipser','Schreinerei','Zimmerei / Holzbau','Dachdecker','Spenglerei','Gartenbau','Landschaftsbau','Pflästerungen','Bodenbeläge','Plattenleger','Fensterbau','Fassadenbau','Gerüstbau','Abbruchunternehmen','Aushubarbeiten','Baureinigung','Gebäudereinigung','Hauswartung','Schlosserei / Metallbau','Glaserei','Küchenbau','Badezimmer-Renovation','Bauleitung','Baumanagement','Ingenieurbüro','Heizungsinstallation','Lüftung / Klima','Solartechnik / Photovoltaik','Kaminfeger','Aufzüge','Sicherheitsanlagen','Industriemontage','Maschinenbau','Metallverarbeitung','Druckerei','Werbetechnik','Textilverarbeitung','Entsorgung / Recycling'],
+    ['Mobilität & Fahrzeuge','Autogarage','Autohandel / Occasionshandel','Carrosserie','Autolackiererei','Reifenservice','Autoglaserei','Autowaschanlage','Fahrschule','Abschleppdienst','Autovermietung','Motorradhandel / Werkstatt','Fahrradgeschäft / Velowerkstatt','Bootswerft','Transport','Umzug','Taxi','Limousinenservice','Nutzfahrzeuge','Tankstelle'],
+    ['Handel & E-Commerce','Detailhandel','Modegeschäft','Schuhgeschäft','Möbelgeschäft','Einrichtungshaus','Elektronikgeschäft','Computerladen','Mobiltelefon-Shop','Juwelier','Uhrenhandel','Optikgeschäft','Sportgeschäft','Spielwarengeschäft','Blumenladen','Gartencenter','Buchhandlung','Papeterie','Haushaltsgeräte','Baumarkt','Tierbedarf','Secondhand-Shop','Online-Shop','Grosshandel','Getränkehandel','Küchenstudio'],
+    ['Leben, Wohnen & Umwelt','Immobilienmakler','Immobilienverwaltung','Umzugsunternehmen','Reinigungsunternehmen','Schädlingsbekämpfung','Schlüsseldienst','Sicherheitstechnik','Bestattungsunternehmen','Gärtnerei','Floristik','Innenarchitektur','Raumausstattung','Möbelrestauration','Energieberatung','Entsorgungsdienst','Wasserschaden-Sanierung','Schimmel-Sanierung','Solarberatung'],
+    ['Freizeit, Bildung & Sport','Musikschule','Nachhilfe','Sprachschule','Fahrschule','Kindertagesstätte','Spielgruppe','Privatschule','Weiterbildung','Tanzschule','Sportverein','Kampfsportschule','Yoga-Studio','Reisebüro','Eventagentur','Veranstaltungstechnik','Fotograf','Videoproduktion','Kino','Museum','Freizeitpark','Escape Room','Campingplatz','Ferienwohnung','Tourismus','Reiseveranstalter','Künstler / Atelier','Musiker','Hundeschule','Reitstall'],
+    ['Sicherheit, Wirtschaft & IT','IT-Dienstleister','Softwareentwicklung','Webagentur','Marketingagentur','Werbeagentur','Grafikdesign','Fotostudio','Telekommunikation','Alarmanlagen','Sicherheitsdienst','Detektei','Unternehmensberatung','Personalvermittlung','Übersetzungsbüro','Bürobedarf','Logistik','Lagerung','Industriebedarf','Labor','Forschung / Entwicklung'],
+    ['Beratung & Dienstleistungen','Treuhandbüro','Buchhaltung','Steuerberatung','Anwaltsbüro','Notariat','Versicherungsberatung','Finanzberatung','Bank / Finanzdienstleistung','Coaching','Personalberatung','Headhunter','Dolmetscher','Sekretariatsservice','Callcenter','Schreibbüro','Marketingberatung','PR-Agentur','Fotografie','Videografie','Druckservice'],
+    ['Tier & Natur','Tierarztpraxis','Tierpflege','Hundesalon','Hundeschule','Tierpension','Pferdepension','Reitstall','Landwirtschaft','Forstwirtschaft','Gartenpflege','Baumpflege','Gärtnerei','Blumenladen','Imkerei'],
+    ['Öffentliche Hand & Organisationen','Gemeindeverwaltung','Behörde','Verein','Verband','Kirche','Stiftung','Soziale Institution','Alterszentrum','Bibliothek','Feuerwehr','Öffentlicher Verkehr','Tourismusorganisation']
+  ];
+  const slug = v => v.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const INDUSTRIES = TAXONOMY.flatMap(([category,...names])=>names.map(name=>({
+    id:name==='Coiffeur'?'beauty':name==='Restaurant'?'resto':name==='Sanitär / Heizung'?'craft':slug(name),category,name
+  }))).filter((x,i,a)=>a.findIndex(y=>y.id===x.id)===i);
+  const BR = Object.fromEntries(INDUSTRIES.map(x=>[x.id,{
+    d:x.id==='resto'?['Tisch','reservieren']:x.id==='beauty'?['Termin','buchen']:x.id==='craft'?['Offerte','anfragen']:['Anfrage','stellen'],
+    tool:x.id==='resto'?'MyLOCALINA':x.id==='beauty'?'MyCOCKPIT':'Formular',
+    q:(x.name==='Coiffeur'?'Coiffeur':x.name==='Sanitär / Heizung'?'Sanitär':x.name)+' '+(x.id==='resto'?'Zug':'Horgen')
+  }]));
+  BR.beauty={d:['Termin','buchen'],tool:'MyCOCKPIT',q:'Coiffeur Horgen'};
+  BR.resto={d:['Tisch','reservieren'],tool:'MyLOCALINA',q:'Restaurant Zug'};
+  BR.craft={d:['Offerte','anfragen'],tool:'Formular',q:'Maler Adliswil'};
   const PK = [
     {name:'Basis', flames:1, pitch:'Gefunden werden. Das Fundament steht, alle Wege führen zu dir.'},
     {name:'Feurig', flames:2, pitch:'Mehr Anfragen. Kunden sehen dich, vertrauen dir und buchen direkt.'},
@@ -1315,15 +1339,37 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
     g.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); tapEl(g.dataset.id); }});
   });
   document.querySelectorAll('#viewpk .chip').forEach(c=>c.addEventListener('click',()=>{ st.pk=+c.dataset.p; save(); update(); }));
-  function setBranch(b){
-    const prev=st.br; if(!BR[b]) return; st.br=b; st.term=BR[st.br].q; $('term').value=st.term;
-    if(st.br==='resto' && prev!=='resto') st.def.slice(0,3).forEach(x=>{ if(x.kb){ x.kb=false; x.loc=true; } });
-    if(st.br!=='resto' && prev==='resto') st.def.slice(0,3).forEach((x,i)=>{ if(x.loc){ x.loc=false; x.kb=DEF_DEF()[i].kb; } });
-    if(st.br==='craft' && prev!=='craft'){ st.def[1].reno='Starter'; st.def[2].reno='Profi'; }
-    if(st.br!=='craft' && prev==='craft') st.def.slice(0,3).forEach(x=>{ x.reno='-'; });
-    save(); update(); renderKw();
+  function renderIndustryUI(){
+    const cat=$('branche-kategorie'),sub=$('branche-unterkategorie'),search=$('branche-suche'),hits=$('branche-treffer');
+    if(!cat||!sub||!search||!hits)return;
+    const current=INDUSTRIES.find(x=>x.id===st.br)||INDUSTRIES.find(x=>x.id==='beauty')||INDUSTRIES[0];
+    const categories=[...new Set(INDUSTRIES.map(x=>x.category))];
+    cat.replaceChildren(...categories.map(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;return o;}));
+    cat.value=current.category;
+    function fillSub(){const arr=INDUSTRIES.filter(x=>x.category===cat.value);sub.replaceChildren(...arr.map(x=>{const o=document.createElement('option');o.value=x.id;o.textContent=x.name;return o;}));if(arr.some(x=>x.id===st.br))sub.value=st.br;else sub.value=arr[0]?.id||'';}
+    function renderHits(){
+      const q=search.value.trim().toLocaleLowerCase('de-CH');
+      const found=INDUSTRIES.filter(x=>!q||(x.name+' '+x.category).toLocaleLowerCase('de-CH').includes(q)).slice(0,8);
+      hits.replaceChildren();
+      found.forEach(x=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=x.name+' · '+x.category;b.addEventListener('click',()=>{cat.value=x.category;fillSub();sub.value=x.id;search.value=x.name;hits.replaceChildren();setBranch(x.id);});hits.appendChild(b);});
+      $('branche-status').textContent=q?(found.length?found.length+' passende Vorschläge angezeigt.':'Keine Treffer – Suchbegriff prüfen oder Branchenstamm ergänzen.'):'Branchenkatalog mit '+INDUSTRIES.length+' auswählbaren Einträgen. Suchfeld und Kategorien sind kombinierbar.';
+    }
+    fillSub();search.value=current.name;
+    cat.onchange=()=>{fillSub();const x=INDUSTRIES.find(x=>x.id===sub.value);if(x)setBranch(x.id);renderHits();};
+    sub.onchange=()=>{const x=INDUSTRIES.find(x=>x.id===sub.value);if(x){search.value=x.name;setBranch(x.id);}renderHits();};
+    search.oninput=renderHits;renderHits();
   }
-  document.querySelectorAll('#branche .chip').forEach(c=>c.addEventListener('click',()=>setBranch(c.dataset.b)));
+  function setBranch(b){
+    const prev=st.br;if(!BR[b])return;st.br=b;st.term=BR[st.br].q;$('term').value=st.term;
+    const item=INDUSTRIES.find(x=>x.id===b);
+    if(item){const cat=$('branche-kategorie'),sub=$('branche-unterkategorie'),search=$('branche-suche');if(cat)cat.value=item.category;if(sub){const arr=INDUSTRIES.filter(x=>x.category===item.category);sub.replaceChildren(...arr.map(x=>{const o=document.createElement('option');o.value=x.id;o.textContent=x.name;return o;}));sub.value=b;}if(search)search.value=item.name;}
+    if(st.br==='resto'&&prev!=='resto')st.def.slice(0,3).forEach(x=>{if(x.kb){x.kb=false;x.loc=true;}});
+    if(st.br!=='resto'&&prev==='resto')st.def.slice(0,3).forEach((x,i)=>{if(x.loc){x.loc=false;x.kb=DEF_DEF()[i].kb;}});
+    if(st.br==='craft'&&prev!=='craft'){st.def[1].reno='Starter';st.def[2].reno='Profi';}
+    if(st.br!=='craft'&&prev==='craft')st.def.slice(0,3).forEach(x=>{x.reno='-';});
+    save();update();renderKw();
+  }
+  renderIndustryUI();
   $('term').addEventListener('input',e=>{ st.term=e.target.value; save(); renderScene(); });
   ['q','c','w','v','db'].forEach(k=>{ const el=$('f-'+k); if(el){ el.value=st.f[k]??''; el.addEventListener('input',()=>{ st.f[k]=el.value; save(); calc(); renderSum(); }); } });
   [['lz','g-lz'],['op','g-op'],['in','g-in'],['loc','g-loc'],['sloc','g-sloc'],['tik','g-tik'],['bn','g-bn'],['bt','g-bt'],['be','g-be'],['tiks','g-tiks'],['smsM','g-smsM'],['smsL','g-smsL']].forEach(([k,id])=>{
