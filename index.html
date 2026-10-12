@@ -800,7 +800,7 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
   ];
   const slug = v => v.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   const INDUSTRIES = TAXONOMY.flatMap(([category,...names])=>names.map(name=>({
-    id:name==='Coiffeur'?'beauty':name==='Restaurant'?'resto':name==='Sanitär / Heizung'?'craft':slug(name),category,name
+    id:name==='Coiffeur'?'beauty':name==='Restaurant'?'resto':slug(name),category,name
   }))).filter((x,i,a)=>a.findIndex(y=>y.id===x.id)===i);
   const BR = Object.fromEntries(INDUSTRIES.map(x=>[x.id,{
     d:x.id==='resto'?['Tisch','reservieren']:x.id==='beauty'?['Termin','buchen']:x.id==='craft'?['Offerte','anfragen']:['Anfrage','stellen'],
