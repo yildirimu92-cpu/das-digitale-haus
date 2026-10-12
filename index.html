@@ -1666,7 +1666,9 @@ svg.scene{min-width:640px}
     // Doppelte Begriffe unabhängig von Gross-/Kleinschreibung entfernen.
     if(Array.isArray(result.dienstleistungen)) st.svc=uniqueTerms(result.dienstleistungen);
     if(Array.isArray(result.stichworte)) st.kw=uniqueTerms(result.stichworte);
-    const scanText=[o.title,o.description,...(o.headings||[]),...(result.dienstleistungen||[]),...(result.stichworte||[]),o.textExcerpt].filter(Boolean).join(' ').toLowerCase();
+    // Branch detection may only use the page's own metadata and headings. Do not use full-page text,
+    // generated keywords, footer/menu links or previous suggestions: those cause false positives.
+    const scanText=[o.title,o.description,...(o.headings||[])].filter(Boolean).join(' ').toLocaleLowerCase('de-CH');
     const branchRules=[
       ['yoga-studio',/pilates|reformer|classical pilates|pilates studio|tower class/],
       ['resto',/restaurant|gastronomie|pizzeria|café|cafe|take.away|tischreserv|speisekarte|mittagstisch/],
