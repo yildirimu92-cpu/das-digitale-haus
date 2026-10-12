@@ -1,4 +1,15 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><style>
+.roi-simple{display:grid;gap:14px}
+.roi-results{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.roi-kpi{border:1.5px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:5px;min-width:0}
+.roi-kpi strong{font-size:clamp(19px,2.4vw,28px);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.roi-highlight{background:var(--marker);color:#1c2836;border-color:var(--ink)}
+.roi-highlight .label{color:#344150}
+.roi-more{border-top:1px dashed var(--line);padding-top:10px}
+.roi-more summary{cursor:pointer;font-weight:600}
+#f-db{max-width:320px}
+@media(max-width:760px){.roi-results{grid-template-columns:repeat(2,minmax(0,1fr))}.roi-kpi{padding:10px}}
+</style></head><body>
 <title>Das digitale Haus</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -727,28 +738,32 @@ svg.scene{min-width:640px}
         <button type="button" id="v-copy" hidden></button><button type="button" id="v-import" hidden></button><input id="v-file" type="file" hidden>
         <span id="v-import-status" hidden></span><input id="v-region" type="text" hidden><input id="v-region-confirm" type="checkbox" hidden>
       </div>
-      <div class="fgrid">
-        <div style="display:grid;gap:14px;min-width:0">
-          <div class="inputs">
-            <label class="field"><span class="label" id="f-ql">Suchen in der Region / Monat</span><input class="t" id="f-q" type="text" inputmode="numeric"></label>
-            <label class="field"><span class="label">Davon melden sich %</span><input class="t" id="f-c" type="text" inputmode="decimal"></label>
-            <label class="field"><span class="label">Davon werden Kunden %</span><input class="t" id="f-w" type="text" inputmode="decimal"></label>
-            <label class="field"><span class="label">Umsatz pro Neukunde CHF</span><input class="t" id="f-v" type="text" inputmode="decimal"></label>
-            <label class="field"><span class="label">Deckungsbeitrag pro Neukunde CHF</span><input class="t" id="f-db" type="text" inputmode="decimal" placeholder="Optional, nach variablen Kosten"></label>
-          </div>
+      <div class="roi-simple">
+        <div class="inputs">
+          <label class="field"><span class="label" id="f-ql">Suchanfragen pro Monat</span><input class="t" id="f-q" type="text" inputmode="numeric"></label>
+          <label class="field"><span class="label">Wie viele melden sich? (%)</span><input class="t" id="f-c" type="text" inputmode="decimal"></label>
+          <label class="field"><span class="label">Wie viele werden Kunden? (%)</span><input class="t" id="f-w" type="text" inputmode="decimal"></label>
+          <label class="field"><span class="label">Umsatz pro Neukunde (CHF)</span><input class="t" id="f-v" type="text" inputmode="decimal"></label>
+        </div>
+        <div class="roi-results" aria-live="polite">
+          <div class="roi-kpi"><span class="label">Suchanfragen</span><strong id="o-q">0</strong></div>
+          <div class="roi-kpi"><span class="label">Mögliche Anfragen</span><strong id="o-c">0</strong></div>
+          <div class="roi-kpi"><span class="label">Mögliche Neukunden</span><strong id="o-w">0</strong></div>
+          <div class="roi-kpi roi-highlight"><span class="label">Umsatzpotenzial / Monat</span><strong id="roi-revenue">CHF 0</strong></div>
+        </div>
+        <details class="roi-more">
+          <summary>Berechnungsdetails und Paketvergleich</summary>
           <div class="funnel" aria-live="polite">
-            <div class="tier t1"><span class="k">Suchen in der Region</span><span class="n" id="o-q">0</span></div>
-            <div class="tier t15"><span class="k">finden dich (<span id="o-pn">Feurig</span>)</span><span class="n" id="o-s">0</span></div>
-            <div class="tier t2"><span class="k">Anfragen</span><span class="n" id="o-c">0</span></div>
-            <div class="tier t3"><span class="k">Neukunden</span><span class="n" id="o-w">0</span></div>
+            <div class="tier t1"><span class="k">Suchanfragen</span><span class="n" id="o-q-detail">0</span></div>
+            <div class="tier t15"><span class="k">Potenziell sichtbar (<span id="o-pn">Feurig</span>)</span><span class="n" id="o-s">0</span></div>
+            <div class="tier t2"><span class="k">Anfragen</span><span class="n" id="o-c-detail">0</span></div>
+            <div class="tier t3"><span class="k">Neukunden</span><span class="n" id="o-w-detail">0</span></div>
           </div>
-        </div>
-        <div style="display:grid;gap:10px;align-content:start;min-width:0">
-          <span class="label">Lohnt es sich? Die drei Stufen pro Monat</span>
           <div class="cmpwrap"><table class="cmp" id="cmp"></table></div>
-          <p class="note">«Gefunden von» ist eine Annahme: wie viele der Suchenden den Kunden mit diesem Paket finden. Im Gespräch gemeinsam festlegen und anpassen.</p>
+          <label class="field" style="max-width:320px"><span class="label">Deckungsbeitrag pro Neukunde (CHF, optional)</span><input class="t" id="f-db" type="text" inputmode="decimal" placeholder="Nach variablen Kosten"></label>
+          <p class="note">Schätzung, keine Umsatzgarantie. Die Sichtbarkeit und Konversionsraten sind Annahmen und sollten im Gespräch geprüft werden.</p>
           <span class="note" id="o-pay"></span>
-        </div>
+        </details>
       </div>
       <div class="field" style="border-top:1.5px dashed var(--line);padding-top:12px">
         <span class="label">KI-Test im Gespräch</span>
@@ -1384,6 +1399,8 @@ svg.scene{min-width:640px}
     const fromVol=volSum()>0; const fq=$('f-q'); fq.readOnly=fromVol; if(fromVol){ fq.value=fmt(q,0); } else if(document.activeElement!==fq){ fq.value=st.f.q; }
     $('f-ql').textContent = fromVol ? 'Suchen pro Monat (aus Stichworten)' : 'Suchen in der Region / Monat';
     $('o-q').textContent=fmt(q,0); $('o-s').textContent=fmt(r.seen,0); $('o-c').textContent=fmt(r.leads,0); $('o-w').textContent=fmt(r.kunden,1);
+    $('o-q-detail').textContent=fmt(q,0); $('o-c-detail').textContent=fmt(r.leads,0); $('o-w-detail').textContent=fmt(r.kunden,1);
+    $('roi-revenue').textContent=chf(r.ums);
     $('o-pn').textContent=tierName(cur);
     const cols=[0,1,2], hd=i=>`class="${i===cur?'sel':''}"`;
     const row=(lab,f,cls)=>`<tr${cls?` class="${cls}"`:''}><td>${lab}</td>${cols.map(i=>`<td ${hd(i)}>${f(res[i],i)}</td>`).join('')}</tr>`;
