@@ -240,8 +240,8 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
 .cmp input.vin{width:110px}
 /* Drucklayout für das PDF (immer hell, wie ein Whiteboard-Blatt) */
 .pr{position:absolute;left:-30000px;top:0;width:794px;font-family:"Archivo",system-ui,sans-serif;color:#1c2836;font-size:13px;line-height:1.45;color-scheme:light}
-.pr .pg{width:794px;height:1123px;box-sizing:border-box;padding:44px 52px 60px;background-color:#ffffff;background-image:linear-gradient(#edf1f5 1px,transparent 1px),linear-gradient(90deg,#edf1f5 1px,transparent 1px);background-size:24px 24px;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:16px}
-.pr .ms{width:690px;display:flex;flex-direction:column;gap:16px}
+.pr .pg{width:794px;height:1123px;box-sizing:border-box;padding:36px 34px 52px;background-color:#ffffff;background-image:linear-gradient(#edf1f5 1px,transparent 1px),linear-gradient(90deg,#edf1f5 1px,transparent 1px);background-size:24px 24px;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:16px}
+.pr .ms{width:726px;display:flex;flex-direction:column;gap:13px}
 .pr .hd{display:flex;justify-content:space-between;align-items:center;gap:16px;width:100%;min-width:0;flex:0 0 auto;box-sizing:border-box}
 .pr .hd>div{flex:1 1 auto;min-width:0;max-width:100%}
 .pr .hd img{display:block;flex:0 0 auto;height:auto;max-height:30px;max-width:112px;width:auto;object-fit:contain;background:#fff;border-radius:6px;padding:4px 6px;box-sizing:border-box}
@@ -270,12 +270,12 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
 .pr .ptier{border:1.5px solid #cbd5df;border-radius:12px;padding:10px 12px;background:#fff}
 .pr .ptier.on{border:2px solid #1c2836;box-shadow:3px 3px 0 #1c2836}
 .pr .ptier b{font-family:"Kalam",cursive;font-size:20px;display:block;line-height:1.1}
-.pr .house{break-inside:avoid;page-break-inside:avoid;overflow:hidden}.pr .house img{display:block;width:auto;height:auto;max-width:100%;max-height:220px;object-fit:contain;object-position:center;margin-inline:auto}
+.pr .house{break-inside:avoid;page-break-inside:avoid;overflow:hidden}.pr .house img{display:block;width:100%;height:auto;max-width:100%;max-height:300px;object-fit:contain;object-position:center;margin-inline:auto}
 .pr .fun{display:grid;gap:5px;justify-items:center}
 .pr .fun div{display:flex;justify-content:space-between;padding:6px 22px;font-weight:600;clip-path:polygon(0 0,100% 0,calc(100% - 16px) 100%,16px 100%)}
 .pr .fun b{font-family:"Kalam",cursive;font-size:20px}
 .pr .fine{font-size:10.5px;color:#5b6878}
-.pr .ft{position:absolute;left:52px;right:52px;bottom:24px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#5b6878}
+.pr .ft{position:absolute;left:34px;right:34px;bottom:20px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#5b6878}
 .rabatt{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:flex-end}
 .rabatt .price{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center}
 .rabatt .price input{text-align:right}
@@ -459,8 +459,8 @@ svg.scene{min-width:640px}
   <div class="board">
     <div class="scene-wrap">
     <svg class="scene" viewBox="0 0 1000 600" role="img" aria-label="Skizze: Suchmaschinen, Weg mit Navigationssystemen und Werbe-Wegweisern, Haus mit Website als Fundament">
-      <path class="road" d="M180 175 C 170 300, 330 300, 430 385 S 560 505, 660 525"/>
-      <path class="roadmid" d="M180 175 C 170 300, 330 300, 430 385 S 560 505, 660 525"/>
+      <path class="road" d="M180 175 C 168 255, 238 294, 332 324 S 505 424, 668 466"/>
+      <path class="roadmid" d="M180 175 C 168 255, 238 294, 332 324 S 505 424, 668 466"/>
       <g>
         <rect class="s fc" x="28" y="30" width="330" height="58" rx="29"/>
         <circle class="s" cx="64" cy="57" r="11"/><path class="s" d="M72 65 L82 75"/>
@@ -2066,10 +2066,10 @@ svg.scene{min-width:640px}
       const ms=document.createElement('div'); ms.className='ms'; wrap.appendChild(ms);
       const blocks=printBlocks(d, houseSrc).map(html=>{ const el=document.createElement('div'); el.innerHTML=html; ms.appendChild(el); return el; });
       await Promise.all([...ms.querySelectorAll('img')].map(img=>img.complete?0:new Promise(r=>{ img.onload=img.onerror=r; })));
-      const AV=1123-44-60, GAP=16, pages=[[]]; let h=0;
+      const AV=1123-36-52, GAP=13, pages=[[]]; let h=0;
       // Never crop a block or its illustration. Scale oversized images proportionally,
       // then paginate whole cards so the drawing remains complete in the PDF.
-      const maxBlock=Math.floor(AV*0.70);
+      const maxBlock=Math.floor(AV*0.76);
       blocks.forEach(el=>{
         const img=el.querySelector('img');
         if(img && (img.naturalWidth || img.width)){
@@ -2080,7 +2080,7 @@ svg.scene{min-width:640px}
           if(el.classList.contains('house')){
             // The scene SVG has a 5:3 viewBox. Constrain both dimensions instead of
             // forcing it into a full-width, fixed-height box that distorts the drawing.
-            img.style.maxHeight='220px';
+            img.style.maxHeight='300px';
             img.style.objectPosition='center';
             img.style.display='block';
             img.style.marginInline='auto';
