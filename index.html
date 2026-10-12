@@ -268,7 +268,7 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
 .pr .ptier{border:1.5px solid #cbd5df;border-radius:12px;padding:10px 12px;background:#fff}
 .pr .ptier.on{border:2px solid #1c2836;box-shadow:3px 3px 0 #1c2836}
 .pr .ptier b{font-family:"Kalam",cursive;font-size:20px;display:block;line-height:1.1}
-.pr .house img{display:block;width:100%;height:auto;max-height:300px;object-fit:contain;object-position:center;margin-inline:auto}
+.pr .house{break-inside:avoid;page-break-inside:avoid;overflow:hidden}.pr .house img{display:block;width:100%;height:220px;max-height:220px;object-fit:contain;object-position:center;margin-inline:auto}
 .pr .fun{display:grid;gap:5px;justify-items:center}
 .pr .fun div{display:flex;justify-content:space-between;padding:6px 22px;font-weight:600;clip-path:polygon(0 0,100% 0,calc(100% - 16px) 100%,16px 100%)}
 .pr .fun b{font-family:"Kalam",cursive;font-size:20px}
@@ -1694,21 +1694,31 @@ svg.scene{min-width:640px}
     if(Array.isArray(result.stichworte)) st.kw=uniqueTerms(result.stichworte);
     const sourceText=[o.title||'',o.description||'',...(o.headings||[]),o.textExcerpt||''].join(' ').toLocaleLowerCase('de-CH');
     const curatedTerms=(branchId)=>{
-      const base={resto:['Restaurant'],beauty:['Coiffeur','Friseur','Haarschnitt','Haarstyling'],craft:['Handwerker','Handwerksbetrieb','Offerte'],'pilates-studio':['Pilates','Pilates-Studio','Probetraining'],kosmetikstudio:['Kosmetikstudio','Kosmetikbehandlung','Hautpflege'],motorbootsfahrschule:['Motorbootsfahrschule','Bootsfahrstunden','Bootsprüfung'],bootsfahrschule:['Bootsfahrschule','Bootsfahrstunden','Bootsprüfung']};
-      const terms=base[branchId]||[];
+      // Nur kontrollierte, branchenbezogene Suchbegriffe. Keine Navigationstexte,
+      // Begrüssungen oder zufälligen Wörter aus dem Seitentext als Keywords übernehmen.
+      const catalogName=INDUSTRIES.find(x=>x.id===branchId)?.name||'';
+      const base={
+        resto:['Restaurant','Italienisches Restaurant','Italienische Küche','Pizza','Pasta','Mittagsmenü','Take-away','Tischreservation'],
+        beauty:['Coiffeur','Friseur','Haarschnitt','Haarstyling','Damenhaarschnitt','Herrenhaarschnitt'],
+        craft:['Handwerker','Handwerksbetrieb','Offerte','Reparatur','Montage'],
+        'pilates-studio':['Pilates','Pilates-Studio','Pilates-Kurs','Reformer Pilates','Probetraining'],
+        kosmetikstudio:['Kosmetikstudio','Kosmetikbehandlung','Hautpflege','Gesichtsbehandlung'],
+        motorbootsfahrschule:['Motorbootsfahrschule','Bootsfahrstunden','Bootsprüfung'],
+        bootsfahrschule:['Bootsfahrschule','Bootsfahrstunden','Bootsprüfung']
+      };
+      let terms=base[branchId]||[catalogName].filter(Boolean);
       if(branchId==='resto'){
         const add=[];
-        if(/italien|italiano|italian/.test(sourceText))add.push('Italienisches Restaurant','Italienische Küche');
+        if(/italien|italiano|italian|tuscany|toskan/.test(sourceText))add.push('Italienisches Restaurant','Italienische Küche');
         if(/pizza|pizzeria/.test(sourceText))add.push('Pizza','Pizzeria');
         if(/pasta|spaghetti|ravioli|lasagne/.test(sourceText))add.push('Pasta');
         if(/risotto/.test(sourceText))add.push('Risotto');
         if(/take.?away|lieferdienst|lieferung/.test(sourceText))add.push('Take-away','Lieferservice');
         if(/mittag|lunch/.test(sourceText))add.push('Mittagsmenü');
         if(/reservation|reservier|tisch buchen/.test(sourceText))add.push('Tischreservation');
-        return uniqueTerms([...terms,...add]).slice(0,10);
+        terms=[...terms,...add];
       }
-      const item=INDUSTRIES.find(x=>x.id===branchId);
-      return terms.length?terms:uniqueTerms([item?.name||'Dienstleistung','Beratung','Anfrage']).slice(0,8);
+      return uniqueTerms(terms).slice(0,10);
     };
     const title=String(o.title||'').toLocaleLowerCase('de-CH');
     const headings=(o.headings||[]).map(x=>String(x||'').toLocaleLowerCase('de-CH'));
@@ -1766,7 +1776,12 @@ svg.scene{min-width:640px}
       foundPlace=candidates.length?candidates[0].p:null;
     }
     const extractedTown=foundPlace?String(foundPlace[0]).replace(/\s+(?:ZH|BL|BE|LU|SG|AG|SO|TG|GR|VS|VD|GE|FR|NE|JU|TI|SH|SZ|ZG|NW|OW|GL|AR|AI|UR)\s*$/i,'').trim():locationHint;
-    if(foundPlace){st.reg.mode='umkreis';st.reg.center=pkey(foundPlace);st.reg.radius=10;st.reg.cantons=[];st.reg.add=[];st.reg.rem=[];invalidate();renderRegion();fitSel();}
+    if(foundPlace){
+      // Beim Website-Check den bisherigen Kartenstandort vollständig ersetzen.
+      // So kann ein vorheriger Standardstandort (z. B. Horgen) nicht stehen bleiben.
+      st.reg={...DEF_REG(),mode:'umkreis',center:pkey(foundPlace),radius:10,cantons:[],add:[],rem:[]};
+      invalidate();renderRegion();fitSel();
+    }
         if(detectedId && BR[detectedId]){
       const item=INDUSTRIES.find(x=>x.id===detectedId);
       const town=extractedTown||'';
