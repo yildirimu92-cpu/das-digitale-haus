@@ -884,7 +884,7 @@ svg.scene{min-width:640px}
   // Für Vollständigkeit auf Eintragsebene später mit dem offiziellen internen Branchenexport abgleichen.
   const TAXONOMY = [
     ['Essen, Genuss & Gastronomie','Restaurant','Café','Bar','Take-away','Catering','Bäckerei / Konditorei','Metzgerei','Pizzeria','Hotel','Pension','Foodtruck','Lieferservice','Eisdiele','Confiserie','Weinhandlung','Lebensmittelgeschäft'],
-    ['Medizin, Ästhetik & Wellness','Arztpraxis','Zahnarzt','Dentalhygiene','Physiotherapie','Psychotherapie','Psychologie','Apotheke','Optiker','Hörakustik','Massage','Kosmetikstudio','Kosmetik','Coiffeur','Barbershop','Nagelstudio','Tattoo-Studio','Fitnessstudio','Personal Training','Hebamme','Tierarzt','Pflegeheim','Spitex','Ergotherapie','Naturheilkunde','Akupunktur','Chiropraktik','Dermatologie','Augenarzt','Gynäkologie','Kinderarzt','Logopädie'],
+    ['Medizin, Ästhetik & Wellness','Arztpraxis','Zahnarzt','Dentalhygiene','Physiotherapie','Psychotherapie','Psychologie','Apotheke','Optiker','Hörakustik','Massage','Kosmetikstudio','Kosmetik','Coiffeur','Barbershop','Nagelstudio','Tattoo-Studio','Fitnessstudio','Personal Training','Pilates-Studio','Hebamme','Tierarzt','Pflegeheim','Spitex','Ergotherapie','Naturheilkunde','Akupunktur','Chiropraktik','Dermatologie','Augenarzt','Gynäkologie','Kinderarzt','Logopädie'],
     ['Handwerk, Bau & Industrie','Sanitär / Heizung','Elektroinstallationen','Architekturbüro','Bauunternehmen','Maler / Gipser','Schreinerei','Zimmerei / Holzbau','Dachdecker','Spenglerei','Gartenbau','Landschaftsbau','Pflästerungen','Bodenbeläge','Plattenleger','Fensterbau','Fassadenbau','Gerüstbau','Abbruchunternehmen','Aushubarbeiten','Baureinigung','Gebäudereinigung','Hauswartung','Schlosserei / Metallbau','Glaserei','Küchenbau','Badezimmer-Renovation','Bauleitung','Baumanagement','Ingenieurbüro','Heizungsinstallation','Lüftung / Klima','Solartechnik / Photovoltaik','Kaminfeger','Aufzüge','Sicherheitsanlagen','Industriemontage','Maschinenbau','Metallverarbeitung','Druckerei','Werbetechnik','Textilverarbeitung','Entsorgung / Recycling'],
     ['Mobilität & Fahrzeuge','Autogarage','Autohandel / Occasionshandel','Carrosserie','Autolackiererei','Reifenservice','Autoglaserei','Autowaschanlage','Fahrschule','Abschleppdienst','Autovermietung','Motorradhandel / Werkstatt','Fahrradgeschäft / Velowerkstatt','Bootswerft','Transport','Umzug','Taxi','Limousinenservice','Nutzfahrzeuge','Tankstelle'],
     ['Handel & E-Commerce','Detailhandel','Modegeschäft','Schuhgeschäft','Möbelgeschäft','Einrichtungshaus','Elektronikgeschäft','Computerladen','Mobiltelefon-Shop','Juwelier','Uhrenhandel','Optikgeschäft','Sportgeschäft','Spielwarengeschäft','Blumenladen','Gartencenter','Buchhandlung','Papeterie','Haushaltsgeräte','Baumarkt','Tierbedarf','Secondhand-Shop','Online-Shop','Grosshandel','Getränkehandel','Küchenstudio'],
@@ -897,12 +897,11 @@ svg.scene{min-width:640px}
   ];
   const slug = v => v.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   const INDUSTRIES = TAXONOMY.flatMap(([category,...names])=>names.map(name=>({
-    id:name==='Coiffeur'?'beauty':name==='Restaurant'?'resto':name==='Pilates-Studio'?'yoga-studio':slug(name),category,name
+    id:name==='Coiffeur'?'beauty':name==='Restaurant'?'resto':name==='Pilates-Studio'?'pilates-studio':slug(name),category,name
   }))).filter((x,i,a)=>a.findIndex(y=>y.id===x.id)===i);
   // Keep website-classifier IDs aligned with the industry picker.
-  const PILATES_ITEM = INDUSTRIES.find(x=>x.id==='yoga-studio');
-  if(!PILATES_ITEM) INDUSTRIES.push({id:'yoga-studio',category:'Freizeit, Bildung & Sport',name:'Pilates-Studio'});
-  const BRANCH_ALIASES = {'pilates-studio':'yoga-studio','pilates':'yoga-studio','yoga-studio':'yoga-studio','kosmetik':'kosmetikstudio','restaurant':'resto','coiffeur':'beauty'};
+  const PILATES_ITEM = INDUSTRIES.find(x=>x.id==='pilates-studio');
+  const BRANCH_ALIASES = {'yoga-studio':'pilates-studio','pilates':'pilates-studio','pilates-studio':'pilates-studio','kosmetik':'kosmetikstudio','restaurant':'resto','coiffeur':'beauty'};
   function canonicalBranchId(id){const raw=String(id||'').trim();return BRANCH_ALIASES[raw.toLocaleLowerCase('de-CH')]||raw;}
   // Allgemeine Handwerksbranche für Website-Scans, die mehrere Gewerke erkennen,
   // ohne ein einzelnes Gewerk sicher bestimmen zu können.
@@ -915,7 +914,8 @@ svg.scene{min-width:640px}
   BR.beauty={d:['Termin','buchen'],tool:'MyCOCKPIT',q:'Coiffeur Horgen'};
   BR.resto={d:['Tisch','reservieren'],tool:'MyLOCALINA',q:'Restaurant Zug'};
   BR.craft={d:['Offerte','anfragen'],tool:'Formular',q:'Maler Adliswil'};
-  BR['yoga-studio']={d:['Probetraining','buchen'],tool:'MyCOCKPIT',q:'Pilates Kilchberg'};
+  BR['pilates-studio']={d:['Probetraining','buchen'],tool:'MyCOCKPIT',q:'Pilates Kilchberg'};
+  BR['yoga-studio']={d:['Probetraining','buchen'],tool:'MyCOCKPIT',q:'Yoga Horgen'};
   const PK = [
     {name:'Basis', flames:1, pitch:'Gefunden werden. Das Fundament steht, alle Wege führen zu dir.'},
     {name:'Feurig', flames:2, pitch:'Mehr Anfragen. Kunden sehen dich, vertrauen dir und buchen direkt.'},
