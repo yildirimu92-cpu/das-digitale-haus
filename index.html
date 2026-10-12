@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><style>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important} .business-profile{border:1.5px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:10px;margin:12px 0}.biz-recommendation{background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:12px;display:grid;gap:6px}.biz-recommendation strong{font-size:18px} </style><style>
 .roi-simple{display:grid;gap:14px}
 .roi-results{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .roi-kpi{border:1.5px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:5px;min-width:0}
@@ -740,6 +740,7 @@ svg.scene{min-width:640px}
         <button type="button" id="v-copy" hidden></button><button type="button" id="v-import" hidden></button><input id="v-file" type="file" hidden>
         <span id="v-import-status" hidden></span><input id="v-region" type="text" hidden><input id="v-region-confirm" type="checkbox" hidden>
       </div>
+      <div class="business-profile"><h3>Individuelle Paketempfehlung</h3><p class="note">Die Empfehlung berücksichtigt Branche, Suchpotenzial, Kundenwert, Betriebsgrösse und freie Kapazität. Nicht bekannte Werte sind Schätzungen.</p><div class="inputs"><label class="field"><span class="label">Betriebsgrösse</span><select class="t" id="biz-size"><option value="solo">Einzelunternehmen</option><option value="small" selected>2–9 Mitarbeitende</option><option value="medium">10–49 Mitarbeitende</option><option value="large">50+ Mitarbeitende</option></select></label><label class="field"><span class="label">Kapazität für zusätzliche Kunden</span><select class="t" id="biz-capacity"><option value="low">Begrenzt</option><option value="medium" selected>Teilweise vorhanden</option><option value="high">Gute Wachstumskapazität</option></select></label></div><div id="biz-recommendation" class="biz-recommendation" aria-live="polite">Empfehlung wird berechnet …</div></div>
       <div class="roi-simple">
         <div class="inputs">
           <label class="field"><span class="label" id="f-ql">Suchanfragen pro Monat</span><input class="t" id="f-q" type="text" inputmode="numeric"></label>
@@ -1432,7 +1433,20 @@ svg.scene{min-width:640px}
     cols.forEach(i=>{ const el=$('vis-'+i); el.addEventListener('input',()=>{ st.f.vis[i]=el.value; save(); calc(); }); });
     if(focusId && focusId.startsWith('vis-')){ const el=$(focusId); if(el){ el.focus(); const n=el.value.length; el.setSelectionRange(n,n); } }
     $('o-pay').textContent='Kosten pro Monat inklusive Einmalkosten, verteilt auf '+fmt(price(st.pk).lz,0)+' Monate. Der Umsatz ist kein Gewinn. Für die Netto-Wirtschaftlichkeit bitte den Deckungsbeitrag pro Neukunde eingeben.';
+    recommendBusiness(q,c,w,v,res);
   }
+  function recommendBusiness(q,contact,close,avgRevenue,res){
+    const size=$('biz-size'),cap=$('biz-capacity'),out=$('biz-recommendation');if(!size||!cap||!out)return;
+    const customers=Math.max(0,q*contact/100*close/100),potential=customers*Math.max(0,avgRevenue);
+    let score=(q>=300?1:0)+(q>=1000?1:0)+(avgRevenue>=500?1:0)+(avgRevenue>=1500?1:0)+(potential>=3000?1:0)+(potential>=10000?1:0);
+    score+=({solo:0,small:1,medium:2,large:3}[size.value]||0);
+    score+=({low:0,medium:1,high:2}[cap.value]||0);
+    if(cap.value==='low')score=Math.min(score,3);
+    const ix=score>=7?2:score>=4?1:0,tier=['Basis','Feurig','Platzhirsch'][ix];
+    const why=ix===2?'Hohes geschätztes Potenzial und ausreichende Kapazität können eine stärkere Präsenz rechtfertigen.':ix===1?'Gezielte Werbung und passende Branchenprodukte könnten sinnvoll sein.':'Zuerst das digitale Fundament stärken und Nachfrage validieren.';
+    out.innerHTML='<strong>Vorläufige Empfehlung: '+tier+'</strong><div>'+why+'</div><small>Rechenbasis: '+fmt(q,0)+' Suchanfragen/Monat, ca. '+fmt(customers,1)+' mögliche Neukunden und '+chf(potential)+' Umsatzpotenzial. Betriebsgrösse und Kapazität sind berücksichtigt. Annahmen mit dem Kunden prüfen; keine Umsatzgarantie.</small>';
+  }
+  ['biz-size','biz-capacity'].forEach(id=>{const el=$(id);if(el)el.addEventListener('change',()=>{save();calc();});});
 
   function update(){ renderScene(); renderCfg(); renderPrices(); renderVol(); renderVolMeta(); renderKi(); calc(); renderSum(); try{ renderAna(); }catch(e){} }
 
