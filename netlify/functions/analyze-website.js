@@ -167,11 +167,16 @@ exports.handler = async (event) => {
         if (logoUrl) break;
       }
     }
-    // Last resort: social preview image, clearly only a fallback.
+    // Do not use og:image as a logo: it is often a campaign banner or social preview.
+    // Fallback to lazy-loaded image attributes only when their markup identifies a logo.
     if (!logoUrl) {
-      const og = first(html, /<meta\b[^>]*property=["']og:image["'][^>]*content=["']([^"']*)["'][^>]*>/i) ||
-        first(html, /<meta\b[^>]*content=["']([^"']*)["'][^>]*property=["']og:image["'][^>]*>/i);
-      logoUrl = absolutePublicImage(og);
+      for (const m of html.matchAll(/<(?:img|source)\b[^>]*>/gi)) {
+        const tag = m[0];
+        if (!/(?:alt|class|id|src|data-src|data-lazy-src)=["'][^"']*logo[^"']*["']/i.test(tag)) continue;
+        const src = (tag.match(/\b(?:src|data-src|data-lazy-src)=["']([^"']+)["']/i) || [])[1];
+        logoUrl = absolutePublicImage(src);
+        if (logoUrl) break;
+      }
     }
     const observations = { title, description, headings:headings.slice(0,12), hasPhone, hasEmail, hasContact, forms, hasBooking, hasSocial, logoUrl, textExcerpt:text.slice(0,5000) };
     return { statusCode:200, headers, body:JSON.stringify({ok:true,url:u.href,firma:'',branche:'andere',dienstleistungen:services.slice(0,20),stichworte:keywords.slice(0,20),orte:[],logoUrl,beobachtungen:hints,observations,source:'automatischer HTML-Check',checkedAt:new Date().toISOString()}) };
