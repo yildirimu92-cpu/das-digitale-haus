@@ -242,9 +242,10 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
 .pr{position:absolute;left:-30000px;top:0;width:794px;font-family:"Archivo",system-ui,sans-serif;color:#1c2836;font-size:13px;line-height:1.45;color-scheme:light}
 .pr .pg{width:794px;height:1123px;box-sizing:border-box;padding:44px 52px 60px;background-color:#ffffff;background-image:linear-gradient(#edf1f5 1px,transparent 1px),linear-gradient(90deg,#edf1f5 1px,transparent 1px);background-size:24px 24px;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:16px}
 .pr .ms{width:690px;display:flex;flex-direction:column;gap:16px}
-.pr .hd{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
-.pr .hd img{height:30px;width:auto;background:#fff;border-radius:6px;padding:4px 6px}
-.pr h1{font-family:"Kalam",cursive;font-weight:700;font-size:46px;margin:0;line-height:1}
+.pr .hd{display:flex;justify-content:space-between;align-items:center;gap:16px;width:100%;min-width:0;flex:0 0 auto;box-sizing:border-box}
+.pr .hd>div{flex:1 1 auto;min-width:0;max-width:100%}
+.pr .hd img{display:block;flex:0 0 auto;height:auto;max-height:30px;max-width:112px;width:auto;object-fit:contain;background:#fff;border-radius:6px;padding:4px 6px;box-sizing:border-box}
+.pr h1{font-family:"Kalam",cursive;font-weight:700;font-size:42px;margin:0;line-height:1.08;max-width:100%;overflow-wrap:anywhere}
 .pr h1 span{background:linear-gradient(transparent 55%,#ffdc4d 55%,#ffdc4d 88%,transparent 88%);padding:0 4px}
 .pr .meta{color:#5b6878;font-size:13px;margin-top:6px}
 .pr .card{background:#fff;border:2px solid #1c2836;border-radius:14px;box-shadow:4px 4px 0 #1c2836;padding:14px 18px}
@@ -2075,7 +2076,12 @@ svg.scene{min-width:640px}
         wrap.appendChild(pg);
         const canvas=await H(pg,{scale:2,backgroundColor:'#ffffff',logging:false,useCORS:true});
         if(i>0) doc.addPage();
-        doc.addImage(canvas.toDataURL('image/jpeg',0.85),'JPEG',0,0,210,297);
+        // Preserve the captured page's aspect ratio instead of stretching it to A4.
+        const pageW=210, pageH=297, ratio=canvas.width/canvas.height;
+        let imageW=pageW, imageH=imageW/ratio;
+        if(imageH>pageH){ imageH=pageH; imageW=imageH*ratio; }
+        doc.setFillColor(255,255,255); doc.rect(0,0,pageW,pageH,'F');
+        doc.addImage(canvas.toDataURL('image/jpeg',0.92),'JPEG',(pageW-imageW)/2,(pageH-imageH)/2,imageW,imageH);
         wrap.removeChild(pg);
       }
       return doc.output('blob');
