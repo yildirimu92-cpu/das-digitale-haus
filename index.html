@@ -1515,11 +1515,12 @@ svg.scene{min-width:640px}
   function renderIndustryUI(){
     const cat=$('branche-kategorie'),sub=$('branche-unterkategorie'),search=$('branche-suche'),hits=$('branche-treffer');
     if(!cat||!sub||!search||!hits)return;
+    const needsSelection=!!(st.ana&&st.ana.audit&&st.ana.audit.classificationStatus==='needs-selection');
     const current=INDUSTRIES.find(x=>x.id===st.br)||INDUSTRIES.find(x=>x.id==='beauty')||INDUSTRIES[0];
     const categories=[...new Set(INDUSTRIES.map(x=>x.category))];
     cat.replaceChildren(...categories.map(v=>{const o=document.createElement('option');o.value=v;o.textContent=v;return o;}));
     cat.value=current.category;
-    function fillSub(){const arr=INDUSTRIES.filter(x=>x.category===cat.value);sub.replaceChildren(...arr.map(x=>{const o=document.createElement('option');o.value=x.id;o.textContent=x.name;return o;}));if(arr.some(x=>x.id===st.br))sub.value=st.br;else sub.value=arr[0]?.id||'';}
+    function fillSub(){const arr=INDUSTRIES.filter(x=>x.category===cat.value);sub.replaceChildren(...(needsSelection?[(()=>{const o=document.createElement('option');o.value='';o.textContent='Branche auswählen …';return o;})()]:[]),...arr.map(x=>{const o=document.createElement('option');o.value=x.id;o.textContent=x.name;return o;}));if(needsSelection)sub.value='';else if(arr.some(x=>x.id===st.br))sub.value=st.br;else sub.value=arr[0]?.id||'';}
     function renderHits(){
       const q=search.value.trim().toLocaleLowerCase('de-CH');
       const found=INDUSTRIES.filter(x=>!q||(x.name+' '+x.category).toLocaleLowerCase('de-CH').includes(q)).slice(0,8);
@@ -1527,7 +1528,7 @@ svg.scene{min-width:640px}
       found.forEach(x=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=x.name+' · '+x.category;b.addEventListener('click',()=>{cat.value=x.category;fillSub();sub.value=x.id;search.value=x.name;hits.replaceChildren();setBranch(x.id);});hits.appendChild(b);});
       $('branche-status').textContent=q?(found.length?found.length+' passende Vorschläge angezeigt.':'Keine Treffer – Suchbegriff prüfen oder Branchenstamm ergänzen.'):'Branchenkatalog mit '+INDUSTRIES.length+' auswählbaren Einträgen. Suchfeld und Kategorien sind kombinierbar.';
     }
-    fillSub();search.value=current.name;
+    fillSub();search.value=needsSelection?'':current.name;
     cat.onchange=()=>{fillSub();const x=INDUSTRIES.find(x=>x.id===sub.value);if(x)setBranch(x.id);renderHits();};
     sub.onchange=()=>{const x=INDUSTRIES.find(x=>x.id===sub.value);if(x){search.value=x.name;setBranch(x.id);}renderHits();};
     search.oninput=renderHits;renderHits();
@@ -1557,7 +1558,7 @@ svg.scene{min-width:640px}
     st.tier=['S','M','L','M'];
   }
   function setBranch(b){
-    const prev=st.br;if(!BR[b])return;st.br=b;st.term=BR[st.br].q;$('term').value=st.term;if(prev!==b)applyBranchDefaults(b);
+    const prev=st.br;if(!BR[b])return;st.br=b;st.term=BR[st.br].q;$('term').value=st.term;if(st.ana&&st.ana.audit&&st.ana.audit.classificationStatus==='needs-selection')st.ana.audit.classificationStatus='confirmed';if(prev!==b)applyBranchDefaults(b);
     const item=INDUSTRIES.find(x=>x.id===b);
     if(item){const cat=$('branche-kategorie'),sub=$('branche-unterkategorie'),search=$('branche-suche');if(cat)cat.value=item.category;if(sub){const arr=INDUSTRIES.filter(x=>x.category===item.category);sub.replaceChildren(...arr.map(x=>{const o=document.createElement('option');o.value=x.id;o.textContent=x.name;return o;}));sub.value=b;}if(search)search.value=item.name;}
     if(st.br==='resto'&&prev!=='resto')st.def.slice(0,3).forEach(x=>{if(x.kb){x.kb=false;x.loc=true;}});
