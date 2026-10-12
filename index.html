@@ -915,6 +915,7 @@ svg.scene{min-width:640px}
   BR.resto={d:['Tisch','reservieren'],tool:'MyLOCALINA',q:'Restaurant Zug'};
   BR.craft={d:['Offerte','anfragen'],tool:'Formular',q:'Maler Adliswil'};
   BR['pilates-studio']={d:['Probetraining','buchen'],tool:'MyCOCKPIT',q:'Pilates Kilchberg'};
+  BR.kosmetikstudio={d:['Termin','buchen'],tool:'MyCOCKPIT',q:'Kosmetikstudio Luzern'};
   BR['yoga-studio']={d:['Probetraining','buchen'],tool:'MyCOCKPIT',q:'Yoga Horgen'};
   const PK = [
     {name:'Basis', flames:1, pitch:'Gefunden werden. Das Fundament steht, alle Wege führen zu dir.'},
@@ -1674,9 +1675,11 @@ svg.scene{min-width:640px}
     const title=String(o.title||'').toLocaleLowerCase('de-CH');
     const headings=(o.headings||[]).map(x=>String(x||'').toLocaleLowerCase('de-CH'));
     const metadata=[title,String(o.description||'').toLocaleLowerCase('de-CH'),...headings].join(' ');
+    // Classify from all available page evidence, preferring specific business types
+    // over broad salon/beauty signals. Brand names can be strong evidence too.
     const branchRules=[
+      ['kosmetikstudio',/kosmetikstudio|kosmetik[- ]?institut|kosmetikerin|kosmetikbehandlung|gesichtsbehandlung|beauty empire|hautpflege|skin care|facial treatment|ästhetikstudio|aesthetic studio/],
       ['yoga-studio',/\bpilates\b|\breformer\b|classical pilates|pilates studio|tower class/],
-      ['kosmetikstudio',/kosmetikstudio|kosmetik[- ]?institut|kosmetikerin|kosmetikbehandlung|gesichtsbehandlung|beauty empire/],
       ['resto',/\brestaurant\b|gastronomie|pizzeria|café|cafe|take.away|tischreserv|speisekarte|mittagstisch/],
       ['craft',/sanitär|sanitaer|heizung|elektroinstall|maler|gipser|schreinerei|zimmerei|dachdecker|gartenbau|bauunternehmen|renovation|handwerk|renovero/],
       ['dental',/zahnarzt|zahnmedizin|dentalhygiene|zahnklinik/],
@@ -1684,7 +1687,7 @@ svg.scene{min-width:640px}
       ['hotel',/\bhotel\b|pension|übernachtung|uebernachtung/],
       ['beauty',/\bcoiffeur\b|friseur|barbershop|nagelstudio|haarentfernung|diodenlaser|massage/]
     ];
-    const detected=branchRules.find(([id,re])=>re.test(title)) || branchRules.find(([id,re])=>re.test(headings.join(' '))) || branchRules.find(([id,re])=>re.test(metadata));
+    const detected=branchRules.find(([id,re])=>re.test(metadata));
     const detectedId=detected?canonicalBranchId(detected[0]):'';
     if(detectedId && BR[detectedId] && INDUSTRIES.some(x=>x.id===detectedId)) setBranch(detectedId);
     // Resolve place names conservatively; the gazetteer contains the short place name Loc.
