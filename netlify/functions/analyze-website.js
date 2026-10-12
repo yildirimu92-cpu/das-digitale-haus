@@ -140,7 +140,7 @@ exports.handler = async (event) => {
     }
     let logoUrl = '';
     // Prefer Organization/LocalBusiness JSON-LD logo values.
-    for (const m of html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\\S]*?)<\/script>/gi)) {
+    for (const m of html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
       try {
         const parsed = JSON.parse(m[1].trim());
         const nodes = Array.isArray(parsed) ? parsed : [parsed];
