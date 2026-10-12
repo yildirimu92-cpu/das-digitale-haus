@@ -1772,7 +1772,9 @@ svg.scene{min-width:640px}
     let foundPlace=null;
     const locationHint=String(result.businessLocation||o.businessLocation||(Array.isArray(result.orte)?result.orte[0]:'')||'').trim();
     if(Array.isArray(PLACES)&&PLACES.length){
-      const evidence=[locationHint,title,...headings,String(o.description||''),String(o.textExcerpt||'')].join(' ').toLocaleLowerCase('de-CH');
+      // Only explicit address/location evidence may select a town. Page titles, SEO copy,
+      // headings and general body text can mention other towns and must not set the business location.
+      const evidence=locationHint.toLocaleLowerCase('de-CH');
       const hasToken=(text,value)=>{
         const escaped=String(value).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
         return new RegExp('(^|[^\\p{L}\\p{N}])'+escaped+'([^\\p{L}\\p{N}]|$)','iu').test(text);
