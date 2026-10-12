@@ -140,7 +140,7 @@ exports.handler = async (event) => {
     }
     let logoUrl = '';
     // Prefer Organization/LocalBusiness JSON-LD logo values.
-    for (const m of html.matchAll(/<script\\b[^>]*type=["']application\\/ld\\+json["'][^>]*>([\\s\\S]*?)<\\/script>/gi)) {
+    for (const m of html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\\S]*?)<\/script>/gi)) {
       try {
         const parsed = JSON.parse(m[1].trim());
         const nodes = Array.isArray(parsed) ? parsed : [parsed];
@@ -159,18 +159,18 @@ exports.handler = async (event) => {
     }
     // Fallback to image tags whose alt, class, id or src suggests a logo.
     if (!logoUrl) {
-      for (const m of html.matchAll(/<img\\b[^>]*>/gi)) {
+      for (const m of html.matchAll(/<img\b[^>]*>/gi)) {
         const tag = m[0];
         if (!/(?:alt|class|id|src)=["'][^"']*logo[^"']*["']/i.test(tag)) continue;
-        const src = (tag.match(/\\bsrc=["']([^"']+)["']/i) || [])[1];
+        const src = (tag.match(/\bsrc=["']([^"']+)["']/i) || [])[1];
         logoUrl = absolutePublicImage(src);
         if (logoUrl) break;
       }
     }
     // Last resort: social preview image, clearly only a fallback.
     if (!logoUrl) {
-      const og = first(html, /<meta\\b[^>]*property=["']og:image["'][^>]*content=["']([^"']*)["'][^>]*>/i) ||
-        first(html, /<meta\\b[^>]*content=["']([^"']*)["'][^>]*property=["']og:image["'][^>]*>/i);
+      const og = first(html, /<meta\b[^>]*property=["']og:image["'][^>]*content=["']([^"']*)["'][^>]*>/i) ||
+        first(html, /<meta\b[^>]*content=["']([^"']*)["'][^>]*property=["']og:image["'][^>]*>/i);
       logoUrl = absolutePublicImage(og);
     }
     const observations = { title, description, headings:headings.slice(0,12), hasPhone, hasEmail, hasContact, forms, hasBooking, hasSocial, logoUrl, textExcerpt:text.slice(0,5000) };
