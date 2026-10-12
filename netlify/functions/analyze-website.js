@@ -214,26 +214,50 @@ exports.handler = async (event) => {
       }
     }
     // Resolve business location from structured data; never use the current map center as evidence.
-    function findLocation(value, depth=0) {
-      if (!value || depth > 8) return '';
-      if (Array.isArray(value)) { for (const item of value) { const found=findLocation(item,depth+1); if(found)return found; } return ''; }
-      if (typeof value !== 'object') return '';
-      const address=value.address;
-      if (address && typeof address==='object') {
-        const locality=String(address.addressLocality||'').trim();
-        if(locality)return locality;
-        const formatted=[address.streetAddress,address.postalCode,address.addressRegion,address.addressCountry].filter(Boolean).join(', ');
-        if(formatted)return formatted;
+    // Prefer the actual business entity over WebPage publisher/provider metadata.
+    // Publisher data can describe the website agency rather than the customer's location.
+    function isBusinessEntity(value) {
+      const types = [].concat(value && value['@type'] || []).map(x => String(x).toLowerCase());
+      return types.some(t => /localbusiness|restaurant|foodestablishment|store|professionalservice|medicalbusiness|healthandbeautybusiness|automotivebusiness|educationalorganization|sportsactivitylocation|touristinformationcenter/.test(t));
+    }
+    function locationFromEntity(value) {
+      if (!value || typeof value !== 'object') return '';
+      const a = value.address;
+      if (a && typeof a === 'object') {
+        const locality = String(a.addressLocality || '').trim();
+        const postal = String(a.postalCode || '').trim();
+        const region = String(a.addressRegion || '').trim();
+        const country = String(a.addressCountry && (a.addressCountry.name || a.addressCountry) || '').trim();
+        if (locality) return locality;
+        const formatted = [a.streetAddress, postal, region, country].filter(Boolean).join(', ');
+        if (formatted) return formatted;
       }
-      if(typeof address==='string'&&address.trim())return address.trim();
-      for(const key of ['@graph','mainEntity','mainEntityOfPage','itemListElement','publisher','provider','location']) {
-        const found=findLocation(value[key],depth+1);if(found)return found;
+      if (typeof a === 'string' && a.trim()) return a.trim();
+      return '';
+    }
+    function findLocation(value, depth=0, businessOnly=false) {
+      if (!value || depth > 10) return '';
+      if (Array.isArray(value)) {
+        for (const item of value) { const found=findLocation(item,depth+1,businessOnly); if(found)return found; }
+        return '';
+      }
+      if (typeof value !== 'object') return '';
+      if (!businessOnly || isBusinessEntity(value)) {
+        const own = locationFromEntity(value);
+        if (own) return own;
+      }
+      for (const key of ['@graph','mainEntity','mainEntityOfPage','itemListElement','location','hasMap']) {
+        const found=findLocation(value[key],depth+1,businessOnly);
+        if(found)return found;
       }
       return '';
     }
     let businessLocation='';
     for(const m of html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
-      try { businessLocation=findLocation(JSON.parse(m[1].trim())); } catch {}
+      try {
+        const json = JSON.parse(m[1].trim());
+        businessLocation = findLocation(json,0,true) || findLocation(json,0,false);
+      } catch {}
       if(businessLocation)break;
     }
     if(!businessLocation) {
