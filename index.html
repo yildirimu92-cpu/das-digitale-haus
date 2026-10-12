@@ -337,58 +337,13 @@ svg.scene{min-width:640px}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 </style>
-  <!-- ========== KUNDENSTART / LOCALSEARCH ERKLÄRUNG ========== -->
-  <section class="panel" id="kundenstart" aria-labelledby="kundenstart-titel" style="gap:16px">
-    <div>
-      <p class="label">Gesprächseinstieg</p>
-      <h2 id="kundenstart-titel">Vom Eintrag zum digitalen Wachstum</h2>
-      <p class="sub">localsearch unterstützt Schweizer KMU dabei, online gefunden zu werden, Vertrauen aufzubauen und neue Anfragen zu gewinnen. Wähle den Kundentyp, damit du das Gespräch passend aufbauen kannst.</p>
-    </div>
-    <div class="two" style="gap:12px">
-      <button class="panel" type="button" id="kunde-bestand" aria-pressed="false" style="text-align:left;cursor:pointer">
-        <span class="label">Kundenweg 1</span>
-        <h2 style="font-size:22px">Bestehender Kunde</h2>
-        <span>Bestehende Einträge und Lösungen sichtbar machen, den heutigen Nutzen einordnen und nächste Entwicklungsmöglichkeiten aufzeigen.</span>
-      </button>
-      <button class="panel" type="button" id="kunde-neu" aria-pressed="false" style="text-align:left;cursor:pointer">
-        <span class="label">Kundenweg 2</span>
-        <h2 style="font-size:22px">Neuer Kunde</h2>
-        <span>Die aktuelle digitale Präsenz verstehen, Lücken erkennen und passende nächste Schritte erarbeiten.</span>
-      </button>
-    </div>
-    <div class="board">
-      <div class="boardhead">
-        <h2 style="font-size:22px">So läuft die digitale Kundengewinnung</h2>
-        <p class="note">Einfach erklärt: Menschen suchen online, vergleichen Anbieter und entscheiden sich für einen Betrieb. Wir helfen an den entscheidenden Stellen.</p>
-      </div>
-      <div class="two" style="gap:10px;margin:10px 8px 8px">
-        <div style="border:1.5px solid var(--line);border-radius:12px;padding:12px">
-          <p class="label">1 · Gefunden werden</p>
-          <strong>Bei Google und online sichtbar sein</strong>
-          <p class="note" style="margin-top:6px">Damit Menschen den Betrieb entdecken, wenn sie eine Leistung suchen.</p>
-        </div>
-        <div style="border:1.5px solid var(--line);border-radius:12px;padding:12px">
-          <p class="label">2 · Überzeugen</p>
-          <strong>Gute Website und echte Bewertungen</strong>
-          <p class="note" style="margin-top:6px">Ein klarer Auftritt zeigt, was der Betrieb anbietet und warum man ihm vertrauen kann.</p>
-        </div>
-        <div style="border:1.5px solid var(--line);border-radius:12px;padding:12px">
-          <p class="label">3 · Kontakt ermöglichen</p>
-          <strong>Anrufen, anfragen oder buchen</strong>
-          <p class="note" style="margin-top:6px">Der Weg zum Betrieb soll einfach und verständlich sein.</p>
-        </div>
-        <div style="border:1.5px solid var(--line);border-radius:12px;padding:12px">
-          <p class="label">4 · Kunden halten</p>
-          <strong>Gut betreuen und in Kontakt bleiben</strong>
-          <p class="note" style="margin-top:6px">Passende digitale Hilfen erleichtern die Betreuung und fördern Folgekontakte.</p>
-        </div>
-      </div>
-    </div>
-    <div id="kundenstart-hinweis" class="note" aria-live="polite">Bitte wähle einen Kundenweg. Die Auswahl dient aktuell als Gesprächsleitfaden; die bestehenden Analyse- und Produktfunktionen bleiben darunter verfügbar.</div>
-  </section>
-
   <!-- ========== GESPRÄCH ========== -->
-  <section class="sess" aria-label="Kundengespräch">
+  <section class="sess" id="kundenstart" aria-label="Start: Kunde vorbereiten">
+    <div class="boardhead" style="padding:4px 0 8px">
+      <p class="label">Start</p>
+      <h2>Start: Kunde vorbereiten</h2>
+      <p class="note">Gespeicherten Kunden öffnen oder eine neue Vorbereitung starten. Änderungen werden mit dem Kundendossier gespeichert.</p>
+    </div>
     <div class="sessrow">
       <label class="field" style="flex:2 1 240px">
         <span class="label">Kunde / Gespräch</span>
@@ -400,7 +355,7 @@ svg.scene{min-width:640px}
       </label>
       <div class="sessbtns">
         <button class="btn primary" id="s-save" type="button">Speichern</button>
-        <button class="btn" id="s-open" type="button" aria-expanded="false">Gespräche <span id="s-count"></span></button>
+        <button class="btn" id="s-open" type="button" aria-expanded="true">Gespeicherte Kunden <span id="s-count"></span></button>
         <button class="btn" id="reset" type="button">Neu</button>
       </div>
     </div>
@@ -408,7 +363,7 @@ svg.scene{min-width:640px}
       <summary>Notizen zum Gespräch</summary>
       <textarea class="t" id="s-notes" rows="4" placeholder="Einwände, nächste Schritte, Termin für Nachfassen …"></textarea>
     </details>
-    <div class="slist" id="s-list" hidden>
+    <div class="slist" id="s-list">
       <input class="t" id="s-q" type="search" placeholder="Gespräch suchen" autocomplete="off">
       <div id="s-items"></div>
     </div>
@@ -417,8 +372,8 @@ svg.scene{min-width:640px}
   <!-- ========== WEBSITE-ANALYSE ========== -->
   <section class="board" aria-labelledby="ah">
     <div class="boardhead">
-      <h2 id="ah">Start: Kunde vorbereiten</h2>
-      <p class="note">Website eintragen und die externen Prüf-Links nutzen. Der automatische Website-Check wird separat integriert; bis dahin kannst du die Erkenntnisse manuell ergänzen.</p>
+      <h2 id="ah">Website und Online-Auftritt prüfen</h2>
+      <p class="note">Website eintragen, automatisch prüfen und die Erkenntnisse für das digitale Haus übernehmen.</p>
     </div>
     <div class="ana">
       <div class="side">
@@ -1889,7 +1844,7 @@ svg.scene{min-width:640px}
   async function loadConversations(){if(!cloudOk||!UID)return;const {data,error}=await DB.from('conversations').select('*').eq('user_id',UID).order('updated_at',{ascending:false});if(error)throw error;LIST=(data||[]).map(x=>({id:x.id,name:x.customer_name,date:x.meeting_date||'',notes:x.notes||'',updated:new Date(x.updated_at).getTime(),pkg:x.package_data&&x.package_data.pkg,monthly:x.package_data&&x.package_data.monthly,state:x.analysis_data,website_url:x.website_url}));renderList();}
   function refreshSess(){$('s-name').value=st.cur.name;$('s-date').value=st.cur.date||'';$('s-notes').value=st.cur.notes||'';if(st.cur.notes)$('s-notes-d').open=true;stat();renderList();}
   function refreshInputs(){$('term').value=st.term;['q','c','w','v'].forEach(k=>$('f-'+k).value=st.f[k]);document.querySelectorAll('.sgrid input, .sgrid select').forEach(el=>{const k=GMAP[el.id];if(k)el.value=st.g[k];});renderKw();refreshSess();renderPts();renderAna();}
-  function renderList(){$('s-count').textContent=LIST.length?'('+LIST.length+')':'';const q=norm($('s-q').value.trim()),items=LIST.filter(x=>!q||norm(x.name||'').includes(q));$('s-items').innerHTML=items.length?items.map(x=>{const d=x.date?new Date(x.date+'T12:00').toLocaleDateString('de-CH'):'';return `<div class="sitem${x.id===st.cur.id?' cur':''}"><button type="button" class="open" data-id="${esc(x.id)}"><b>${esc(x.name||'Ohne Namen')}</b><span>${[d,x.pkg,x.monthly!=null?chf(x.monthly)+' / Monat':''].filter(Boolean).map(esc).join(' · ')}</span></button><button type="button" class="btn sm del" data-id="${esc(x.id)}">Löschen</button></div>`;}).join(''):`<p class="note">${LIST.length?'Kein Gespräch gefunden.':'Noch keine Gespräche gespeichert.'}</p>`;}
+  function renderList(){$('s-count').textContent=LIST.length?'('+LIST.length+')':'';const q=norm($('s-q').value.trim()),filtered=LIST.filter(x=>!q||norm([x.name,x.website_url,x.notes].join(' ')).includes(q)),items=q?filtered:filtered.slice(0,5);$('s-items').innerHTML=items.length?items.map(x=>{const d=x.date?new Date(x.date+'T12:00').toLocaleDateString('de-CH'):'';return `<div class="sitem${x.id===st.cur.id?' cur':''}"><button type="button" class="open" data-id="${esc(x.id)}"><b>${esc(x.name||'Ohne Namen')}</b><span>${[d,x.pkg,x.monthly!=null?chf(x.monthly)+' / Monat':''].filter(Boolean).map(esc).join(' · ')}</span></button><button type="button" class="btn sm del" data-id="${esc(x.id)}">Löschen</button></div>`;}).join(''):`<p class="note">${LIST.length?'Kein Gespräch gefunden.':'Noch keine Gespräche gespeichert.'}</p>`;}
   function openConv(id){const x=LIST.find(i=>i.id===id);if(!x||!x.state)return;if(saveT){clearTimeout(saveT);saveT=null;if(st.cur.name.trim())cloudSave();}const s=JSON.parse(JSON.stringify(x.state));st.svc=[];st.kw=[];st.rub='';st.rabatt='';st.pts=[];st.next='';st.topic='';st.vol={};st.volMeta={};st.ki={q:'',r:''};st.zopt={cmp:false,pot:false};st.pay={base:'12',ads:'1'};st.ana={url:x.website_url||'',hints:[]};delete st.def;delete st.tier;Object.assign(st,s);migrate(st);st.cur={id:x.id,name:x.name||'',date:x.date||'',notes:x.notes||''};invalidate();refreshInputs();update();renderRegion();fitSel();try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}$('s-list').hidden=true;$('s-open').setAttribute('aria-expanded','false');stat('Geöffnet: '+st.cur.name,'ok');window.scrollTo({top:0,behavior:'smooth'});}
   $('s-name').addEventListener('input',e=>{st.cur.name=e.target.value;save();if(!cloudOk)stat();});$('s-date').addEventListener('input',e=>{st.cur.date=e.target.value;save();});$('s-notes').addEventListener('input',e=>{st.cur.notes=e.target.value;save();});$('s-save').addEventListener('click',()=>{clearTimeout(saveT);saveT=null;cloudSave();});$('s-open').addEventListener('click',()=>{const l=$('s-list');l.hidden=!l.hidden;$('s-open').setAttribute('aria-expanded',String(!l.hidden));if(!l.hidden)renderList();});$('s-q').addEventListener('input',renderList);
   $('s-items').addEventListener('click',async e=>{const o=e.target.closest('button.open');if(o){openConv(o.dataset.id);return;}const d=e.target.closest('button.del');if(!d||!cloudOk)return;if(!d.dataset.arm){d.dataset.arm='1';d.textContent='Wirklich löschen?';setTimeout(()=>{if(d.isConnected){delete d.dataset.arm;d.textContent='Löschen';}},4000);return;}try{const {error}=await DB.from('conversations').delete().eq('id',d.dataset.id).eq('user_id',UID);if(error)throw error;if(st.cur.id===d.dataset.id){st.cur.id=null;save();}await loadConversations();stat('Gespräch gelöscht.','ok');}catch(e){console.error(e);stat('Löschen hat nicht geklappt.','bad');}});
