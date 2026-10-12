@@ -1208,12 +1208,22 @@ svg.scene{min-width:640px}
       return `<g transform="translate(${x} 0) scale(${s})"><path class="flame1 flick" style="animation-delay:${i*.3}s" d="M0 0 C -14 -8 -12 -26 0 -40 C 3 -28 15 -22 11 -8 C 9 -2 5 0 0 0Z"/><path class="flame2" d="M0 0 C -6 -4 -6 -14 0 -22 C 2 -14 7 -10 5 -4 C 4 -1 2 0 0 0Z"/></g>`;
     }).join('');
     $('flag').style.display = st.pk===2?'':'none';
-    // Show the detected customer logo on the house illustration.
+    // Place the customer logo in a reserved, compact area inside the house.
     let logo=document.getElementById('customer-logo');
     const logoUrl=st.ana&&st.ana.audit&&st.ana.audit.logoUrl;
     if(logoUrl){
-      if(!logo){logo=document.createElementNS('http://www.w3.org/2000/svg','image');logo.setAttribute('id','customer-logo');logo.setAttribute('x','730');logo.setAttribute('y','370');logo.setAttribute('width','150');logo.setAttribute('height','58');logo.setAttribute('preserveAspectRatio','xMidYMid meet');logo.setAttribute('href',logoUrl);document.querySelector('svg.scene')?.appendChild(logo);}
-      else if(logo.getAttribute('href')!==logoUrl) logo.setAttribute('href',logoUrl);
+      if(!logo){
+        logo=document.createElementNS('http://www.w3.org/2000/svg','image');
+        logo.setAttribute('id','customer-logo');
+        logo.setAttribute('x','760'); logo.setAttribute('y','386');
+        logo.setAttribute('width','100'); logo.setAttribute('height','34');
+        logo.setAttribute('preserveAspectRatio','xMidYMid meet');
+        logo.setAttribute('href',logoUrl);
+        // Insert before the house labels so the logo cannot cover their text.
+        const scene=document.querySelector('svg.scene');
+        const house=scene&&scene.querySelector('[data-id="web"]');
+        if(house) scene.insertBefore(logo,house); else scene?.appendChild(logo);
+      } else if(logo.getAttribute('href')!==logoUrl) logo.setAttribute('href',logoUrl);
       logo.style.display='';
     } else if(logo) logo.style.display='none';
     const c=eff(), sm=c.kb==='M'?num(st.g.smsM):c.kb==='L'?num(st.g.smsL):0;
