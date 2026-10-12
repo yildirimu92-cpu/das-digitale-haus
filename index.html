@@ -1514,9 +1514,17 @@ svg.scene{min-width:640px}
     search.oninput=renderHits;renderHits();
   }
   function applyBranchDefaults(b){
-    const mk=(tier)=>({...blankDef(),op:true,bsm:tier>=1,web:tier===0?'S':tier===1?'M':'L',
-      kb:b!=='resto'&&tier>=1,loc:b==='resto'&&tier>=1,ads:tier>=1,budget:tier===0?0:tier===1?250:1000,
-      tik:tier===2&&['beauty','craft'].includes(b),
+    const mk=(tier)=>({...blankDef(),
+      op:true,
+      bsm:tier>=1,
+      web:tier===0?'S':tier===1?'M':'L',
+      kb:b!=='resto'&&tier>=1,
+      loc:b==='resto'&&tier>=1,
+      shop:tier===2,
+      mail:tier===2?'std':'-',
+      ads:tier>=1,
+      budget:tier===0?0:tier===1?250:1000,
+      tik:tier===2,
       reno:b==='craft'?(tier===1?'Starter':tier===2?'Profi':'-'):'-'});
     st.def=[mk(0),mk(1),mk(2),{...blankDef(),op:true,kb:b!=='resto'&&b==='beauty',loc:b==='resto'}];
     st.tier=['S','M','L','M'];
