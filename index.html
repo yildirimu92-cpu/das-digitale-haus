@@ -270,7 +270,7 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
 .pr .ptier{border:1.5px solid #cbd5df;border-radius:12px;padding:10px 12px;background:#fff}
 .pr .ptier.on{border:2px solid #1c2836;box-shadow:3px 3px 0 #1c2836}
 .pr .ptier b{font-family:"Kalam",cursive;font-size:20px;display:block;line-height:1.1}
-.pr .house{break-inside:avoid;page-break-inside:avoid;overflow:hidden}.pr .house img{display:block;width:100%;height:220px;max-height:220px;object-fit:contain;object-position:center;margin-inline:auto}
+.pr .house{break-inside:avoid;page-break-inside:avoid;overflow:hidden}.pr .house img{display:block;width:auto;height:auto;max-width:100%;max-height:220px;object-fit:contain;object-position:center;margin-inline:auto}
 .pr .fun{display:grid;gap:5px;justify-items:center}
 .pr .fun div{display:flex;justify-content:space-between;padding:6px 22px;font-weight:600;clip-path:polygon(0 0,100% 0,calc(100% - 16px) 100%,16px 100%)}
 .pr .fun b{font-family:"Kalam",cursive;font-size:20px}
@@ -1580,7 +1580,7 @@ svg.scene{min-width:640px}
     if(!isCraftBranch(st.br)&&isCraftBranch(prev))st.def.slice(0,3).forEach(x=>{x.reno='-';});
     const productNote=$('branch-product-note');
     if(productNote)productNote.textContent=b==='resto'
-      ?'Empfehlung für Restaurants: MyLOCALINA Standard – Online-Reservationen, weniger manueller Telefonaufwand und ein klarer Buchungsweg für Gäste.'
+      ?'Bei Restaurants werden zusätzliche Produkte nur empfohlen, wenn Reservationen oder andere konkrete Anforderungen dafür sprechen.'
       :isCraftBranch(b)?'Handwerk: Renovero als branchenspezifischen Anfragekanal prüfen.'
       :(b==='beauty'||b==='kosmetikstudio'||b==='pilates-studio'||b==='yoga-studio')?'Terminorientierte Betriebe: MyCOCKPIT als passenden Buchungs- und Kundenverwaltungsbaustein prüfen.'
       :'Branchenprodukte werden passend zu Angebot, Nachfrage und Kapazität ausgewählt.';
@@ -2054,17 +2054,25 @@ svg.scene{min-width:640px}
       blocks.forEach(el=>{
         const img=el.querySelector('img');
         if(img && (img.naturalWidth || img.width)){
-          img.style.maxWidth='100%';
+          img.style.width='auto';
           img.style.height='auto';
+          img.style.maxWidth='100%';
           img.style.objectFit='contain';
-          if(el.classList.contains('house')) img.style.maxHeight=Math.floor(maxBlock*0.62)+'px';
+          if(el.classList.contains('house')){
+            // The scene SVG has a 5:3 viewBox. Constrain both dimensions instead of
+            // forcing it into a full-width, fixed-height box that distorts the drawing.
+            img.style.maxHeight='220px';
+            img.style.objectPosition='center';
+            img.style.display='block';
+            img.style.marginInline='auto';
+          }
         }
         let bh=el.offsetHeight;
         if(bh>maxBlock){
           // Compress internal spacing and text slightly instead of hiding overflow.
           el.style.padding='10px 12px';
           el.style.gap='8px';
-          if(img) img.style.maxHeight=Math.floor(maxBlock*0.52)+'px';
+          if(img && !el.classList.contains('house')) img.style.maxHeight=Math.floor(maxBlock*0.52)+'px';
           bh=el.offsetHeight;
         }
         if(h>0 && h+GAP+bh>AV){ pages.push([]); h=0; }
