@@ -1215,8 +1215,8 @@ svg.scene{min-width:640px}
       if(!logo){
         logo=document.createElementNS('http://www.w3.org/2000/svg','image');
         logo.setAttribute('id','customer-logo');
-        logo.setAttribute('x','770'); logo.setAttribute('y','258');
-        logo.setAttribute('width','100'); logo.setAttribute('height','30');
+        logo.setAttribute('x','790'); logo.setAttribute('y','465');
+        logo.setAttribute('width','70'); logo.setAttribute('height','22');
         logo.setAttribute('preserveAspectRatio','xMidYMid meet');
         logo.setAttribute('href',logoUrl);
         // Insert before the house labels so the logo cannot cover their text.
@@ -1496,7 +1496,7 @@ svg.scene{min-width:640px}
   }
   function applyBranchDefaults(b){
     const mk=(tier)=>({...blankDef(),op:true,bsm:tier>=1,web:tier===0?'S':tier===1?'M':'L',
-      kb:b!=='resto'&&tier>=1,loc:b==='resto'&&tier>=1,ads:tier>=1,budget:tier===2?750:250,
+      kb:b!=='resto'&&tier>=1,loc:b==='resto'&&tier>=1,ads:tier>=1,budget:tier===0?0:tier===1?250:1000,
       tik:tier===2&&['beauty','craft'].includes(b),
       reno:b==='craft'?(tier===1?'Starter':tier===2?'Profi':'-'):'-'});
     st.def=[mk(0),mk(1),mk(2),{...blankDef(),op:true,kb:b!=='resto'&&b==='beauty',loc:b==='resto'}];
