@@ -1709,7 +1709,7 @@ svg.scene{min-width:640px}
     if(detectedId && BR[detectedId]){
       const item=INDUSTRIES.find(x=>x.id===detectedId);
       const town=foundPlace?foundPlace[0]:(st.reg.mode==='umkreis'&&BYKEY.get(st.reg.center)?BYKEY.get(st.reg.center)[0]:'Horgen');
-      st.term=(item?item.name:'Anfrage')+' '+town;
+      st.term=(detectedId==='pilates-studio'?'Pilates':(item?item.name:'Anfrage'))+' '+town;
       $('term').value=st.term;
     }
     save(); renderIndustryUI(); renderAna(); renderKw(); update();
