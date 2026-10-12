@@ -1792,14 +1792,17 @@ svg.scene{min-width:640px}
     // it is actually named in the page content; never retain a previous map center.
     if(foundPlace){
       // Beim Website-Check den bisherigen Kartenstandort vollständig ersetzen.
-      // So kann ein vorheriger Standardstandort (z. B. Horgen) nicht stehen bleiben.
       st.reg={...DEF_REG(),mode:'umkreis',center:pkey(foundPlace),radius:10,cantons:[],add:[],rem:[]};
       invalidate();renderRegion();fitSel();
+    } else {
+      // Kein belastbarer Ortsbeleg: alten Standard-/Kundenstandort nicht übernehmen.
+      st.reg=DEF_REG();
+      invalidate();renderRegion();fitSel();
     }
-        if(detectedId && BR[detectedId]){
+    if(detectedId && BR[detectedId]){
       const item=INDUSTRIES.find(x=>x.id===detectedId);
-      const town=extractedTown||'';
-      st.term=(detectedId==='pilates-studio'?'Pilates':(item?item.name:'Anfrage'))+' '+town;
+      const town=foundPlace ? extractedTown : locationHint;
+      st.term=town ? (detectedId==='pilates-studio'?'Pilates':(item?item.name:'Anfrage'))+' '+town : '';
       $('term').value=st.term;
     }
     save(); renderIndustryUI(); renderAna(); renderKw(); update();
