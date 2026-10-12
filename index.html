@@ -1687,20 +1687,34 @@ svg.scene{min-width:640px}
     const detected=branchRules.find(([id,re])=>re.test(title)) || branchRules.find(([id,re])=>re.test(headings.join(' '))) || branchRules.find(([id,re])=>re.test(metadata));
     const detectedId=detected?canonicalBranchId(detected[0]):'';
     if(detectedId && BR[detectedId] && INDUSTRIES.some(x=>x.id===detectedId)) setBranch(detectedId);
-    // Only use an explicit Swiss place name from the site's own metadata/headings.
+    // Resolve place names conservatively; the gazetteer contains the short place name Loc.
     let foundPlace=null;
     if(Array.isArray(PLACES)&&PLACES.length){
       const placeText=[title,...headings,String(o.description||'').toLocaleLowerCase('de-CH')];
-      for(const text of placeText){
-        foundPlace=PLACES.filter(p=>{
-          if(!p||!p[0]) return false;
-          const place=String(p[0]).trim();
-          // Complete place-name token only; Loc must not match location.
-          const escaped=place.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
-          return new RegExp('(^|[^\\p{L}\\p{N}])'+escaped+'([^\\p{L}\\p{N}]|$)','iu').test(text);
-        }).sort((a,b)=>String(b[0]).length-String(a[0]).length)[0]||null;
-        if(foundPlace) break;
+      const evidence=placeText.join(' ').toLocaleLowerCase('de-CH');
+      const hasToken=(text,value)=>{
+        const escaped=String(value).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+        return new RegExp('(^|[^\\p{L}\\p{N}])'+escaped+'([^\\p{L}\\p{N}]|$)','iu').test(text);
+      };
+      const candidates=[];
+      for(const p of PLACES){
+        if(!p||!p[0]) continue;
+        const full=String(p[0]).trim();
+        if(full.length<4) continue;
+        const canton=String(p[1]||'');
+        const base=full.replace(/\\s+(?:ZH|BL|BE|LU|SG|AG|SO|TG|GR|VS|VD|GE|FR|NE|JU|TI|SH|SZ|ZG|NW|OW|GL|AR|AI|UR)\\s*$/i,'').trim();
+        let matched=false,score=0;
+        for(const text of placeText){
+          if(hasToken(text,full)){matched=true;score=Math.max(score,100+full.length);}
+          else if(base.length>=4&&hasToken(text,base)){matched=true;score=Math.max(score,50+base.length);}
+        }
+        if(!matched) continue;
+        if(canton==='ZH'&&/\\b(zurich|zürich|zh|near zurich|zurich area)\\b/i.test(evidence)) score+=35;
+        if(canton==='BL'&&/\\b(basel|basel-land|baselland|bl)\\b/i.test(evidence)) score+=35;
+        candidates.push({p,score});
       }
+      candidates.sort((a,b)=>b.score-a.score||String(b.p[0]).length-String(a.p[0]).length);
+      foundPlace=candidates.length?candidates[0].p:null;
     }
     if(foundPlace){
       st.reg.mode='umkreis'; st.reg.center=pkey(foundPlace); st.reg.radius=10;
