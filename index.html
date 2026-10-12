@@ -1255,6 +1255,19 @@ svg.scene{min-width:640px}
   }
 
   const flameSvg=n=>Array.from({length:n},()=>`<svg width="18" height="26" viewBox="-14 -42 28 44" aria-hidden="true"><path class="flame1" d="M0 0 C -14 -8 -12 -26 0 -40 C 3 -28 15 -22 11 -8 C 9 -2 5 0 0 0Z"/><path class="flame2" d="M0 0 C -6 -4 -6 -14 0 -22 C 2 -14 7 -10 5 -4 C 4 -1 2 0 0 0Z"/></svg>`).join('');
+  function contractDiscount(months){ return months>=36?0.20:months>=24?0.10:0; }
+  function priceSchedule(P){
+    const months=Math.max(12,Math.min(36,Math.round((num(st.g.lz)||36)/12)*12));
+    const annual=(P.orte||0)+(P.rub||0)+(P.mail||0);
+    const core=Math.max(0,P.m-(P.mAds||0)-annual/12);
+    const termPct=contractDiscount(months);
+    const monthly=core*(1-termPct)+(P.mAds||0);
+    const years=[];
+    for(let y=1;y<=Math.min(3,Math.ceil(months/12));y++){
+      years.push({year:y,monthly,annual,setup:y===1?(P.once||0):0,total:monthly*12+annual+(y===1?(P.once||0):0)});
+    }
+    return {months,termPct,monthly,annual,years,total:years.reduce((s,y)=>s+y.total,0)};
+  }
   function yrParts(P){ return [P.orte?`Ortschaften ${chf(P.orte)}`:'', P.rub?`Rubriken ${chf(P.rub)}`:'', P.mail?`Mail ${chf(P.mail)}`:''].filter(Boolean).join(', '); }
 
   /* ---------- Definition: was braucht der Kunde? (ohne Preise) ---------- */
@@ -1661,7 +1674,7 @@ ${text.slice(0,40000)}`;
     if(d.region||d.orte) h+=`<h4>Wo Sie gefunden werden</h4><p style="margin:0">${esc(d.region||'Gewählte Orte')}${d.orte?` · ${fmt(d.orte,0)} Ortschaften`:''}</p>`;
     if(d.svc.length||d.kw.length) h+=`<h4>Wofür Sie gefunden werden</h4>${d.svc.length?`<p style="margin:0 0 4px"><b>Dienstleistungen:</b> ${esc(d.svc.join(', '))}</p>`:''}${d.kw.length?`<p style="margin:0"><b>Stichworte:</b> ${esc(d.kw.join(', '))}</p>`:''}`;
     h+=`<h4>Unsere Empfehlung: ${esc(d.pkg)}${d.sub?' ('+esc(d.sub)+')':''}</h4><ul>${d.feats.map(f=>`<li>${esc(f)}</li>`).join('')||'<li>Noch keine Produkte gewählt</li>'}</ul>`;
-    h+=`<h4>Kosten</h4><table>${P.disc>0?`<tr><td>Listenpreis pro Monat</td><td>${chf(P.list)}</td></tr><tr><td>Sonderrabatt ${fmt(P.pct,0)} % auf Abo-Kosten</td><td>− ${chf(P.disc)}</td></tr>`:''}<tr class="b"><td>Pro Monat (alles inklusive)</td><td>${chf(P.m)}</td></tr>${P.yr?`<tr><td>Zusätzlich pro Jahr (${esc(d.yrParts)})</td><td>${chf(P.yr)}</td></tr>`:''}<tr><td>Einmalig</td><td>${chf(P.once)}</td></tr><tr class="b"><td>Total im 1. Jahr</td><td>${chf(P.m*12+P.yr+P.once)}</td></tr></table><p style="margin:8px 0 0"><b>Zahlungsweise:</b> ${payLines().map(esc).join(' · ')}</p>`;
+    const S=priceSchedule(P); h+=`<h4>Kosten und Vertragslaufzeit</h4><p style="margin:0 0 6px">Laufzeit: ${S.months} Monate${S.termPct?` · Laufzeitrabatt ${fmt(S.termPct*100,0)} % auf laufende Produktkosten (ohne Werbebudget und Einmalkosten)`:''}</p><table><tr><th>Zeitraum</th><th>Monatlich¹</th><th>Jahres-/Zusatzkosten</th><th>Einmalig</th><th>Total</th></tr>${S.years.map(y=>`<tr${y.year===1?' class="b"':''}><td>${y.year}. Jahr</td><td>${chf(y.monthly)}</td><td>${chf(y.annual)}</td><td>${chf(y.setup)}</td><td>${chf(y.total)}</td></tr>`).join('')}<tr class="b"><td>Vertragsgesamtbetrag</td><td colspan="3">${S.months} Monate</td><td>${chf(S.total)}</td></tr></table><p class="fine" style="margin:6px 0 0">¹ Monatsbetrag ohne separat ausgewiesene Jahres- und Einmalkosten. Jahreskosten werden dem tatsächlichen Zahlungsjahr zugeordnet. Preisannahme gemäss gewählter Laufzeit; massgebend ist das konkrete Angebot.</p><p style="margin:8px 0 0"><b>Zahlungsweise:</b> ${payLines().map(esc).join(' · ')}</p>`;
     if(d.cmp) h+=`<h4>Die drei Stufen im Vergleich</h4><table><tr><td></td><td>pro Monat</td><td>1. Jahr</td></tr>${d.cmp.map(x=>`<tr${x.cur?' class="b"':''}><td>${esc(x.name)}</td><td>${chf(x.m)}</td><td>${chf(x.first)}</td></tr>`).join('')}</table>`;
     if(d.pot) h+=`<h4>Potenzial und Wirtschaftlichkeit</h4><p style="margin:0">${fmt(d.pot.q,0)} Suchanfragen/Monat (Datenbasis: ${esc(d.pot.src)}) · angenommene Sichtbarkeit ${fmt(d.pot.vis,0)} % · ${fmt(d.pot.leads,0)} Anfragen · ${fmt(d.pot.kunden,1)} Neukunden · geschätzter Umsatz ${chf(d.pot.ums)}/Monat</p><p style="margin:6px 0 0">${d.pot.dbPer>0?`Deckungsbeitrag: ${chf(d.pot.deck)}/Monat · Paketkosten inkl. Setup-Anteil: ${chf(d.pot.cost)}/Monat · Deckungsbeitrag nach Paketkosten: ${chf(d.pot.net)}/Monat · Break-even: ${d.pot.breakEven} Neukunden/Monat`:'Deckungsbeitrag und Break-even nicht berechnet: Deckungsbeitrag pro Neukunde wurde nicht angegeben.'}</p><p class="fine" style="margin-top:4px">Sichtbarkeit, Kontaktquote, Abschlussquote und Kundenwert sind Annahmen, keine garantierten Ergebnisse. Suchdatenquelle: ${esc(d.pot.src)}. ${d.pot.src.includes('nicht bestätigt')?'Die regionale Übereinstimmung ist nicht bestätigt. ':''}Umsatz ist nicht Gewinn; Schätzungen sind keine Garantie.</p>`;
     if(d.pts.length) h+=`<h4>Was wir vereinbart haben</h4><ul>${d.pts.map(p=>`<li>${esc(p.t)}${p.d?` <span class="meta">(bis ${esc(dch(p.d))})</span>`:''}</li>`).join('')}</ul>`;
@@ -1723,7 +1736,7 @@ ${text.slice(0,40000)}`;
     if(d.region||d.orte){ head('Wo Sie gefunden werden'); txt((d.region||'Gewählte Orte')+(d.orte?` · ${fmt(d.orte,0)} Ortschaften`:''),10.5); }
     if(d.svc.length||d.kw.length){ head('Wofür Sie gefunden werden'); if(d.svc.length) txt('Dienstleistungen: '+d.svc.join(', '),10.5); if(d.kw.length){ y+=1; txt('Stichworte: '+d.kw.join(', '),10.5); } }
     head(`Unsere Empfehlung: ${d.pkg}${d.sub?' ('+d.sub+')':''}`); bullets(d.feats.length?d.feats:['Noch keine Produkte gewählt']);
-    head('Kosten'); if(P.disc>0){ row('Listenpreis pro Monat', chf(P.list)); row(`Sonderrabatt ${fmt(P.pct,0)} % auf Abo-Kosten`, '- '+chf(P.disc)); } row('Pro Monat', chf(P.m), true); if(P.yr) row(`Zusätzlich pro Jahr (${d.yrParts})`, chf(P.yr)); row('Einmalig', chf(P.once)); row('Total im 1. Jahr', chf(P.m*12+P.yr+P.once), true);
+    head('Kosten und Vertragslaufzeit'); const S=priceSchedule(P); txt(`Laufzeit: ${S.months} Monate${S.termPct?` · Laufzeitrabatt ${fmt(S.termPct*100,0)} % auf laufende Produktkosten (ohne Werbebudget und Einmalkosten)`:''}`,10.5); S.years.forEach(y=>row(`${y.year}. Jahr: monatlich ${chf(y.monthly)} + Jahreskosten ${chf(y.annual)} + einmalig ${chf(y.setup)}`,chf(y.total),y.year===1)); row('Vertragsgesamtbetrag',chf(S.total),true);
     head('Zahlungsweise'); payLines().forEach(x=>txt(x,10.5));
     if(d.cmp){ head('Die drei Stufen im Vergleich'); d.cmp.forEach(x=>row(`${x.name}: ${chf(x.m)} pro Monat`, `1. Jahr ${chf(x.first)}`, x.cur)); }
     if(d.pot){ head('Potenzial und Wirtschaftlichkeit'); txt(`${fmt(d.pot.q,0)} Suchanfragen pro Monat (${d.pot.src}); angenommene Sichtbarkeit ${fmt(d.pot.vis,0)} %. Daraus ergeben sich rund ${fmt(d.pot.leads,0)} Anfragen und ${fmt(d.pot.kunden,1)} Neukunden sowie ein geschätzter Umsatz von ${chf(d.pot.ums)} pro Monat.`,10.5); y+=1; if(d.pot.dbPer>0) txt(`Deckungsbeitrag ${chf(d.pot.deck)} / Monat; Paketkosten inkl. Setup-Anteil ${chf(d.pot.cost)} / Monat; Deckungsbeitrag nach Paketkosten ${chf(d.pot.net)} / Monat; Break-even bei ${d.pot.breakEven} Neukunden pro Monat.`,10.5); else txt('Deckungsbeitrag und Break-even nicht berechnet: Deckungsbeitrag pro Neukunde wurde nicht angegeben.',10.5); y+=1; txt(`Sichtbarkeit, Kontaktquote, Abschlussquote und Kundenwert sind Annahmen, keine garantierten Ergebnisse. Umsatz ist nicht Gewinn. Suchdatenquelle: ${d.pot.src}. Region und Aktualität vor einer Kundenentscheidung verifizieren.`,9,'italic',mut); }
