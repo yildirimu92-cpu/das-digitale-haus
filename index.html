@@ -1563,23 +1563,31 @@ svg.scene{min-width:640px}
   $('a-stop').addEventListener('click',()=>anaCtl&&anaCtl.abort());
   $('a-go').addEventListener('click',async()=>{
     const text=$('a-text').value.trim(), stEl=$('a-stat');
-    if(text.length<80){ stEl.textContent='Bitte zuerst Text der Website einfügen.'; stEl.className='sstat bad'; $('a-text').focus(); return; }
-    stEl.textContent='Diese Auswertung nutzt aktuell Claude und ist ausserhalb von Claude nicht verfügbar. Verwende vorerst die manuellen Website-Prüfungen.'; stEl.className='sstat bad'; return;
-    const prompt = `Du wertest den Text einer Firmen-Website für ein Verkaufsgespräch von localsearch (Schweiz) aus. Antworte NUR mit JSON in dieser Form:
-{"firma":"", "branche":"beauty|resto|craft|andere", "dienstleistungen":[], "stichworte":[], "orte":[], "beobachtungen":[]}
-Regeln: dienstleistungen = höchstens 12 kurze Begriffe aus dem Angebot. stichworte = höchstens 10 Begriffe, mit denen Kunden bei Google nach so einem Betrieb suchen würden, abgeleitet aus dem Text. orte = Schweizer Ortsnamen, die als Standort oder Einsatzgebiet genannt sind, so geschrieben wie im Text. beobachtungen = höchstens 6 kurze Sätze für den Berater, zum Beispiel ob Online-Buchung, Kontaktformular, Öffnungszeiten, Bewertungen, Social-Media-Kanäle oder mehrere Sprachen erwähnt werden. beauty = Coiffeur, Kosmetik, Massage, Gesundheit; resto = Restaurant, Gastronomie; craft = Handwerk und Dienstleistung. Schweizer Schreibweise ohne ß. Nur Angaben, die im Text stehen, nichts erfinden.
-Website: ${normUrl(st.ana&&st.ana.url)||'unbekannt'}
-Text:
-${text.slice(0,40000)}`;
-    anaCtl=new AbortController(); $('a-go').disabled=true; $('a-stop').hidden=false; stEl.className='sstat'; stEl.textContent='Claude wertet aus …';
+    if(text.length<80){ stEl.textContent='Bitte zuerst den Website-Text einfügen (mindestens 80 Zeichen).'; stEl.className='sstat bad'; $('a-text').focus(); return; }
+    const btn=$('a-go'); btn.disabled=true; stEl.className='sstat'; stEl.textContent='Website-Text wird lokal ausgewertet …';
     try{
-      const r = await sample.json(prompt, {signal:anaCtl.signal, modelTier:'default'});
-      const n=applyAnalysis(r);
-      stEl.className='sstat ok'; stEl.textContent=n;
-    }catch(e){
-      stEl.className='sstat bad';
-      stEl.textContent = e&&e.code==='cancelled' ? 'Abgebrochen.' : e&&e.code==='not_granted' ? 'Claude wurde nicht erlaubt. Ohne Erlaubnis geht die Auswertung nicht.' : e&&e.code==='rate_limited' ? 'Gerade zu viele Anfragen. Bitte kurz warten.' : 'Auswertung hat nicht geklappt. Bitte nochmals versuchen.';
-    }finally{ $('a-go').disabled=false; $('a-stop').hidden=true; anaCtl=null; }
+      const titleMatch=text.match(/(?:^|\\n)\\s*(?:titel|title|seitentitel)\\s*:\\s*(.+)/i);
+      const hasPhone=/(?:tel:|\\+41\\s?\\(?\\d|0\\d{2}[\\s./-]?\\d{3})/i.test(text);
+      const hasEmail=/[\\w.+-]+@[\\w.-]+\\.[a-z]{2,}/i.test(text);
+      const hasBooking=/termin buchen|online buchen|reservation|reservieren|appointment|booking/i.test(text);
+      const hasContact=/kontakt|contact|kontaktformular|anfrage/i.test(text);
+      const hasSocial=/instagram|facebook|linkedin|tiktok|youtube/i.test(text);
+      const services=['coiffeur','friseur','kosmetik','massage','restaurant','café','cafe','sanitär','heizung','maler','gipser','schreinerei','dachdecker','gartenbau','treuhand','zahnarzt','physiotherapie','garage','autowerkstatt','hotel','anwalt','architekt','reinigung','umzug'];
+      const words=services.filter(k=>new RegExp(k.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&'),'i').test(text));
+      const hints=[
+        titleMatch?'Seitentitel im eingefügten Text erkannt.':'Seitentitel nicht eindeutig erkannt – bitte manuell prüfen.',
+        hasPhone?'Telefonnummer oder Telefon-Link im Text erkannt.':'Keine Telefonnummer sicher erkannt.',
+        hasEmail?'E-Mail-Adresse im Text erkannt.':'Keine E-Mail-Adresse sicher erkannt.',
+        hasContact?'Kontakt- oder Anfragehinweise erkannt.':'Kein klarer Kontaktweg erkannt.',
+        hasBooking?'Hinweise auf Buchung oder Reservation erkannt.':'Keine klaren Buchungshinweise erkannt.',
+        hasSocial?'Hinweise auf Social Media erkannt.':'Keine Social-Media-Hinweise erkannt.',
+        words.length?'Mögliche Branchen-/Leistungsbegriffe: '+words.join(', ')+'.':'Keine bekannten Branchenbegriffe automatisch erkannt.',
+        'Dies ist eine lokale Textprüfung, keine KI-Bewertung. Bitte Ergebnisse vor der Kundenberatung kontrollieren.'
+      ];
+      showWebsiteResult({beobachtungen:hints,stichworte:words,observations:{title:titleMatch?titleMatch[1].trim():'',hasPhone,hasEmail,hasContact,hasBooking,hasSocial}},'text');
+      stEl.className='sstat ok'; stEl.textContent='Textprüfung abgeschlossen. Erkannte Hinweise wurden übernommen; bitte manuell verifizieren.';
+    }catch(e){stEl.className='sstat bad';stEl.textContent='Textprüfung fehlgeschlagen: '+(e.message||'unbekannter Fehler');}
+    finally{btn.disabled=false;}
   });
   function applyAnalysis(r, at){
       r=r||{};
@@ -1607,10 +1615,29 @@ ${text.slice(0,40000)}`;
   }
   let lastCheck=null;
 
-  /* Check per Website-Adresse: Auftrag in die eigene Datenbank, Claude-Lauf starten, Ergebnis kommt zurück */
-  const CHECK_TASK='trig_01G4NawW4PHqqRer8G4gaJGw';
+  /* Automatischer Website-Check über eine eigene Netlify Function */
   function cstat(t,c){ $('c-stat').textContent=t; $('c-stat').className='sstat'+(c?' '+c:''); }
-  $('c-go').addEventListener('click',()=>{if(!normUrl(st.ana&&st.ana.url)){cstat('Bitte zuerst die Website eintragen.','bad');$('a-url').focus();return;}cstat('Der automatische Website-Check benötigt noch eine separate Analyse-Integration. Nutze vorerst die manuellen Prüf-Links und die Notlösung unten.','bad');});
+  function showWebsiteResult(result, source){
+    const obs=Array.isArray(result.beobachtungen)?result.beobachtungen:[];
+    const o=result.observations||{};
+    st.ana=Object.assign({},st.ana,{hints:obs,at:new Date().toLocaleString('de-CH',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),audit:{source,title:o.title||'',description:o.description||'',headings:o.headings||[],hasPhone:o.hasPhone,hasEmail:o.hasEmail,hasContact:o.hasContact,forms:o.forms,hasBooking:o.hasBooking,hasSocial:o.hasSocial}});
+    if(Array.isArray(result.stichworte)&&result.stichworte.length) st.kw=[...new Set([...(st.kw||[]),...result.stichworte])].slice(0,20);
+    save(); renderAna(); renderKw(); update();
+  }
+  $('c-go').addEventListener('click',async()=>{
+    const url=normUrl($('a-url').value);
+    if(!url){cstat('Bitte zuerst eine gültige Website-Adresse eintragen.','bad');$('a-url').focus();return;}
+    st.ana=Object.assign({},st.ana,{url}); save();
+    const btn=$('c-go'); btn.disabled=true; cstat('Website wird geprüft …');
+    try{
+      const response=await fetch('/.netlify/functions/analyze-website',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok||!data.ok) throw new Error(data.error||'Website-Check fehlgeschlagen.');
+      showWebsiteResult(data,'auto');
+      cstat('Website-Check abgeschlossen. Technische Merkmale und erkannte Hinweise wurden übernommen.','ok');
+    }catch(e){cstat((e.message||'Website-Check fehlgeschlagen.')+' Du kannst den Website-Text als Alternative einfügen.','bad');}
+    finally{btn.disabled=false;}
+  });
 
   /* ---------- Zusammenfassung für den Kunden ---------- */
   function renderPts(){
