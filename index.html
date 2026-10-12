@@ -922,16 +922,16 @@ svg.scene{min-width:640px}
   const BR = Object.fromEntries(INDUSTRIES.map(x=>[x.id,{
     d:x.id==='resto'?['Tisch','reservieren']:x.id==='beauty'?['Termin','buchen']:x.id==='craft'?['Offerte','anfragen']:['Anfrage','stellen'],
     tool:x.id==='resto'?'MyLOCALINA':x.id==='beauty'?'MyCOCKPIT':'Formular',
-    q:(x.name==='Coiffeur'?'Coiffeur':x.name==='Sanitär / Heizung'?'Sanitär':x.name)+' '+(x.id==='resto'?'Zug':'Horgen')
+    q:(x.name==='Sanitär / Heizung'?'Sanitär':x.name)
   }]));
-  BR.beauty={d:['Termin','buchen'],tool:'MyCOCKPIT',q:'Coiffeur Horgen'};
-  BR.resto={d:['Tisch','reservieren'],tool:'MyLOCALINA',q:'Restaurant Zug'};
-  BR.craft={d:['Offerte','anfragen'],tool:'Formular',q:'Maler Adliswil'};
-  BR['pilates-studio']={d:['Probetraining','buchen'],tool:'MyCOCKPIT',q:'Pilates Kilchberg'};
-  BR.kosmetikstudio={d:['Termin','buchen'],tool:'MyCOCKPIT',q:'Kosmetikstudio Luzern'};
-  BR.motorbootsfahrschule={d:['Kurs','buchen'],tool:'Formular',q:'Motorbootsfahrschule Zürich'};
-  BR.bootsfahrschule={d:['Kurs','buchen'],tool:'Formular',q:'Bootsfahrschule Zürich'};
-  BR['yoga-studio']={d:['Probetraining','buchen'],tool:'MyCOCKPIT',q:'Yoga Horgen'};
+  BR.beauty={d:['Termin','buchen'],tool:'MyCOCKPIT',q:'Coiffeur'};
+  BR.resto={d:['Tisch','reservieren'],tool:'MyLOCALINA',q:'Restaurant'};
+  BR.craft={d:['Offerte','anfragen'],tool:'Formular',q:'Handwerker'};
+  BR['pilates-studio']={d:['Probetraining','buchen'],tool:'MyCOCKPIT',q:'Pilates-Studio'};
+  BR.kosmetikstudio={d:['Termin','buchen'],tool:'MyCOCKPIT',q:'Kosmetikstudio'};
+  BR.motorbootsfahrschule={d:['Kurs','buchen'],tool:'Formular',q:'Motorbootsfahrschule'};
+  BR.bootsfahrschule={d:['Kurs','buchen'],tool:'Formular',q:'Bootsfahrschule'};
+  BR['yoga-studio']={d:['Probetraining','buchen'],tool:'MyCOCKPIT',q:'Yoga-Studio'};
   const PK = [
     {name:'Basis', flames:1, pitch:'Gefunden werden. Das Fundament steht, alle Wege führen zu dir.'},
     {name:'Feurig', flames:2, pitch:'Mehr Anfragen. Kunden sehen dich, vertrauen dir und buchen direkt.'},
