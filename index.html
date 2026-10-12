@@ -1694,10 +1694,8 @@ svg.scene{min-width:640px}
         foundPlace=PLACES.filter(p=>{
           if(!p||!p[0]) return false;
           const place=String(p[0]).trim();
-          // Require a complete place-name token. This prevents "Loc" matching
-          // generic words such as "location" and avoids partial-name collisions.
-          const escaped=place.replace(/[.*+?^${}()|[\]\\]/g,'\\        foundPlace=PLACES.filter(p=>p&&p[0]&&text.includes(String(p[0]).toLocaleLowerCase('de-CH')))
-          .sort((a,b)=>String(b[0]).length-String(a[0]).length)[0]||null;');
+          // Complete place-name token only; Loc must not match location.
+          const escaped=place.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
           return new RegExp('(^|[^\\p{L}\\p{N}])'+escaped+'([^\\p{L}\\p{N}]|$)','iu').test(text);
         }).sort((a,b)=>String(b[0]).length-String(a[0]).length)[0]||null;
         if(foundPlace) break;
