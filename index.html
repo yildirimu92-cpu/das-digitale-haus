@@ -668,6 +668,13 @@ svg.scene{min-width:640px}
         <div class="tagrow"><div class="tags" id="tg-kw"><input id="in-kw" type="text" placeholder="z. B. Balayage" aria-label="Stichwort hinzufügen" autocomplete="off"></div><button class="btn plus" type="button" data-add="kw" aria-label="Stichwort hinzufügen">+</button></div>
         <div class="chips sug" id="sg-kw"></div>
       </div>
+      <div class="field" style="border-top:1.5px dashed var(--line);padding-top:12px">
+        <span class="label">KI-Suche im Gespräch</span>
+        <p class="note">Stelle dieselbe Kundenfrage in ChatGPT oder Gemini. Ergänze die Frage und halte fest, ob der Betrieb genannt wird.</p>
+        <div class="links"><a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT öffnen</a><a href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini öffnen</a></div>
+        <input class="t" id="ki-q" type="text" placeholder="z. B. «Bestes Kosmetikstudio in Horgen?»" style="max-width:520px">
+        <div class="seg" id="ki-r" style="justify-self:start"><button type="button" data-v="">Nicht getestet</button><button type="button" data-v="ja">Betrieb wird genannt</button><button type="button" data-v="nein">Betrieb wird nicht genannt</button></div>
+      </div>
     </section>
 
   </div>
@@ -764,12 +771,6 @@ svg.scene{min-width:640px}
           <p class="note">Schätzung, keine Umsatzgarantie. Die Sichtbarkeit und Konversionsraten sind Annahmen und sollten im Gespräch geprüft werden.</p>
           <span class="note" id="o-pay"></span>
         </details>
-      </div>
-      <div class="field" style="border-top:1.5px dashed var(--line);padding-top:12px">
-        <span class="label">KI-Test im Gespräch</span>
-        <div class="links"><a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT öffnen</a><a href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini öffnen</a></div>
-        <input class="t" id="ki-q" type="text" placeholder="Gestellte Frage, z. B. «Bestes Kosmetikstudio in Luzern?»" style="max-width:520px">
-        <div class="seg" id="ki-r" style="justify-self:start"><button type="button" data-v="">Nicht getestet</button><button type="button" data-v="ja">Kunde genannt</button><button type="button" data-v="nein">Nicht genannt</button></div>
       </div>
     </section>
 
