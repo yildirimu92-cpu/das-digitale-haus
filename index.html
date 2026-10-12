@@ -1738,6 +1738,18 @@ svg.scene{min-width:640px}
     if(branchConfirmed){
       setBranch(detectedId);
       st.kw=curatedTerms(detectedId);
+      // Replace scraped generic phrases with controlled, industry-specific terms.
+      // Restaurant keywords are fixed headings plus cuisine/service terms only when evidenced.
+      if(detectedId==='resto'){
+        st.kw=uniqueTerms(['Restaurant','Italienisches Restaurant','Italienische Küche',
+          ...( /pizza|pizzeria/.test(sourceText)?['Pizza','Pizzeria']:[]),
+          ...( /pasta|spaghetti|ravioli|lasagne/.test(sourceText)?['Pasta']:[]),
+          ...( /risotto/.test(sourceText)?['Risotto']:[]),
+          ...( /take.?away|lieferdienst|lieferung/.test(sourceText)?['Take-away','Lieferservice']:[]),
+          ...( /mittag|lunch/.test(sourceText)?['Mittagsmenü']:[]),
+          ...( /catering/.test(sourceText)?['Catering']:[]),
+          ...( /bankett|veranstaltung/.test(sourceText)?['Bankett']:[])]).slice(0,10);
+      }
       if(detectedId==='resto'){
         const cuisine=[];
         if(/italien|italiano|italian/.test(sourceText))cuisine.push('Italienische Küche');
@@ -1776,6 +1788,8 @@ svg.scene{min-width:640px}
       foundPlace=candidates.length?candidates[0].p:null;
     }
     const extractedTown=foundPlace?String(foundPlace[0]).replace(/\s+(?:ZH|BL|BE|LU|SG|AG|SO|TG|GR|VS|VD|GE|FR|NE|JU|TI|SH|SZ|ZG|NW|OW|GL|AR|AI|UR)\s*$/i,'').trim():locationHint;
+    // Prefer explicit structured business address. If absent, derive a town only when
+    // it is actually named in the page content; never retain a previous map center.
     if(foundPlace){
       // Beim Website-Check den bisherigen Kartenstandort vollständig ersetzen.
       // So kann ein vorheriger Standardstandort (z. B. Horgen) nicht stehen bleiben.
@@ -2027,7 +2041,18 @@ svg.scene{min-width:640px}
       const blocks=printBlocks(d, houseSrc).map(html=>{ const el=document.createElement('div'); el.innerHTML=html; ms.appendChild(el); return el; });
       await Promise.all([...ms.querySelectorAll('img')].map(img=>img.complete?0:new Promise(r=>{ img.onload=img.onerror=r; })));
       const AV=1123-44-60, GAP=16, pages=[[]]; let h=0;
-      blocks.forEach(el=>{ const bh=el.offsetHeight; if(h>0 && h+GAP+bh>AV){ pages.push([]); h=0; } pages[pages.length-1].push(el); h+= (h?GAP:0)+bh; });
+      // Keep every block inside the printable page. Oversized illustration/cards are
+      // constrained before pagination so the drawing cannot be clipped at the page edge.
+      const maxBlock=Math.floor(AV*0.72);
+      blocks.forEach(el=>{
+        if(el.offsetHeight>maxBlock){
+          el.style.maxHeight=maxBlock+'px'; el.style.overflow='hidden';
+          const img=el.querySelector('img'); if(img){img.style.maxHeight=Math.floor(maxBlock*0.68)+'px';img.style.width='100%';img.style.objectFit='contain';}
+        }
+        const bh=Math.min(el.offsetHeight,maxBlock);
+        if(h>0 && h+GAP+bh>AV){ pages.push([]); h=0; }
+        pages[pages.length-1].push(el); h+=(h?GAP:0)+bh;
+      });
       wrap.removeChild(ms);
       const doc=new J.jsPDF({unit:'mm',format:'a4'});
       for(let i=0;i<pages.length;i++){
