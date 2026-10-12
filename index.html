@@ -763,22 +763,14 @@ svg.scene{min-width:640px}
 
   <section class="panel" aria-labelledby="fh">
       <div>
-        <h2 id="fh">Lohnt es sich?</h2>
-        <p class="note" style="margin-top:4px">Suchzahlen pro Stichwort aus dem Google Keyword Planner eintragen. Das Tool rechnet daraus Reichweite, Anfragen und Neukunden.</p>
+        <h2 id="fh">Lohnt sich das für Sie?</h2>
+        <p class="note" style="margin-top:4px">Wir schätzen gemeinsam, wie viele Menschen Sie erreichen, wie viele Anfragen entstehen und ob sich die Investition rechnen kann.</p>
       </div>
-      <div class="volbox">
-        <div class="links">
-          <a href="https://ads.google.com/aw/keywordplanner/home" target="_blank" rel="noopener">Google Keyword Planner öffnen</a>
-          <button class="btn sm" type="button" id="v-copy">Stichworte kopieren</button>
-        </div>
+      <div class="volbox" hidden>
         <div class="cmpwrap"><table class="cmp" id="vol"></table></div>
-        <p class="note" id="v-note">Bei Bandbreiten wie «100–1000» rechnet das Tool vorsichtig mit dem unteren Wert. Wichtig: Keyword-Volumen können sich überschneiden und sind keine eindeutigen Personen. Die Summe ist eine Näherung, keine garantierte erreichbare Nachfrage.</p>
-        <div class="inputs" style="margin-top:12px">
-          <div class="field"><span class="label">Suchdaten importieren</span><button class="btn" type="button" id="v-import">Keyword-Planer-CSV importieren</button><input id="v-file" type="file" accept=".csv,.tsv,.txt,text/csv,text/tab-separated-values" hidden><span class="note" id="v-import-status" aria-live="polite">Noch keine Datei importiert. Die Analyse verwendet sonst manuelle Werte oder die allgemeine Schätzung.</span></div>
-          <label class="field"><span class="label">Region der exportierten Daten</span><input class="t" id="v-region" type="text" placeholder="z. B. Horgen + 15 km"></label>
-        </div>
-        <label class="ck" style="margin-top:10px"><input type="checkbox" id="v-region-confirm"> Ich habe den Keyword-Planer-Export für die oben angegebene Region erstellt.</label>
-        <p class="note">Claude Artifact kann Google-Suchvolumen nicht direkt und zuverlässig live abrufen. Dieser Import übernimmt echte Keyword-Planer-Daten ohne API-Zugang. Für vollautomatische Abfragen ist später ein sicherer Backend-Dienst nötig; API-Schlüssel gehören nicht in dieses HTML.</p>
+        <p class="note" id="v-note"></p>
+        <button type="button" id="v-copy" hidden></button><button type="button" id="v-import" hidden></button><input id="v-file" type="file" hidden>
+        <span id="v-import-status" hidden></span><input id="v-region" type="text" hidden><input id="v-region-confirm" type="checkbox" hidden>
       </div>
       <div class="fgrid">
         <div style="display:grid;gap:14px;min-width:0">
@@ -1702,8 +1694,8 @@ svg.scene{min-width:640px}
     renderPay();
     const d=sumData(), P=d.P;
     let h=`<img src="${LOGO_PNG}" alt="localsearch" style="height:26px;width:auto;display:block;margin-bottom:10px"><h3>Ihr digitales Haus</h3><div class="meta">${esc(d.kunde)}${d.datum?' · '+esc(d.datum):''}${d.berater.length?' · Beratung: '+esc(d.berater[0]):''}</div>`;
-    if(d.region||d.orte) h+=`<h4>Wo Sie gefunden werden</h4><p style="margin:0">${esc(d.region||'Gewählte Orte')}${d.orte?` · ${fmt(d.orte,0)} Ortschaften`:''}</p>`;
-    if(d.svc.length||d.kw.length) h+=`<h4>Wofür Sie gefunden werden</h4>${d.svc.length?`<p style="margin:0 0 4px"><b>Dienstleistungen:</b> ${esc(d.svc.join(', '))}</p>`:''}${d.kw.length?`<p style="margin:0"><b>Stichworte:</b> ${esc(d.kw.join(', '))}</p>`:''}`;
+    if(d.region||d.orte) h+=`<h4>Wo möchten Sie gefunden werden?</h4><p style="margin:0">${esc(d.region||'Gewählte Orte')}${d.orte?` · ${fmt(d.orte,0)} Ortschaften`:''}</p>`;
+    if(d.svc.length||d.kw.length) h+=`<h4>Wofür möchten Sie gefunden werden?</h4>${d.svc.length?`<p style="margin:0 0 4px"><b>Dienstleistungen:</b> ${esc(d.svc.join(', '))}</p>`:''}${d.kw.length?`<p style="margin:0"><b>Stichworte:</b> ${esc(d.kw.join(', '))}</p>`:''}`;
     h+=`<h4>Unsere Empfehlung: ${esc(d.pkg)}${d.sub?' ('+esc(d.sub)+')':''}</h4><ul>${d.feats.map(f=>`<li>${esc(f)}</li>`).join('')||'<li>Noch keine Produkte gewählt</li>'}</ul>`;
     const S=priceSchedule(P); h+=`<h4>Kosten und Vertragslaufzeit</h4><p style="margin:0 0 6px">Laufzeit: ${S.months} Monate${S.termPct?` · Laufzeitrabatt ${fmt(S.termPct*100,0)} % auf laufende Produktkosten (ohne Werbebudget und Einmalkosten)`:''}</p><table><tr><th>Zeitraum</th><th>Monatlich¹</th><th>Jahres-/Zusatzkosten</th><th>Einmalig</th><th>Total</th></tr>${S.years.map(y=>`<tr${y.year===1?' class="b"':''}><td>${y.year}. Jahr</td><td>${chf(y.monthly)}</td><td>${chf(y.annual)}</td><td>${chf(y.setup)}</td><td>${chf(y.total)}</td></tr>`).join('')}<tr class="b"><td>Vertragsgesamtbetrag</td><td colspan="3">${S.months} Monate</td><td>${chf(S.total)}</td></tr></table><p class="fine" style="margin:6px 0 0">¹ Monatsbetrag ohne separat ausgewiesene Jahres- und Einmalkosten. Jahreskosten werden dem tatsächlichen Zahlungsjahr zugeordnet. Preisannahme gemäss gewählter Laufzeit; massgebend ist das konkrete Angebot.</p><p style="margin:8px 0 0"><b>Zahlungsweise:</b> ${payLines().map(esc).join(' · ')}</p>`;
     if(d.cmp) h+=`<h4>Die drei Stufen im Vergleich</h4><table><tr><td></td><td>pro Monat</td><td>1. Jahr</td></tr>${d.cmp.map(x=>`<tr${x.cur?' class="b"':''}><td>${esc(x.name)}</td><td>${chf(x.m)}</td><td>${chf(x.first)}</td></tr>`).join('')}</table>`;
@@ -1718,7 +1710,7 @@ svg.scene{min-width:640px}
   function sumText(){
     const d=sumData(), P=d.P, L=[];
     L.push(`Ihr digitales Haus – ${d.kunde}${d.datum?' ('+d.datum+')':''}`, '');
-    if(d.region||d.orte) L.push('Wo Sie gefunden werden: '+(d.region||'Gewählte Orte')+(d.orte?`, ${d.orte} Ortschaften`:''));
+    if(d.region||d.orte) L.push('Wo möchten Sie gefunden werden?: '+(d.region||'Gewählte Orte')+(d.orte?`, ${d.orte} Ortschaften`:''));
     if(d.svc.length) L.push('Dienstleistungen: '+d.svc.join(', '));
     if(d.kw.length) L.push('Stichworte: '+d.kw.join(', '));
     L.push('', `Unsere Empfehlung: ${d.pkg}${d.sub?' ('+d.sub+')':''}`); d.feats.forEach(f=>L.push('- '+f));
@@ -1764,8 +1756,8 @@ svg.scene{min-width:640px}
     doc.setFillColor(...yel); doc.rect(M, y-6.5, 78, 9, 'F');
     doc.setFont('helvetica','bold'); doc.setFontSize(20); doc.setTextColor(...ink); doc.text('Ihr digitales Haus', M+1.5, y); y+=9;
     txt(`${d.kunde}${d.datum?' · '+d.datum:''}`, 11, 'normal', mut);
-    if(d.region||d.orte){ head('Wo Sie gefunden werden'); txt((d.region||'Gewählte Orte')+(d.orte?` · ${fmt(d.orte,0)} Ortschaften`:''),10.5); }
-    if(d.svc.length||d.kw.length){ head('Wofür Sie gefunden werden'); if(d.svc.length) txt('Dienstleistungen: '+d.svc.join(', '),10.5); if(d.kw.length){ y+=1; txt('Stichworte: '+d.kw.join(', '),10.5); } }
+    if(d.region||d.orte){ head('Wo möchten Sie gefunden werden?'); txt((d.region||'Gewählte Orte')+(d.orte?` · ${fmt(d.orte,0)} Ortschaften`:''),10.5); }
+    if(d.svc.length||d.kw.length){ head('Wofür möchten Sie gefunden werden?'); if(d.svc.length) txt('Dienstleistungen: '+d.svc.join(', '),10.5); if(d.kw.length){ y+=1; txt('Stichworte: '+d.kw.join(', '),10.5); } }
     head(`Unsere Empfehlung: ${d.pkg}${d.sub?' ('+d.sub+')':''}`); bullets(d.feats.length?d.feats:['Noch keine Produkte gewählt']);
     head('Kosten und Vertragslaufzeit'); const S=priceSchedule(P); txt(`Laufzeit: ${S.months} Monate${S.termPct?` · Laufzeitrabatt ${fmt(S.termPct*100,0)} % auf laufende Produktkosten (ohne Werbebudget und Einmalkosten)`:''}`,10.5); S.years.forEach(y=>row(`${y.year}. Jahr: monatlich ${chf(y.monthly)} + Jahreskosten ${chf(y.annual)} + einmalig ${chf(y.setup)}`,chf(y.total),y.year===1)); row('Vertragsgesamtbetrag',chf(S.total),true);
     head('Zahlungsweise'); payLines().forEach(x=>txt(x,10.5));
@@ -1805,9 +1797,9 @@ svg.scene{min-width:640px}
   function printBlocks(d, houseSrc){
     const P=d.P, B=[], tags=(arr,o)=>`<div class="ptags">${arr.map(t=>`<span class="ptag${o?' o':''}">${esc(t)}</span>`).join('')}</div>`;
     B.push(`<div class="hd"><div><h1><span>Ihr digitales Haus</span></h1><div class="meta">${esc(d.kunde)}${d.datum?' · '+esc(d.datum):''}${d.berater.length?' · Beratung: '+esc(d.berater[0]):''}</div></div><img src="${LOGO_PNG}" alt="localsearch"></div>`);
-    if(houseSrc) B.push(`<div class="card house"><h2>So finden Kunden zu Ihnen</h2><img src="${houseSrc}" alt=""></div>`);
-    const wo = (d.region||d.orte) ? `<div class="card"><h2>Wo Sie gefunden werden</h2><div>${esc(d.region||'Gewählte Orte')}${d.orte?` · <b>${fmt(d.orte,0)} ${d.orte===1?'Ortschaft':'Ortschaften'}</b>`:''}</div></div>` : '';
-    const wf = (d.svc.length||d.kw.length) ? `<div class="card"><h2>Wofür Sie gefunden werden</h2>${d.svc.length?`<div class="lbl">Dienstleistungen</div>${tags(d.svc)}`:''}${d.kw.length?`<div class="lbl">Stichworte</div>${tags(d.kw,true)}`:''}</div>` : '';
+    if(houseSrc) B.push(`<div class="card house"><h2>So möchten Sie von Kunden gefunden werden</h2><img src="${houseSrc}" alt=""></div>`);
+    const wo = (d.region||d.orte) ? `<div class="card"><h2>Wo möchten Sie gefunden werden?</h2><div>${esc(d.region||'Gewählte Orte')}${d.orte?` · <b>${fmt(d.orte,0)} ${d.orte===1?'Ortschaft':'Ortschaften'}</b>`:''}</div></div>` : '';
+    const wf = (d.svc.length||d.kw.length) ? `<div class="card"><h2>Wofür möchten Sie gefunden werden?</h2>${d.svc.length?`<div class="lbl">Dienstleistungen</div>${tags(d.svc)}`:''}${d.kw.length?`<div class="lbl">Stichworte</div>${tags(d.kw,true)}`:''}</div>` : '';
     if(wo||wf) B.push(wo&&wf?`<div class="two">${wo}${wf}</div>`:(wo||wf));
     B.push(`<div class="card"><h2>Unsere Empfehlung: ${esc(d.pkg)}</h2><ul class="f">${(d.feats.length?d.feats:['Noch keine Produkte gewählt']).map(f=>`<li>${esc(f)}</li>`).join('')}</ul></div>`);
     B.push(`<div class="card"><h2>Kosten</h2><div class="two"><div><div class="big">${chf(P.m)} <small>pro Monat, alles inklusive</small></div>${P.disc>0?`<div class="meta"><span style="text-decoration:line-through">${chf(P.list)}</span> · inklusive ${fmt(P.pct,0)} % Sonderrabatt auf Abo-Kosten (− ${chf(P.disc)} pro Monat)</div>`:''}<div class="meta">+ ${chf(P.once)} einmalig · Total im 1. Jahr <b>${chf(P.m*12+P.once)}</b></div></div><div><div class="lbl" style="margin-top:0">Zahlungsweise</div>${payLines().map(x=>`<div>${esc(x)}</div>`).join('')}</div></div></div>`);
