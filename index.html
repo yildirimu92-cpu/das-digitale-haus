@@ -1812,6 +1812,8 @@ ${text.slice(0,40000)}`;
     }
   });
 
+  const GMAP={'g-lz':'lz','g-op':'op','g-in':'in','g-loc':'loc','g-nl':'nl','g-sloc':'sloc','g-sshop':'sshop','g-aS':'aS','g-aM':'aM','g-aL':'aL','g-asS':'asS','g-asM':'asM','g-asL':'asL','g-tik':'tik','g-bn':'bn','g-bt':'bt','g-be':'be','g-tiks':'tiks','g-smsM':'smsM','g-smsL':'smsL'};
+
   /* ---------- Supabase auth and private cloud storage ---------- */
   var DB=null, UID=null, saveT=null, setT=null, lastG='', LIST=[], cloudOk=false, cloudTried=false;
   function stat(msg,cls){const el=$('s-stat');if(!msg){msg=!cloudOk?(cloudTried?'Bitte anmelden, um Gespräche geräteübergreifend zu speichern.':'Supabase wird verbunden …'):(st.cur.name.trim()?(st.cur.id?'Änderungen werden automatisch gespeichert.':'Noch nicht gespeichert.'):'Angemeldet. Kundennamen eintragen, dann speichern.');cls=cloudOk?'':(cloudTried?'bad':'');}el.textContent=msg;el.className='sstat'+(cls?' '+cls:'');}
@@ -1838,71 +1840,7 @@ ${text.slice(0,40000)}`;
   $('dh-register').addEventListener('click',async()=>{const email=$('dh-email').value.trim(),password=$('dh-password').value;if(!email||password.length<8){stat('Bitte E-Mail und Passwort mit mindestens 8 Zeichen eingeben.','bad');return;}$('dh-register').disabled=true;try{const {data,error}=await DB.auth.signUp({email,password});if(error)throw error;if(data.session)await startUserSession();else stat('Konto erstellt. Bitte E-Mail bestätigen und danach anmelden.','ok');}catch(e){stat('Konto konnte nicht erstellt werden: '+e.message,'bad');}finally{$('dh-register').disabled=false;}});
   $('dh-logout').addEventListener('click',async()=>{try{if(st.cur.name.trim()&&cloudOk)await cloudSave();await DB.auth.signOut();UID=null;cloudOk=false;LIST=[];renderList();$('dh-login').hidden=false;$('dh-register').hidden=false;$('dh-logout').hidden=true;$('dh-email').disabled=false;$('dh-password').disabled=false;stat('Abgemeldet.','ok');}catch(e){stat('Abmelden fehlgeschlagen.','bad');}});
   async function initCloud(){try{if(!window.supabase||!window.supabase.createClient)throw new Error('Supabase-Bibliothek konnte nicht geladen werden.');const r=await fetch('/.netlify/functions/config',{cache:'no-store'});if(!r.ok)throw new Error('Netlify-Konfiguration fehlt ('+r.status+').');const cfg=await r.json();DB=window.supabase.createClient(cfg.url,cfg.anonKey);cloudTried=true;DB.auth.onAuthStateChange((event)=>{if(event==='SIGNED_OUT'){UID=null;cloudOk=false;LIST=[];renderList();stat('Abgemeldet.');}});await startUserSession();}catch(e){console.error('Supabase init failed',e);cloudTried=true;cloudOk=false;stat('Supabase-Verbindung fehlgeschlagen: '+e.message,'bad');}}
-    $('term').value=st.term; ['q','c','w','v'].forEach(k=>$('f-'+k).value=st.f[k]);
-    document.querySelectorAll('.sgrid input').forEach(el=>{ const k=GMAP[el.id]; if(k) el.value=st.g[k]; });
-    renderKw(); refreshSess(); renderPts(); renderAna();
-  }
-  function renderList(){
-    $('s-count').textContent = LIST.length ? `(${LIST.length})` : '';
-    const q=norm($('s-q').value.trim());
-    const items=LIST.filter(x=>!q||norm(x.name||'').includes(q));
-    $('s-items').innerHTML = items.length ? items.map(x=>{
-      const d = x.date ? new Date(x.date+'T12:00').toLocaleDateString('de-CH') : '';
-      return `<div class="sitem${x.id===st.cur.id?' cur':''}"><button type="button" class="open" data-id="${esc(x.id)}"><b>${esc(x.name||'Ohne Namen')}</b><span>${[d, x.pkg, x.monthly!=null?chf(x.monthly)+' / Monat':''].filter(Boolean).map(esc).join(' · ')}</span></button><button type="button" class="btn sm del" data-id="${esc(x.id)}">Löschen</button></div>`;
-    }).join('') : `<p class="note">${LIST.length?'Kein Gespräch gefunden.':'Noch keine Gespräche gespeichert.'}</p>`;
-  }
-  function openConv(id){
-    const x=LIST.find(i=>i.id===id); if(!x||!x.state) return;
-    if(saveT){ clearTimeout(saveT); saveT=null; if(st.cur.name.trim()) cloudSave(); }
-    const s=JSON.parse(JSON.stringify(x.state));
-    st.svc=[]; st.kw=[]; st.rub=''; st.rabatt=''; st.pts=[]; st.next=''; st.topic=''; st.vol={}; st.volMeta={source:'',importedAt:'',region:'',confirmed:false,matched:0,total:0}; st.ki={q:'',r:''}; st.zopt={cmp:false,pot:false}; st.pay={base:'12',ads:'1'}; st.ana={url:'',hints:[],at:''}; delete st.def; delete st.tier; Object.assign(st, s); migrate(st); st.cur={id:x.id, name:x.name||'', date:x.date||'', notes:x.notes||''};
-    invalidate(); refreshInputs(); update(); renderRegion(); fitSel();
-    try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){}
-    $('s-list').hidden=true; $('s-open').setAttribute('aria-expanded','false');
-    stat('Geöffnet: '+st.cur.name,'ok'); try{ onCheck(lastCheck); }catch(e){} window.scrollTo({top:0,behavior:'smooth'});
-  }
-  $('s-name').addEventListener('input',e=>{ st.cur.name=e.target.value; save(); if(!cloudOk) stat(); });
-  $('s-date').addEventListener('input',e=>{ st.cur.date=e.target.value; save(); });
-  $('s-notes').addEventListener('input',e=>{ st.cur.notes=e.target.value; save(); });
-  $('s-save').addEventListener('click',()=>{ clearTimeout(saveT); saveT=null; cloudSave(); });
-  $('s-open').addEventListener('click',()=>{ const l=$('s-list'); l.hidden=!l.hidden; $('s-open').setAttribute('aria-expanded',String(!l.hidden)); if(!l.hidden) renderList(); });
-  $('s-q').addEventListener('input',renderList);
-  $('s-items').addEventListener('click',e=>{
-    const o=e.target.closest('button.open'); if(o){ openConv(o.dataset.id); return; }
-    const d=e.target.closest('button.del'); if(!d||!cloudOk) return;
-    if(!d.dataset.arm){ d.dataset.arm='1'; d.textContent='Wirklich löschen?'; setTimeout(()=>{ if(d.isConnected){ delete d.dataset.arm; d.textContent='Löschen'; } },4000); return; }
-    const id=d.dataset.id;
-    chain = chain.then(()=>DB.collection('data/users/'+UID).doc(id).delete())
-      .then(()=>{ if(st.cur.id===id){ st.cur.id=null; try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} } stat('Gespräch gelöscht.','ok'); })
-      .catch(()=>stat('Löschen hat nicht geklappt.','bad'));
-  });
-  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden' && saveT){ clearTimeout(saveT); saveT=null; cloudSave(); } });
-  const GMAP={'g-lz':'lz','g-op':'op','g-in':'in','g-loc':'loc','g-nl':'nl','g-sloc':'sloc','g-sshop':'sshop','g-aS':'aS','g-aM':'aM','g-aL':'aL','g-asS':'asS','g-asM':'asM','g-asL':'asL','g-tik':'tik','g-bn':'bn','g-bt':'bt','g-be':'be','g-tiks':'tiks','g-smsM':'smsM','g-smsL':'smsL'};
-
-  async function initCloud(){
-    try{
-      if(!window.claude || !window.claude.use){ await new Promise(r=>setTimeout(r,1500)); }
-      if(!window.claude || !window.claude.use){ cloudTried=true; stat(); return; }
-      const [db,user]=await Promise.all([window.claude.use('db'), window.claude.use('user')]);
-      const uid = user ? await user.id() : null;
-      cloudTried=true;
-      if(!db||!uid){ stat(); return; }
-      DB=db; UID=uid; cloudOk=true;
-      const col=db.collection('data/users/'+uid);
-      const sd=await col.doc('settings').get();
-      if(sd.exists){ const d=sd.data()||{}; st.g=Object.assign({...DEF_G}, JSON.parse(JSON.stringify(d.g||{})));
-        try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} refreshInputs(); update(); renderRegion(); lastG=JSON.stringify(st.g); }
-      else saveSettings();
-      col.onSnapshot(snap=>{
-        LIST=snap.docs.filter(d=>d.id!=='settings').map(d=>Object.assign({id:d.id}, d.data())).filter(x=>x.kind==='gespraech').sort((a,b)=>(b.updated||0)-(a.updated||0));
-        renderList();
-      }, ()=>stat('Verbindung zum Speicher unterbrochen. Seite neu laden.','bad'));
-      col.doc('check').onSnapshot(sn=>{ try{ onCheck(sn.exists?sn.data():null); }catch(e){} }, ()=>{});
-      stat();
-    }catch(e){ cloudTried=true; cloudOk=false; stat(); }
-  }
-
-  $('term').value=st.term;
+    $('term').value=st.term;
   renderKw(); update(); renderRegion(); refreshSess(); renderPts(); renderAna(); initCloud();
 
   fetch('mapdata.json').then(r=>r.json()).then(d=>{
@@ -1910,7 +1848,7 @@ ${text.slice(0,40000)}`;
     if(applyOrte()) save();
     buildMap(); invalidate(); renderRegion(); fitSel(); update();
   }).catch(()=>{ $('m-sum').textContent='Karte konnte nicht geladen werden. Seite neu laden.'; });
-})();
+})();;
 </script>
 
 </body></html>
