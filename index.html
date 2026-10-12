@@ -1573,7 +1573,7 @@ svg.scene{min-width:640px}
       const hasContact=/kontakt|contact|kontaktformular|anfrage/i.test(text);
       const hasSocial=/instagram|facebook|linkedin|tiktok|youtube/i.test(text);
       const services=['coiffeur','friseur','kosmetik','massage','restaurant','café','cafe','sanitär','heizung','maler','gipser','schreinerei','dachdecker','gartenbau','treuhand','zahnarzt','physiotherapie','garage','autowerkstatt','hotel','anwalt','architekt','reinigung','umzug'];
-      const words=services.filter(k=>new RegExp(k.replace(/[.*+?^${}()|[\]\]/g,'\$&'),'i').test(text));
+      const lowerText=text.toLocaleLowerCase('de-CH'); const words=services.filter(k=>lowerText.includes(k));
       const hints=[
         titleMatch?'Seitentitel im eingefügten Text erkannt.':'Seitentitel nicht eindeutig erkannt – bitte manuell prüfen.',
         hasPhone?'Telefonnummer oder Telefon-Link im Text erkannt.':'Keine Telefonnummer sicher erkannt.',
