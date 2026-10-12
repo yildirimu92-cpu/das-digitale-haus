@@ -1,4 +1,5 @@
 const dns = require('node:dns/promises');
+const { classifyWebsite } = require('./lib/website-classifier');
 const net = require('node:net');
 
 function isPrivate(ip) {
@@ -212,8 +213,11 @@ exports.handler = async (event) => {
         if (logoUrl) break;
       }
     }
+    const industryCatalog = Array.isArray(body.industries) ? body.industries : [];
+    const classificationText = [title, description, ...headings, text.slice(0, 10000)].filter(Boolean).join('\n');
+    const classification = await classifyWebsite({ text: classificationText, industries: industryCatalog });
     const observations = { title, description, headings:headings.slice(0,12), hasPhone, hasEmail, hasContact, forms, hasBooking, hasSocial, logoUrl, textExcerpt:text.slice(0,5000) };
-    return { statusCode:200, headers, body:JSON.stringify({ok:true,url:u.href,firma:'',branche:'andere',dienstleistungen:services.slice(0,20),stichworte:keywords.slice(0,20),orte:[],logoUrl,beobachtungen:hints,observations,source:'automatischer HTML-Check',checkedAt:new Date().toISOString()}) };
+    return { statusCode:200, headers, body:JSON.stringify({ok:true,url:u.href,firma:'',branche:'andere',dienstleistungen:services.slice(0,20),stichworte:keywords.slice(0,20),orte:[],logoUrl,classification,beobachtungen:hints,observations,source:'automatischer HTML-Check',checkedAt:new Date().toISOString()}) };
   } catch (e) {
     return { statusCode:400, headers, body:JSON.stringify({error:e.name==='AbortError'?'Die Website antwortet zu langsam. Bitte später erneut versuchen.':(e.message||'Website-Check fehlgeschlagen.')}) };
   }
