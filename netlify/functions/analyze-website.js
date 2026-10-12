@@ -98,30 +98,41 @@ exports.handler = async (event) => {
     hints.push(hasSocial ? 'Mindestens ein Social-Media-Link erkannt.' : 'Keine bekannten Social-Media-Links erkannt.');
     // Extract useful business categories and search terms from visible page content.
     // This is deterministic rule-based extraction, not an AI-generated interpretation.
-    const sourceText = [title, description, ...headings, text].filter(Boolean).join(' ').replace(/\\s+/g,' ').trim();
+    // Build a branch-neutral, noise-filtered vocabulary from the site's own content.
+    // Remove navigation/footer/cookie/technical UI before extracting business terms.
+    const contentHtml = html
+      .replace(/<(nav|footer|script|style|noscript|svg|iframe|form)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, ' ')
+      .replace(/<(?:div|section|aside)\b[^>]*(?:id|class)=["'][^"']*(?:cookie|consent|breadcrumb|breadcrumbs|navigation|nav-menu|footer|menu|social-icons|share-buttons|tracking|widget|storefront-builder)[^"']*["'][^>]*>[\s\S]*?<\/(?:div|section|aside)\s*>/gi, ' ');
+    const contentText = cleanHtml(contentHtml).slice(0, 18000);
+    const sourceText = [title, description, ...headings, contentText].filter(Boolean).join(' ').replace(/\s+/g,' ').trim();
     const lower = sourceText.toLocaleLowerCase('de-CH');
-    // Use terms actually present on the scanned website. Do not inject branch-specific
-    // canned keywords: headings/title/description are the strongest signals, with frequent
-    // meaningful terms from visible page text as a fallback.
-    const stopWords = new Set(('und oder der die das ein eine einer eines einem den dem des im in am an auf aus bei mit für von vom zum zur über unter nach vor als ist sind wird werden wir sie ihr ihre uns ich the and or of a an to for from with on at by is are be our your you we this that in studio near zurich schweiz schweizer angebot kontakt impressum datenschutz cookies home startseite').split(/\s+/));
+    const stopWords = new Set(('und oder der die das ein eine einer eines einem den dem des im in am an auf aus bei mit für von vom zum zur über unter nach vor als ist sind wird werden wir sie ihr ihre uns ich the and or of a an to for from with on at by is are be our your you we this that these those studio near schweiz schweizer schweizerisch angebot kontakt impressum datenschutz cookies home startseite read more learn more find your way questions before you start location contact hours title true false type com artifact wix wixsite wixstores storefront builder powered by all rights reserved privacy policy terms conditions').split(/\s+/));
     const normalizeTerm = v => cleanHtml(v).replace(/[|•·]/g,' ').replace(/\s+/g,' ').trim();
-    const titleTerms = [title, description, ...headings].map(normalizeTerm).filter(Boolean);
+    const isUsefulPhrase = phrase => phrase.length >= 3 && phrase.length <= 65 &&
+      !/^(home|home page|menu|navigation|kontakt|contact|impressum|datenschutz|privacy policy|terms|location|title|true|false|type|com|artifact)$/i.test(phrase) &&
+      !/\b(wixstores|storefront-builder|cookie|consent|javascript|wordpress|shopify|tracking|analytics|powered by)\b/i.test(phrase) &&
+      phrase.split(/\s+/).length <= 9;
     const keywordCandidates = [];
-    for (const phrase of titleTerms) {
-      if (phrase.length >= 3 && !keywordCandidates.some(x=>x.toLocaleLowerCase('de-CH')===phrase.toLocaleLowerCase('de-CH'))) keywordCandidates.push(phrase);
+    for (const phrase of [title, ...headings]) {
+      const term = normalizeTerm(phrase);
+      if (isUsefulPhrase(term) && !keywordCandidates.some(x=>x.toLocaleLowerCase('de-CH')===term.toLocaleLowerCase('de-CH'))) keywordCandidates.push(term);
     }
     const wordCounts = new Map();
-    const words = lower.match(/[\p{L}\p{N}][\p{L}\p{N}-]{2,}/gu) || [];
-    for (const word of words) {
-      if (stopWords.has(word) || /^\d+$/.test(word)) continue;
+    const words = lower.match(/[\p{L}][\p{L}-]{2,}/gu) || [];
+    for (const rawWord of words) {
+      const word = rawWord.replace(/^-+|-+$/g,'');
+      if (stopWords.has(word) || word.length < 4 || /^\d+$/.test(word)) continue;
+      if (/\b(wix|storefront|builder|artifact|cookie|consent|javascript|wordpress|shopify|title|false|true|location|contact|hours)\b/i.test(word)) continue;
       wordCounts.set(word, (wordCounts.get(word)||0)+1);
     }
-    const frequent = [...wordCounts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,12).map(([word])=>word);
+    const frequent = [...wordCounts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'de-CH')).slice(0,16).map(([word])=>word);
     for (const word of frequent) {
       if (!keywordCandidates.some(x=>x.toLocaleLowerCase('de-CH')===word)) keywordCandidates.push(word);
     }
-    const services = headings.filter(x=>x.length>=3).slice(0,12);
-    const keywords = keywordCandidates.slice(0,20);
+    // Headings become service candidates only when they resemble a concise, useful service.
+    const genericHeading = /^(home|about|about us|contact|contact us|location|hours|faq|questions|menu|services|our services|welcome|impressum|datenschutz|privacy policy|terms|book now|learn more|find your way|title|true|false|type|com|artifact)$/i;
+    const services = headings.map(normalizeTerm).filter(x=>isUsefulPhrase(x)&&!genericHeading.test(x)).slice(0,12);
+    const keywords = keywordCandidates.slice(0,16);
     // Detect a public business logo from structured data or image markup.
     function absolutePublicImage(raw) {
       try {
