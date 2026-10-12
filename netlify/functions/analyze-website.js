@@ -100,37 +100,28 @@ exports.handler = async (event) => {
     // This is deterministic rule-based extraction, not an AI-generated interpretation.
     const sourceText = [title, description, ...headings, text].filter(Boolean).join(' ').replace(/\\s+/g,' ').trim();
     const lower = sourceText.toLocaleLowerCase('de-CH');
-    const rules = [
-      {terms:['pilates','reformer','classical pilates','pilates studio','pilates-studio','tower class'], svc:['Pilates Privatlektionen','Pilates Gruppenkurse','Reformer-Training'], kw:['Pilates Kilchberg','Klassisches Pilates','Reformer Pilates','Pilates Privatstunden','Pilates Gruppenkurse','Pilates Studio']},
-      {terms:['diodenlaser','laserhaarentfernung','laser-haarentfernung','haarentfernung','dauerhafte haarentfernung','ipl'], svc:['Haarentfernung','Diodenlaser'], kw:['Haarentfernung','Diodenlaser','Laserhaarentfernung']},
-      {terms:['zahnbleaching','bleaching','zahnaufhellung','whitening'], svc:['Zahnbleaching'], kw:['Zahnbleaching','Zahnaufhellung']},
-      {terms:['kosmetik','kosmetikinstitut','gesichtsbehandlung','beauty'], svc:['Kosmetik'], kw:['Kosmetik','Kosmetikstudio','Beauty']},
-      {terms:['gesichtsbehandlung','facial'], svc:['Gesichtsbehandlung'], kw:['Gesichtsbehandlung']},
-      {terms:['maniküre','manicure','nagelstudio','nageldesign','gelnägel'], svc:['Maniküre','Nageldesign'], kw:['Nagelstudio','Nageldesign']},
-      {terms:['pediküre','pedicure','fusspflege','fusspflege','medizinische fusspflege'], svc:['Pediküre','Fusspflege'], kw:['Pediküre','Fusspflege']},
-      {terms:['wimpernverlängerung','lashlifting','wimpernlifting'], svc:['Wimpernbehandlungen'], kw:['Wimpernverlängerung','Lashlifting']},
-      {terms:['massage','klassische massage','sportmassage'], svc:['Massage'], kw:['Massage','Sportmassage']},
-      {terms:['coiffeur','friseur','haarschnitt','balayage','haarfarbe','haarfärben'], svc:['Haarschnitt','Färben'], kw:['Coiffeur','Friseur','Balayage']},
-      {terms:['zahnarzt','zahnmedizin','zahnklinik'], svc:['Zahnmedizin'], kw:['Zahnarzt','Zahnmedizin']},
-      {terms:['physiotherapie','physio','rehabilitation'], svc:['Physiotherapie'], kw:['Physiotherapie','Physio']},
-      {terms:['restaurant','mittagessen','speisekarte','menü'], svc:['Restaurant'], kw:['Restaurant','Mittagsmenü']},
-      {terms:['take-away','takeaway','lieferservice'], svc:['Take-away','Lieferservice'], kw:['Take-away','Lieferservice']},
-      {terms:['malerarbeiten','malergeschäft','malerbetrieb'], svc:['Malerarbeiten'], kw:['Maler','Malerarbeiten']},
-      {terms:['sanitär','sanitaer','heizung','wärmepumpe'], svc:['Sanitär- und Heizungsarbeiten'], kw:['Sanitär','Heizung','Wärmepumpe']},
-      {terms:['gartenpflege','gartenbau','gartenunterhalt'], svc:['Gartenpflege'], kw:['Gartenpflege','Gartenbau']},
-      {terms:['garage','autowerkstatt','fahrzeugservice'], svc:['Fahrzeugservice'], kw:['Garage','Autowerkstatt']}
-    ];
-    const services = [], keywords = [];
-    for (const rule of rules) {
-      if (rule.terms.some(term => lower.includes(term))) {
-        for (const item of rule.svc) if (!services.includes(item)) services.push(item);
-        for (const item of rule.kw) if (!keywords.includes(item)) keywords.push(item);
-      }
+    // Use terms actually present on the scanned website. Do not inject branch-specific
+    // canned keywords: headings/title/description are the strongest signals, with frequent
+    // meaningful terms from visible page text as a fallback.
+    const stopWords = new Set(('und oder der die das ein eine einer eines einem den dem des im in am an auf aus bei mit für von vom zum zur über unter nach vor als ist sind wird werden wir sie ihr ihre uns ich the and or of a an to for from with on at by is are be our your you we this that in studio near zurich schweiz schweizer angebot kontakt impressum datenschutz cookies home startseite').split(/\s+/));
+    const normalizeTerm = v => cleanHtml(v).replace(/[|•·]/g,' ').replace(/\s+/g,' ').trim();
+    const titleTerms = [title, description, ...headings].map(normalizeTerm).filter(Boolean);
+    const keywordCandidates = [];
+    for (const phrase of titleTerms) {
+      if (phrase.length >= 3 && !keywordCandidates.some(x=>x.toLocaleLowerCase('de-CH')===phrase.toLocaleLowerCase('de-CH'))) keywordCandidates.push(phrase);
     }
-    // Retain other recognizable industry terms as search terms.
-    const extraTerms = ['coiffeur','friseur','kosmetik','massage','restaurant','café','cafe','sanitär','heizung','maler','gipser','schreinerei','dachdecker','gartenbau','treuhand','zahnarzt','physiotherapie','garage','autowerkstatt','hotel','anwalt','architekt','reinigung','umzug'];
-    for (const term of extraTerms) if (lower.includes(term) && !keywords.includes(term)) keywords.push(term);
-    const inferredIndustry = rules.find(rule => rule.terms.some(term => lower.includes(term)));
+    const wordCounts = new Map();
+    const words = lower.match(/[\p{L}\p{N}][\p{L}\p{N}-]{2,}/gu) || [];
+    for (const word of words) {
+      if (stopWords.has(word) || /^\d+$/.test(word)) continue;
+      wordCounts.set(word, (wordCounts.get(word)||0)+1);
+    }
+    const frequent = [...wordCounts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,12).map(([word])=>word);
+    for (const word of frequent) {
+      if (!keywordCandidates.some(x=>x.toLocaleLowerCase('de-CH')===word)) keywordCandidates.push(word);
+    }
+    const services = headings.filter(x=>x.length>=3).slice(0,12);
+    const keywords = keywordCandidates.slice(0,20);
     // Detect a public business logo from structured data or image markup.
     function absolutePublicImage(raw) {
       try {
