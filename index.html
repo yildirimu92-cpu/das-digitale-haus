@@ -884,12 +884,12 @@ svg.scene{min-width:640px}
   // Für Vollständigkeit auf Eintragsebene später mit dem offiziellen internen Branchenexport abgleichen.
   const TAXONOMY = [
     ['Essen, Genuss & Gastronomie','Restaurant','Café','Bar','Take-away','Catering','Bäckerei / Konditorei','Metzgerei','Pizzeria','Hotel','Pension','Foodtruck','Lieferservice','Eisdiele','Confiserie','Weinhandlung','Lebensmittelgeschäft'],
-    ['Medizin, Ästhetik & Wellness','Arztpraxis','Zahnarzt','Dentalhygiene','Physiotherapie','Psychotherapie','Psychologie','Apotheke','Optiker','Hörakustik','Massage','Kosmetikstudio','Kosmetik','Coiffeur','Barbershop','Nagelstudio','Tattoo-Studio','Fitnessstudio','Personal Training','Pilates-Studio','Hebamme','Tierarzt','Pflegeheim','Spitex','Ergotherapie','Naturheilkunde','Akupunktur','Chiropraktik','Dermatologie','Augenarzt','Gynäkologie','Kinderarzt','Logopädie'],
+    ['Medizin, Ästhetik & Wellness','Arztpraxis','Zahnarzt','Dentalhygiene','Physiotherapie','Psychotherapie','Psychologie','Apotheke','Optiker','Hörakustik','Massage','Kosmetikstudio','Kosmetik','Coiffeur','Barbershop','Nagelstudio','Tattoo-Studio','Fitnessstudio','Personal Training','Hebamme','Tierarzt','Pflegeheim','Spitex','Ergotherapie','Naturheilkunde','Akupunktur','Chiropraktik','Dermatologie','Augenarzt','Gynäkologie','Kinderarzt','Logopädie'],
     ['Handwerk, Bau & Industrie','Sanitär / Heizung','Elektroinstallationen','Architekturbüro','Bauunternehmen','Maler / Gipser','Schreinerei','Zimmerei / Holzbau','Dachdecker','Spenglerei','Gartenbau','Landschaftsbau','Pflästerungen','Bodenbeläge','Plattenleger','Fensterbau','Fassadenbau','Gerüstbau','Abbruchunternehmen','Aushubarbeiten','Baureinigung','Gebäudereinigung','Hauswartung','Schlosserei / Metallbau','Glaserei','Küchenbau','Badezimmer-Renovation','Bauleitung','Baumanagement','Ingenieurbüro','Heizungsinstallation','Lüftung / Klima','Solartechnik / Photovoltaik','Kaminfeger','Aufzüge','Sicherheitsanlagen','Industriemontage','Maschinenbau','Metallverarbeitung','Druckerei','Werbetechnik','Textilverarbeitung','Entsorgung / Recycling'],
     ['Mobilität & Fahrzeuge','Autogarage','Autohandel / Occasionshandel','Carrosserie','Autolackiererei','Reifenservice','Autoglaserei','Autowaschanlage','Fahrschule','Abschleppdienst','Autovermietung','Motorradhandel / Werkstatt','Fahrradgeschäft / Velowerkstatt','Bootswerft','Transport','Umzug','Taxi','Limousinenservice','Nutzfahrzeuge','Tankstelle'],
     ['Handel & E-Commerce','Detailhandel','Modegeschäft','Schuhgeschäft','Möbelgeschäft','Einrichtungshaus','Elektronikgeschäft','Computerladen','Mobiltelefon-Shop','Juwelier','Uhrenhandel','Optikgeschäft','Sportgeschäft','Spielwarengeschäft','Blumenladen','Gartencenter','Buchhandlung','Papeterie','Haushaltsgeräte','Baumarkt','Tierbedarf','Secondhand-Shop','Online-Shop','Grosshandel','Getränkehandel','Küchenstudio'],
     ['Leben, Wohnen & Umwelt','Immobilienmakler','Immobilienverwaltung','Umzugsunternehmen','Reinigungsunternehmen','Schädlingsbekämpfung','Schlüsseldienst','Sicherheitstechnik','Bestattungsunternehmen','Gärtnerei','Floristik','Innenarchitektur','Raumausstattung','Möbelrestauration','Energieberatung','Entsorgungsdienst','Wasserschaden-Sanierung','Schimmel-Sanierung','Solarberatung'],
-    ['Freizeit, Bildung & Sport','Musikschule','Nachhilfe','Sprachschule','Fahrschule','Kindertagesstätte','Spielgruppe','Privatschule','Weiterbildung','Tanzschule','Sportverein','Kampfsportschule','Yoga-Studio','Reisebüro','Eventagentur','Veranstaltungstechnik','Fotograf','Videoproduktion','Kino','Museum','Freizeitpark','Escape Room','Campingplatz','Ferienwohnung','Tourismus','Reiseveranstalter','Künstler / Atelier','Musiker','Hundeschule','Reitstall'],
+    ['Freizeit, Bildung & Sport','Musikschule','Nachhilfe','Sprachschule','Fahrschule','Kindertagesstätte','Spielgruppe','Privatschule','Weiterbildung','Tanzschule','Sportverein','Kampfsportschule','Yoga-Studio','Pilates-Studio','Reisebüro','Eventagentur','Veranstaltungstechnik','Fotograf','Videoproduktion','Kino','Museum','Freizeitpark','Escape Room','Campingplatz','Ferienwohnung','Tourismus','Reiseveranstalter','Künstler / Atelier','Musiker','Hundeschule','Reitstall'],
     ['Sicherheit, Wirtschaft & IT','IT-Dienstleister','Softwareentwicklung','Webagentur','Marketingagentur','Werbeagentur','Grafikdesign','Fotostudio','Telekommunikation','Alarmanlagen','Sicherheitsdienst','Detektei','Unternehmensberatung','Personalvermittlung','Übersetzungsbüro','Bürobedarf','Logistik','Lagerung','Industriebedarf','Labor','Forschung / Entwicklung'],
     ['Beratung & Dienstleistungen','Treuhandbüro','Buchhaltung','Steuerberatung','Anwaltsbüro','Notariat','Versicherungsberatung','Finanzberatung','Bank / Finanzdienstleistung','Coaching','Personalberatung','Headhunter','Dolmetscher','Sekretariatsservice','Callcenter','Schreibbüro','Marketingberatung','PR-Agentur','Fotografie','Videografie','Druckservice'],
     ['Tier & Natur','Tierarztpraxis','Tierpflege','Hundesalon','Hundeschule','Tierpension','Pferdepension','Reitstall','Landwirtschaft','Forstwirtschaft','Gartenpflege','Baumpflege','Gärtnerei','Blumenladen','Imkerei'],
@@ -1691,8 +1691,15 @@ svg.scene{min-width:640px}
     if(Array.isArray(PLACES)&&PLACES.length){
       const placeText=[title,...headings,String(o.description||'').toLocaleLowerCase('de-CH')];
       for(const text of placeText){
-        foundPlace=PLACES.filter(p=>p&&p[0]&&text.includes(String(p[0]).toLocaleLowerCase('de-CH')))
-          .sort((a,b)=>String(b[0]).length-String(a[0]).length)[0]||null;
+        foundPlace=PLACES.filter(p=>{
+          if(!p||!p[0]) return false;
+          const place=String(p[0]).trim();
+          // Require a complete place-name token. This prevents "Loc" matching
+          // generic words such as "location" and avoids partial-name collisions.
+          const escaped=place.replace(/[.*+?^${}()|[\]\\]/g,'\\        foundPlace=PLACES.filter(p=>p&&p[0]&&text.includes(String(p[0]).toLocaleLowerCase('de-CH')))
+          .sort((a,b)=>String(b[0]).length-String(a[0]).length)[0]||null;');
+          return new RegExp('(^|[^\\p{L}\\p{N}])'+escaped+'([^\\p{L}\\p{N}]|$)','iu').test(text);
+        }).sort((a,b)=>String(b[0]).length-String(a[0]).length)[0]||null;
         if(foundPlace) break;
       }
     }
