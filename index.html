@@ -910,6 +910,7 @@ svg.scene{min-width:640px}
   BR.beauty={d:['Termin','buchen'],tool:'MyCOCKPIT',q:'Coiffeur Horgen'};
   BR.resto={d:['Tisch','reservieren'],tool:'MyLOCALINA',q:'Restaurant Zug'};
   BR.craft={d:['Offerte','anfragen'],tool:'Formular',q:'Maler Adliswil'};
+  BR['yoga-studio']={d:['Probetraining','buchen'],tool:'MyCOCKPIT',q:'Pilates Kilchberg'};
   const PK = [
     {name:'Basis', flames:1, pitch:'Gefunden werden. Das Fundament steht, alle Wege führen zu dir.'},
     {name:'Feurig', flames:2, pitch:'Mehr Anfragen. Kunden sehen dich, vertrauen dir und buchen direkt.'},
@@ -1673,10 +1674,12 @@ svg.scene{min-width:640px}
       ['beauty',/kosmetik|beauty|diodenlaser|haarentfernung|zahnbleaching|nagelstudio|coiffeur|friseur|barbershop|massage|gesichtsbehandlung/],
       ['dental',/zahnarzt|zahnmedizin|dentalhygiene|zahnklinik/],
       ['physio',/physiotherapie|physiozentrum|ergotherapie/],
-      ['yoga-studio',/pilates|reformer|classical pilates|pilates studio|tower class/],
       ['hotel',/hotel|pension|übernachtung|uebernachtung/]
     ];
-    const detected=branchRules.find(([id,re])=>re.test(scanText));
+    // Pilates is a highly specific signal: always prioritize it over generic terms elsewhere on the page.
+    const detected=/pilates|reformer|classical pilates|pilates studio|tower class/i.test(scanText)
+      ? ['yoga-studio',/pilates|reformer|classical pilates|pilates studio|tower class/i]
+      : branchRules.find(([id,re])=>re.test(scanText));
     if(detected && BR[detected[0]]) setBranch(detected[0]);
     else {
       const matched=INDUSTRIES.find(x=>scanText.includes(x.name.toLowerCase()));
