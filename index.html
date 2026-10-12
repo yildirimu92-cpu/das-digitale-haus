@@ -2041,15 +2041,25 @@ svg.scene{min-width:640px}
       const blocks=printBlocks(d, houseSrc).map(html=>{ const el=document.createElement('div'); el.innerHTML=html; ms.appendChild(el); return el; });
       await Promise.all([...ms.querySelectorAll('img')].map(img=>img.complete?0:new Promise(r=>{ img.onload=img.onerror=r; })));
       const AV=1123-44-60, GAP=16, pages=[[]]; let h=0;
-      // Keep every block inside the printable page. Oversized illustration/cards are
-      // constrained before pagination so the drawing cannot be clipped at the page edge.
-      const maxBlock=Math.floor(AV*0.72);
+      // Never crop a block or its illustration. Scale oversized images proportionally,
+      // then paginate whole cards so the drawing remains complete in the PDF.
+      const maxBlock=Math.floor(AV*0.70);
       blocks.forEach(el=>{
-        if(el.offsetHeight>maxBlock){
-          el.style.maxHeight=maxBlock+'px'; el.style.overflow='hidden';
-          const img=el.querySelector('img'); if(img){img.style.maxHeight=Math.floor(maxBlock*0.68)+'px';img.style.width='100%';img.style.objectFit='contain';}
+        const img=el.querySelector('img');
+        if(img && (img.naturalWidth || img.width)){
+          img.style.maxWidth='100%';
+          img.style.height='auto';
+          img.style.objectFit='contain';
+          if(el.classList.contains('house')) img.style.maxHeight=Math.floor(maxBlock*0.62)+'px';
         }
-        const bh=Math.min(el.offsetHeight,maxBlock);
+        let bh=el.offsetHeight;
+        if(bh>maxBlock){
+          // Compress internal spacing and text slightly instead of hiding overflow.
+          el.style.padding='10px 12px';
+          el.style.gap='8px';
+          if(img) img.style.maxHeight=Math.floor(maxBlock*0.52)+'px';
+          bh=el.offsetHeight;
+        }
         if(h>0 && h+GAP+bh>AV){ pages.push([]); h=0; }
         pages[pages.length-1].push(el); h+=(h?GAP:0)+bh;
       });
