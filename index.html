@@ -1198,7 +1198,7 @@ svg.scene{min-width:640px}
     const eligible=Math.max(0,m-mAds-annual/12);
     const disc=eligible*pct/100;
     m = mAds + eligible - disc + annual/12;
-    return {m, list, disc, pct, mAds, mOther:m-mAds, once, yr:0, orte, rub, mail, lz, total:(m-annual/12)*lz+annual+once, miss};
+    const years=Math.ceil(lz/12);\n    return {m, list, disc, pct, mAds, mOther:m-mAds, once, yr:0, orte, rub, mail, lz, total:(m-annual/12)*lz+annual*years+once, miss};
   }
   function feats(i){
     const c=(typeof i==='object')?i:eff(i), out=[], n=selected().length;
