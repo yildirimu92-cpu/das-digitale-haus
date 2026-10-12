@@ -886,7 +886,7 @@ svg.scene{min-width:640px}
     ['Essen, Genuss & Gastronomie','Restaurant','Café','Bar','Take-away','Catering','Bäckerei / Konditorei','Metzgerei','Pizzeria','Hotel','Pension','Foodtruck','Lieferservice','Eisdiele','Confiserie','Weinhandlung','Lebensmittelgeschäft'],
     ['Medizin, Ästhetik & Wellness','Arztpraxis','Zahnarzt','Dentalhygiene','Physiotherapie','Psychotherapie','Psychologie','Apotheke','Optiker','Hörakustik','Massage','Kosmetikstudio','Kosmetik','Coiffeur','Barbershop','Nagelstudio','Tattoo-Studio','Fitnessstudio','Personal Training','Hebamme','Tierarzt','Pflegeheim','Spitex','Ergotherapie','Naturheilkunde','Akupunktur','Chiropraktik','Dermatologie','Augenarzt','Gynäkologie','Kinderarzt','Logopädie'],
     ['Handwerk, Bau & Industrie','Sanitär / Heizung','Elektroinstallationen','Architekturbüro','Bauunternehmen','Maler / Gipser','Schreinerei','Zimmerei / Holzbau','Dachdecker','Spenglerei','Gartenbau','Landschaftsbau','Pflästerungen','Bodenbeläge','Plattenleger','Fensterbau','Fassadenbau','Gerüstbau','Abbruchunternehmen','Aushubarbeiten','Baureinigung','Gebäudereinigung','Hauswartung','Schlosserei / Metallbau','Glaserei','Küchenbau','Badezimmer-Renovation','Bauleitung','Baumanagement','Ingenieurbüro','Heizungsinstallation','Lüftung / Klima','Solartechnik / Photovoltaik','Kaminfeger','Aufzüge','Sicherheitsanlagen','Industriemontage','Maschinenbau','Metallverarbeitung','Druckerei','Werbetechnik','Textilverarbeitung','Entsorgung / Recycling'],
-    ['Mobilität & Fahrzeuge','Autogarage','Autohandel / Occasionshandel','Carrosserie','Autolackiererei','Reifenservice','Autoglaserei','Autowaschanlage','Fahrschule','Abschleppdienst','Autovermietung','Motorradhandel / Werkstatt','Fahrradgeschäft / Velowerkstatt','Bootswerft','Transport','Umzug','Taxi','Limousinenservice','Nutzfahrzeuge','Tankstelle'],
+    ['Mobilität & Fahrzeuge','Bootsfahrschule','Motorbootsfahrschule','Autogarage','Autohandel / Occasionshandel','Carrosserie','Autolackiererei','Reifenservice','Autoglaserei','Autowaschanlage','Fahrschule','Abschleppdienst','Autovermietung','Motorradhandel / Werkstatt','Fahrradgeschäft / Velowerkstatt','Bootswerft','Transport','Umzug','Taxi','Limousinenservice','Nutzfahrzeuge','Tankstelle'],
     ['Handel & E-Commerce','Detailhandel','Modegeschäft','Schuhgeschäft','Möbelgeschäft','Einrichtungshaus','Elektronikgeschäft','Computerladen','Mobiltelefon-Shop','Juwelier','Uhrenhandel','Optikgeschäft','Sportgeschäft','Spielwarengeschäft','Blumenladen','Gartencenter','Buchhandlung','Papeterie','Haushaltsgeräte','Baumarkt','Tierbedarf','Secondhand-Shop','Online-Shop','Grosshandel','Getränkehandel','Küchenstudio'],
     ['Leben, Wohnen & Umwelt','Immobilienmakler','Immobilienverwaltung','Umzugsunternehmen','Reinigungsunternehmen','Schädlingsbekämpfung','Schlüsseldienst','Sicherheitstechnik','Bestattungsunternehmen','Gärtnerei','Floristik','Innenarchitektur','Raumausstattung','Möbelrestauration','Energieberatung','Entsorgungsdienst','Wasserschaden-Sanierung','Schimmel-Sanierung','Solarberatung'],
     ['Freizeit, Bildung & Sport','Musikschule','Nachhilfe','Sprachschule','Fahrschule','Kindertagesstätte','Spielgruppe','Privatschule','Weiterbildung','Tanzschule','Sportverein','Kampfsportschule','Yoga-Studio','Pilates-Studio','Reisebüro','Eventagentur','Veranstaltungstechnik','Fotograf','Videoproduktion','Kino','Museum','Freizeitpark','Escape Room','Campingplatz','Ferienwohnung','Tourismus','Reiseveranstalter','Künstler / Atelier','Musiker','Hundeschule','Reitstall'],
@@ -916,6 +916,8 @@ svg.scene{min-width:640px}
   BR.craft={d:['Offerte','anfragen'],tool:'Formular',q:'Maler Adliswil'};
   BR['pilates-studio']={d:['Probetraining','buchen'],tool:'MyCOCKPIT',q:'Pilates Kilchberg'};
   BR.kosmetikstudio={d:['Termin','buchen'],tool:'MyCOCKPIT',q:'Kosmetikstudio Luzern'};
+  BR.motorbootsfahrschule={d:['Kurs','buchen'],tool:'Formular',q:'Motorbootsfahrschule Zürich'};
+  BR.bootsfahrschule={d:['Kurs','buchen'],tool:'Formular',q:'Bootsfahrschule Zürich'};
   BR['yoga-studio']={d:['Probetraining','buchen'],tool:'MyCOCKPIT',q:'Yoga Horgen'};
   const PK = [
     {name:'Basis', flames:1, pitch:'Gefunden werden. Das Fundament steht, alle Wege führen zu dir.'},
@@ -1678,6 +1680,7 @@ svg.scene{min-width:640px}
     // Classify from all available page evidence, preferring specific business types
     // over broad salon/beauty signals. Brand names can be strong evidence too.
     const branchRules=[
+      ['motorbootsfahrschule',/motorboots?fahr|motorbootsschule|boots?fahrschule|bootsschule|motorboot|bootsausbildung|schiffsfuehrer|schiffsführerschein|bootsschein|motorbootkurs/],
       ['kosmetikstudio',/kosmetikstudio|kosmetik[- ]?institut|kosmetikerin|kosmetikbehandlung|gesichtsbehandlung|beauty empire|hautpflege|skin care|facial treatment|ästhetikstudio|aesthetic studio/],
       ['yoga-studio',/\bpilates\b|\breformer\b|classical pilates|pilates studio|tower class/],
       ['resto',/\brestaurant\b|gastronomie|pizzeria|café|cafe|take.away|tischreserv|speisekarte|mittagstisch/],
