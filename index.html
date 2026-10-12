@@ -415,7 +415,7 @@ svg.scene{min-width:640px}
   <section class="board" aria-labelledby="ah">
     <div class="boardhead">
       <h2 id="ah">Start: Kunde vorbereiten</h2>
-      <p class="note">Website eintragen und «Check starten» tippen. Claude prüft Website, Google-Profil und Social Media und füllt Dienstleistungen, Stichworte und Orte aus. Danach kannst du alles ändern.</p>
+      <p class="note">Website eintragen und die externen Prüf-Links nutzen. Der automatische Website-Check wird separat integriert; bis dahin kannst du die Erkenntnisse manuell ergänzen.</p>
     </div>
     <div class="ana">
       <div class="side">
@@ -1520,7 +1520,7 @@ svg.scene{min-width:640px}
     if(!(a.hints && a.hints.length)) $('a-res').innerHTML='<p class="note">Noch keine Auswertung. Lass den Kunden im Chat vorbereiten oder prüfe ihn über die Links links und mit dem Digital Status Check.</p>';
     else $('a-res').innerHTML=`<ul class="hints">${a.hints.map(h=>`<li>${esc(h)}</li>`).join('')}</ul>${a.at?`<p class="note" style="margin-top:6px">Ausgewertet: ${esc(a.at)}</p>`:''}`;
   }
-  $('a-url').addEventListener('input',e=>{ st.ana=Object.assign({hints:[]},st.ana,{url:e.target.value}); save(); renderAna(); cstat(''); try{ onCheck(lastCheck); }catch(err){} });
+  $('a-url').addEventListener('input',e=>{ st.ana=Object.assign({hints:[]},st.ana,{url:e.target.value}); save(); renderAna(); cstat(''); });
   let anaCtl=null;
   $('a-stop').addEventListener('click',()=>anaCtl&&anaCtl.abort());
   $('a-go').addEventListener('click',async()=>{
@@ -1821,7 +1821,7 @@ ${text.slice(0,40000)}`;
   function scheduleCloud(){if(!cloudOk)return;clearTimeout(saveT);saveT=null;if(st.cur.name.trim())saveT=setTimeout(()=>{saveT=null;cloudSave();},1200);const gj=JSON.stringify(st.g);if(gj!==lastG){clearTimeout(setT);setT=setTimeout(saveSettings,1200);}}
   async function cloudSave(){
     if(!cloudOk||!UID){stat();return;}if(!st.cur.name.trim()){stat('Bitte zuerst den Kundennamen eintragen.','bad');$('s-name').focus();return;}
-    if(!st.cur.id)st.cur.id=crypto.randomUUID();
+    if(!st.cur.id||! /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(st.cur.id))st.cur.id=crypto.randomUUID();
     const P=price(st.pk),now=new Date().toISOString();
     const body={id:st.cur.id,user_id:UID,customer_name:st.cur.name.trim(),meeting_date:st.cur.date||null,website_url:(st.ana&&st.ana.url)||null,notes:st.cur.notes||null,analysis_data:snapshot(),package_data:{pkg:PK[st.pk].name,monthly:Math.round(P.m)},updated_at:now};
     try{const {error}=await DB.from('conversations').upsert(body,{onConflict:'id'});if(error)throw error;try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}stat('Gespeichert um '+new Date().toLocaleTimeString('de-CH',{hour:'2-digit',minute:'2-digit'}),'ok');await loadConversations();}
