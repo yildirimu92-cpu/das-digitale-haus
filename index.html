@@ -1625,8 +1625,24 @@ svg.scene{min-width:640px}
     const obs=Array.isArray(result.beobachtungen)?result.beobachtungen:[];
     const o=result.observations||{};
     st.ana=Object.assign({},st.ana,{hints:obs,at:new Date().toLocaleString('de-CH',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),audit:{source,title:o.title||'',description:o.description||'',headings:o.headings||[],hasPhone:o.hasPhone,hasEmail:o.hasEmail,hasContact:o.hasContact,forms:o.forms,hasBooking:o.hasBooking,hasSocial:o.hasSocial,logoUrl:result.logoUrl||o.logoUrl||''}});
-    if(Array.isArray(result.dienstleistungen)&&result.dienstleistungen.length) st.svc=[...new Set([...(st.svc||[]),...result.dienstleistungen])].slice(0,20);
-    if(Array.isArray(result.stichworte)&&result.stichworte.length) st.kw=[...new Set([...(st.kw||[]),...result.stichworte])].slice(0,20);
+    // A fresh website scan should replace, not append to, the previous customer's scan-derived terms.
+    if(Array.isArray(result.dienstleistungen)&&result.dienstleistungen.length) st.svc=[...new Set(result.dienstleistungen)].slice(0,20);
+    if(Array.isArray(result.stichworte)&&result.stichworte.length) st.kw=[...new Set(result.stichworte)].slice(0,20);
+    const scanText=[o.title,o.description,...(o.headings||[]),...(result.dienstleistungen||[]),...(result.stichworte||[]),o.textExcerpt].filter(Boolean).join(' ').toLowerCase();
+    const branchRules=[
+      ['resto',/restaurant|gastronomie|pizzeria|café|cafe|take.away|tischreserv|speisekarte|mittagstisch/],
+      ['craft',/sanitär|sanitaer|heizung|elektroinstall|maler|gipser|schreinerei|zimmerei|dachdecker|gartenbau|bauunternehmen|renovation|handwerk|renovero/],
+      ['beauty',/kosmetik|beauty|diodenlaser|haarentfernung|zahnbleaching|nagelstudio|coiffeur|friseur|barbershop|massage|gesichtsbehandlung/],
+      ['dental',/zahnarzt|zahnmedizin|dentalhygiene|zahnklinik/],
+      ['physio',/physiotherapie|physiozentrum|ergotherapie/],
+      ['hotel',/hotel|pension|übernachtung|uebernachtung/]
+    ];
+    const detected=branchRules.find(([id,re])=>re.test(scanText));
+    if(detected && BR[detected[0]]) setBranch(detected[0]);
+    else {
+      const matched=INDUSTRIES.find(x=>scanText.includes(x.name.toLowerCase()));
+      if(matched) setBranch(matched.id);
+    }
     save(); renderAna(); renderKw(); update();
   }
   $('c-go').addEventListener('click',async()=>{
