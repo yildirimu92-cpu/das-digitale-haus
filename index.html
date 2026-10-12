@@ -1209,7 +1209,7 @@ svg.scene{min-width:640px}
     let mAds=0;
     if(c.ads!=='-'){ m+=budget(c); mAds+=budget(c); once+=adsS(c.ads); }
     if(c.reno && RENO[c.reno]) m+=RENO[c.reno].y/12;
-    if(c.tik){ if(g.tik==='') miss.push('Preis advertiseONE TikTok'); m+=num(g.tik); mAds+=num(g.tik); once+=num(g.tiks); }
+    if(c.tik){ if(![250,500,750].includes(num(g.tik))) miss.push('TikTok-Budget auswählen'); m+=num(g.tik); mAds+=num(g.tik); once+=250; }
     if(c.loc){ if(g.loc==='') miss.push('MyLOCALINA-Preis'); m+=num(g.loc); once+=num(g.sloc); }
     once += (SETUP.kb[c.kb]||0) + (SETUP.web[c.web]||0);
     const orte=ortCost(c), rub=c.op==='-'?0:Math.max(0,Math.round(num(st.rub)))*50, mail=hasMail(c)?MAIL[c.mail].p:0, lz=Math.max(1,num(g.lz)||36);
