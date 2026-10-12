@@ -1680,11 +1680,9 @@ svg.scene{min-width:640px}
     const detected=/pilates|reformer|classical pilates|pilates studio|tower class/i.test(scanText)
       ? ['yoga-studio',/pilates|reformer|classical pilates|pilates studio|tower class/i]
       : branchRules.find(([id,re])=>re.test(scanText));
+    // Only change the selected industry when the scanned page contains a strong,
+    // explicit signal. Never infer a branch from incidental words in menus/footer text.
     if(detected && BR[detected[0]]) setBranch(detected[0]);
-    else {
-      const matched=INDUSTRIES.find(x=>scanText.includes(x.name.toLowerCase()));
-      if(matched) setBranch(matched.id);
-    }
     save(); renderAna(); renderKw(); update();
   }
   $('c-go').addEventListener('click',async()=>{
