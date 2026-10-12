@@ -884,7 +884,7 @@ svg.scene{min-width:640px}
   // Für Vollständigkeit auf Eintragsebene später mit dem offiziellen internen Branchenexport abgleichen.
   const TAXONOMY = [
     ['Essen, Genuss & Gastronomie','Restaurant','Café','Bar','Take-away','Catering','Bäckerei / Konditorei','Metzgerei','Pizzeria','Hotel','Pension','Foodtruck','Lieferservice','Eisdiele','Confiserie','Weinhandlung','Lebensmittelgeschäft'],
-    ['Medizin, Ästhetik & Wellness','Arztpraxis','Zahnarzt','Dentalhygiene','Physiotherapie','Psychotherapie','Psychologie','Apotheke','Optiker','Hörakustik','Massage','Kosmetik','Coiffeur','Barbershop','Nagelstudio','Tattoo-Studio','Fitnessstudio','Personal Training','Hebamme','Tierarzt','Pflegeheim','Spitex','Ergotherapie','Naturheilkunde','Akupunktur','Chiropraktik','Dermatologie','Augenarzt','Gynäkologie','Kinderarzt','Logopädie'],
+    ['Medizin, Ästhetik & Wellness','Arztpraxis','Zahnarzt','Dentalhygiene','Physiotherapie','Psychotherapie','Psychologie','Apotheke','Optiker','Hörakustik','Massage','Kosmetikstudio','Kosmetik','Coiffeur','Barbershop','Nagelstudio','Tattoo-Studio','Fitnessstudio','Personal Training','Hebamme','Tierarzt','Pflegeheim','Spitex','Ergotherapie','Naturheilkunde','Akupunktur','Chiropraktik','Dermatologie','Augenarzt','Gynäkologie','Kinderarzt','Logopädie'],
     ['Handwerk, Bau & Industrie','Sanitär / Heizung','Elektroinstallationen','Architekturbüro','Bauunternehmen','Maler / Gipser','Schreinerei','Zimmerei / Holzbau','Dachdecker','Spenglerei','Gartenbau','Landschaftsbau','Pflästerungen','Bodenbeläge','Plattenleger','Fensterbau','Fassadenbau','Gerüstbau','Abbruchunternehmen','Aushubarbeiten','Baureinigung','Gebäudereinigung','Hauswartung','Schlosserei / Metallbau','Glaserei','Küchenbau','Badezimmer-Renovation','Bauleitung','Baumanagement','Ingenieurbüro','Heizungsinstallation','Lüftung / Klima','Solartechnik / Photovoltaik','Kaminfeger','Aufzüge','Sicherheitsanlagen','Industriemontage','Maschinenbau','Metallverarbeitung','Druckerei','Werbetechnik','Textilverarbeitung','Entsorgung / Recycling'],
     ['Mobilität & Fahrzeuge','Autogarage','Autohandel / Occasionshandel','Carrosserie','Autolackiererei','Reifenservice','Autoglaserei','Autowaschanlage','Fahrschule','Abschleppdienst','Autovermietung','Motorradhandel / Werkstatt','Fahrradgeschäft / Velowerkstatt','Bootswerft','Transport','Umzug','Taxi','Limousinenservice','Nutzfahrzeuge','Tankstelle'],
     ['Handel & E-Commerce','Detailhandel','Modegeschäft','Schuhgeschäft','Möbelgeschäft','Einrichtungshaus','Elektronikgeschäft','Computerladen','Mobiltelefon-Shop','Juwelier','Uhrenhandel','Optikgeschäft','Sportgeschäft','Spielwarengeschäft','Blumenladen','Gartencenter','Buchhandlung','Papeterie','Haushaltsgeräte','Baumarkt','Tierbedarf','Secondhand-Shop','Online-Shop','Grosshandel','Getränkehandel','Küchenstudio'],
@@ -1663,29 +1663,45 @@ svg.scene{min-width:640px}
     const obs=Array.isArray(result.beobachtungen)?result.beobachtungen:[];
     const o=result.observations||{};
     st.ana=Object.assign({},st.ana,{hints:obs,at:new Date().toLocaleString('de-CH',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),audit:{source,title:o.title||'',description:o.description||'',headings:o.headings||[],hasPhone:o.hasPhone,hasEmail:o.hasEmail,hasContact:o.hasContact,forms:o.forms,hasBooking:o.hasBooking,hasSocial:o.hasSocial,logoUrl:result.logoUrl||o.logoUrl||''}});
-    // Doppelte Begriffe unabhängig von Gross-/Kleinschreibung entfernen.
     if(Array.isArray(result.dienstleistungen)) st.svc=uniqueTerms(result.dienstleistungen);
     if(Array.isArray(result.stichworte)) st.kw=uniqueTerms(result.stichworte);
-    // Branch detection may only use the page's own metadata and headings. Do not use full-page text,
-    // generated keywords, footer/menu links or previous suggestions: those cause false positives.
-    const scanText=[o.title,o.description,...(o.headings||[])].filter(Boolean).join(' ').toLocaleLowerCase('de-CH');
+    const title=String(o.title||'').toLocaleLowerCase('de-CH');
+    const headings=(o.headings||[]).map(x=>String(x||'').toLocaleLowerCase('de-CH'));
+    const metadata=[title,String(o.description||'').toLocaleLowerCase('de-CH'),...headings].join(' ');
     const branchRules=[
-      ['yoga-studio',/pilates|reformer|classical pilates|pilates studio|tower class/],
-      ['resto',/restaurant|gastronomie|pizzeria|café|cafe|take.away|tischreserv|speisekarte|mittagstisch/],
+      ['yoga-studio',/\bpilates\b|\breformer\b|classical pilates|pilates studio|tower class/],
+      ['kosmetikstudio',/kosmetikstudio|kosmetik[- ]?institut|kosmetikerin|kosmetikbehandlung|gesichtsbehandlung|beauty empire/],
+      ['resto',/\brestaurant\b|gastronomie|pizzeria|café|cafe|take.away|tischreserv|speisekarte|mittagstisch/],
       ['craft',/sanitär|sanitaer|heizung|elektroinstall|maler|gipser|schreinerei|zimmerei|dachdecker|gartenbau|bauunternehmen|renovation|handwerk|renovero/],
-      ['beauty',/kosmetik|beauty|diodenlaser|haarentfernung|zahnbleaching|nagelstudio|coiffeur|friseur|barbershop|massage|gesichtsbehandlung/],
       ['dental',/zahnarzt|zahnmedizin|dentalhygiene|zahnklinik/],
       ['physio',/physiotherapie|physiozentrum|ergotherapie/],
-      ['hotel',/hotel|pension|übernachtung|uebernachtung/]
+      ['hotel',/\bhotel\b|pension|übernachtung|uebernachtung/],
+      ['beauty',/\bcoiffeur\b|friseur|barbershop|nagelstudio|haarentfernung|diodenlaser|massage/]
     ];
-    // Pilates is a highly specific signal: always prioritize it over generic terms elsewhere on the page.
-    const detected=/pilates|reformer|classical pilates|pilates studio|tower class/i.test(scanText)
-      ? ['yoga-studio',/pilates|reformer|classical pilates|pilates studio|tower class/i]
-      : branchRules.find(([id,re])=>re.test(scanText));
-    // Only change the selected industry when the scanned page contains a strong,
-    // explicit signal. Never infer a branch from incidental words in menus/footer text.
+    const detected=branchRules.find(([id,re])=>re.test(title)) || branchRules.find(([id,re])=>re.test(headings.join(' '))) || branchRules.find(([id,re])=>re.test(metadata));
     if(detected && BR[detected[0]]) setBranch(detected[0]);
-    save(); renderAna(); renderKw(); update();
+    // Only use an explicit Swiss place name from the site's own metadata/headings.
+    let foundPlace=null;
+    if(Array.isArray(PLACES)&&PLACES.length){
+      const placeText=[title,...headings,String(o.description||'').toLocaleLowerCase('de-CH')];
+      for(const text of placeText){
+        foundPlace=PLACES.filter(p=>p&&p[0]&&text.includes(String(p[0]).toLocaleLowerCase('de-CH')))
+          .sort((a,b)=>String(b[0]).length-String(a[0]).length)[0]||null;
+        if(foundPlace) break;
+      }
+    }
+    if(foundPlace){
+      st.reg.mode='umkreis'; st.reg.center=pkey(foundPlace); st.reg.radius=10;
+      st.reg.cantons=[]; st.reg.add=[]; st.reg.rem=[];
+      invalidate(); renderRegion(); fitSel();
+    }
+    if(detected && BR[detected[0]]){
+      const item=INDUSTRIES.find(x=>x.id===detected[0]);
+      const town=foundPlace?foundPlace[0]:(st.reg.mode==='umkreis'&&BYKEY.get(st.reg.center)?BYKEY.get(st.reg.center)[0]:'Horgen');
+      st.term=(item?item.name:'Anfrage')+' '+town;
+      $('term').value=st.term;
+    }
+    save(); renderIndustryUI(); renderAna(); renderKw(); update();
   }
   $('c-go').addEventListener('click',async()=>{
     const url=normUrl($('a-url').value);
