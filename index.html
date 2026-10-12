@@ -1677,28 +1677,25 @@ svg.scene{min-width:640px}
     const title=String(o.title||'').toLocaleLowerCase('de-CH');
     const headings=(o.headings||[]).map(x=>String(x||'').toLocaleLowerCase('de-CH'));
     const metadata=[title,String(o.description||'').toLocaleLowerCase('de-CH'),...headings].join(' ');
-    // Classify from all available page evidence, preferring specific business types
-    // over broad salon/beauty signals. Brand names can be strong evidence too.
-    const branchRules=[
-      ['motorbootsfahrschule',/motorboots?fahr|motorbootsschule|boots?fahrschule|bootsschule|motorboot|bootsausbildung|schiffsfuehrer|schiffsführerschein|bootsschein|motorbootkurs/],
-      ['kosmetikstudio',/kosmetikstudio|kosmetik[- ]?institut|kosmetikerin|kosmetikbehandlung|gesichtsbehandlung|beauty empire|hautpflege|skin care|facial treatment|ästhetikstudio|aesthetic studio/],
-      ['yoga-studio',/\bpilates\b|\breformer\b|classical pilates|pilates studio|tower class/],
-      ['resto',/\brestaurant\b|gastronomie|pizzeria|café|cafe|take.away|tischreserv|speisekarte|mittagstisch/],
-      ['craft',/sanitär|sanitaer|heizung|elektroinstall|maler|gipser|schreinerei|zimmerei|dachdecker|gartenbau|bauunternehmen|renovation|handwerk|renovero/],
-      ['dental',/zahnarzt|zahnmedizin|dentalhygiene|zahnklinik/],
-      ['physio',/physiotherapie|physiozentrum|ergotherapie/],
-      ['hotel',/\bhotel\b|pension|übernachtung|uebernachtung/],
-      ['beauty',/\bcoiffeur\b|friseur|barbershop|nagelstudio|haarentfernung|diodenlaser|massage/]
-    ];
-    const detected=branchRules.find(([id,re])=>re.test(metadata));
-    const detectedId=detected?canonicalBranchId(detected[0]):'';
+    // Use the server-side catalog classifier; no independent frontend regex list.
+    const classification=result.classification||{};
+    const catalogItem=INDUSTRIES.find(x=>x.id===classification.id);
+    const detectedId=catalogItem?canonicalBranchId(catalogItem.id):'';
     const branchConfirmed=!!(detectedId && BR[detectedId] && INDUSTRIES.some(x=>x.id===detectedId));
-    if(st.ana&&st.ana.audit) st.ana.audit.classificationStatus=branchConfirmed?'confirmed':'unknown';
-    if(branchConfirmed) setBranch(detectedId);
-    else {
-      // Never silently present the previous default (often Coiffeur) as a detected result.
+    if(st.ana&&st.ana.audit){
+      st.ana.audit.classificationStatus=branchConfirmed?'suggested':'needs-selection';
+      st.ana.audit.classificationConfidence=Number(classification.confidence)||0;
+      st.ana.audit.classificationMethod=classification.method||'fallback';
+      st.ana.audit.classificationEvidence=Array.isArray(classification.evidence)?classification.evidence:[];
+      st.ana.audit.classificationAlternatives=Array.isArray(classification.alternatives)?classification.alternatives:[];
+    }
+    if(branchConfirmed){
+      setBranch(detectedId);
+      if(st.ana&&st.ana.audit) st.ana.audit.classificationStatus=(Number(classification.confidence)>=0.65)?'confirmed':'suggested';
+    } else {
+      // Do not silently reuse the previous branch or its search term.
       st.term=''; $('term').value='';
-      st.ana.hints=[...obs,'Branche nicht eindeutig aus den Website-Angaben erkannt. Bitte manuell auswählen.'];
+      st.ana.hints=[...obs,'Bitte die passende Branche im Branchenkatalog auswählen.'];
     }
     // Resolve place names conservatively; the gazetteer contains the short place name Loc.
     let foundPlace=null;
@@ -1748,7 +1745,7 @@ svg.scene{min-width:640px}
     st.ana=Object.assign({},st.ana,{url}); save();
     const btn=$('c-go'); btn.disabled=true; cstat('Website wird geprüft …');
     try{
-      const response=await fetch('/.netlify/functions/analyze-website',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
+      const response=await fetch('/.netlify/functions/analyze-website',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url,industries:INDUSTRIES.map(({id,name,category})=>({id,name,category}))})});
       const data=await response.json().catch(()=>({}));
       if(!response.ok||!data.ok) throw new Error(data.error||'Website-Check fehlgeschlagen.');
       showWebsiteResult(data,'auto');
