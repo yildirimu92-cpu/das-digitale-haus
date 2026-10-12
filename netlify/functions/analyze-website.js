@@ -213,11 +213,39 @@ exports.handler = async (event) => {
         if (logoUrl) break;
       }
     }
+    // Resolve business location from structured data; never use the current map center as evidence.
+    function findLocation(value, depth=0) {
+      if (!value || depth > 8) return '';
+      if (Array.isArray(value)) { for (const item of value) { const found=findLocation(item,depth+1); if(found)return found; } return ''; }
+      if (typeof value !== 'object') return '';
+      const address=value.address;
+      if (address && typeof address==='object') {
+        const locality=String(address.addressLocality||'').trim();
+        if(locality)return locality;
+        const formatted=[address.streetAddress,address.postalCode,address.addressRegion,address.addressCountry].filter(Boolean).join(', ');
+        if(formatted)return formatted;
+      }
+      if(typeof address==='string'&&address.trim())return address.trim();
+      for(const key of ['@graph','mainEntity','mainEntityOfPage','itemListElement','publisher','provider','location']) {
+        const found=findLocation(value[key],depth+1);if(found)return found;
+      }
+      return '';
+    }
+    let businessLocation='';
+    for(const m of html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+      try { businessLocation=findLocation(JSON.parse(m[1].trim())); } catch {}
+      if(businessLocation)break;
+    }
+    if(!businessLocation) {
+      const addressText=[...all(html, /<address\b[^>]*>([\s\S]*?)<\/address\s*>/gi, 8)]
+        .find(x=>x.length<180 && /[A-ZÄÖÜ][a-zäöü]+/.test(x));
+      if(addressText)businessLocation=addressText;
+    }
     const industryCatalog = Array.isArray(body.industries) ? body.industries : [];
     const classificationText = [title, description, ...headings, text.slice(0, 10000)].filter(Boolean).join('\n');
     const classification = await classifyWebsite({ text: classificationText, industries: industryCatalog });
-    const observations = { title, description, headings:headings.slice(0,12), hasPhone, hasEmail, hasContact, forms, hasBooking, hasSocial, logoUrl, textExcerpt:text.slice(0,5000) };
-    return { statusCode:200, headers, body:JSON.stringify({ok:true,url:u.href,firma:'',branche:'andere',dienstleistungen:services.slice(0,20),stichworte:keywords.slice(0,20),orte:[],logoUrl,classification,beobachtungen:hints,observations,source:'automatischer HTML-Check',checkedAt:new Date().toISOString()}) };
+    const observations = { title, description, headings:headings.slice(0,12), hasPhone, hasEmail, hasContact, forms, hasBooking, hasSocial, logoUrl, businessLocation, textExcerpt:text.slice(0,5000) };
+    return { statusCode:200, headers, body:JSON.stringify({ok:true,url:u.href,firma:'',branche:'andere',dienstleistungen:services.slice(0,20),stichworte:keywords.slice(0,20),orte:businessLocation?[businessLocation]:[],businessLocation,logoUrl,classification,beobachtungen:hints,observations,source:'automatischer HTML-Check',checkedAt:new Date().toISOString()}) };
   } catch (e) {
     return { statusCode:400, headers, body:JSON.stringify({error:e.name==='AbortError'?'Die Website antwortet zu langsam. Bitte später erneut versuchen.':(e.message||'Website-Check fehlgeschlagen.')}) };
   }
