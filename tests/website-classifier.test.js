@@ -3,6 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { fallbackClassification } = require('../netlify/functions/lib/website-classifier');
+const { findBusinessLocation } = require('../netlify/functions/lib/business-location');
 
 const catalog = [
   { id: 'beauty', name: 'Coiffeur', category: 'Medizin, Ästhetik & Wellness' },
@@ -68,34 +69,24 @@ test('restaurant in Zug is classified without inheriting an unrelated publisher 
       }
     </script>
   `;
-  // The website extractor must prefer a business entity over publisher metadata.
-  const match = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
-  const json = JSON.parse(match[1]);
-  function isBusinessEntity(value) {
-    const types = [].concat(value && value['@type'] || []).map(x => String(x).toLowerCase());
-    return types.some(t => /localbusiness|restaurant|foodestablishment|store|professionalservice|medicalbusiness|healthandbeautybusiness|automotivebusiness|educationalorganization|sportsactivitylocation|touristinformationcenter/.test(t));
-  }
-  function locationFromEntity(value) {
-    const address = value && value.address;
-    if (address && typeof address === 'object') return String(address.addressLocality || '').trim();
-    return typeof address === 'string' ? address.trim() : '';
-  }
-  function findBusinessLocation(value, depth=0) {
-    if (!value || depth > 10) return '';
-    if (Array.isArray(value)) {
-      for (const item of value) { const found=findBusinessLocation(item,depth+1); if(found)return found; }
-      return '';
-    }
-    if (typeof value !== 'object') return '';
-    if (isBusinessEntity(value)) {
-      const own = locationFromEntity(value);
-      if (own) return own;
-    }
-    for (const key of ['@graph','mainEntity','mainEntityOfPage','itemListElement','location','hasMap']) {
-      const found=findBusinessLocation(value[key],depth+1);
-      if(found)return found;
-    }
-    return '';
-  }
   assert.equal(findBusinessLocation(json), 'Zug');
+});
+
+
+test('business location extraction ignores publisher-only addresses', () => {
+  const json = {
+    '@type': 'WebPage',
+    publisher: { '@type': 'Organization', address: { addressLocality: 'Horgen' } },
+  };
+  assert.equal(findBusinessLocation(json), '');
+});
+
+test('business location extraction supports nested business entities and formatted addresses', () => {
+  const json = {
+    mainEntity: {
+      '@type': 'LocalBusiness',
+      address: { streetAddress: 'Bahnhofstrasse 1', postalCode: '6300', addressRegion: 'ZG' },
+    },
+  };
+  assert.equal(findBusinessLocation(json), 'Bahnhofstrasse 1, 6300, ZG');
 });
