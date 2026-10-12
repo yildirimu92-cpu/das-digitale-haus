@@ -278,6 +278,56 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
     </div>
   </header>
 
+<style>
+/* Responsive polish v1 */
+*,*::before,*::after{box-sizing:border-box}
+img,svg,canvas{max-width:100%}
+.wrap{width:100%;min-width:0}
+.panel,.board,.two,.field,.sess,.sessrow,.inputs,.mapgrid,.side,.cmpwrap{min-width:0}
+.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.panel{overflow-wrap:anywhere}
+.panel strong,.panel h2,.sub,.note{overflow-wrap:anywhere}
+.scene-wrap{max-width:100%;overscroll-behavior-x:contain}
+svg.scene{width:100%;height:auto}
+.brand{max-width:100%;height:auto}
+input.t,select.t,textarea,button{max-width:100%}
+.cmpwrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.cmp{min-width:540px}
+.pr{left:-20000px;max-width:none}
+.pr .pg{width:794px;max-width:none}
+@media(max-width:760px){
+.wrap{padding:14px 12px 32px;gap:16px}
+header{align-items:flex-start}
+h1{font-size:clamp(28px,8vw,38px)}
+h2{font-size:23px}
+.two{grid-template-columns:minmax(0,1fr);gap:12px}
+.panel{padding:14px}
+.inputs,.sgrid{grid-template-columns:minmax(0,1fr)!important}
+.sessrow{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.field{width:100%;max-width:none!important}
+input.t,select.t{width:100%;min-height:42px}
+.chips{gap:7px}
+.chip{max-width:100%;white-space:normal;text-align:left}
+.board{padding:8px}
+.boardhead{padding:6px}
+.scene-wrap{margin-inline:-2px}
+svg.scene{min-width:600px;width:600px;max-width:none}
+.mapgrid{grid-template-columns:minmax(0,1fr);padding:0}
+.mapbox{width:100%}
+.mapctl{position:static;justify-content:flex-end;padding:8px}
+.cmp input.vin{width:90px}
+#kundenstart .two{grid-template-columns:minmax(0,1fr)}
+#kundenstart .panel{width:100%}
+}
+@media(min-width:761px) and (max-width:1024px){
+.wrap{padding:18px 18px 38px;gap:18px}
+.two{gap:14px}
+.panel{padding:16px}
+.scene-wrap{overflow-x:auto}
+svg.scene{min-width:640px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style>
   <!-- ========== KUNDENSTART / LOCALSEARCH ERKLÄRUNG ========== -->
   <section class="panel" id="kundenstart" aria-labelledby="kundenstart-titel" style="gap:16px">
     <div>
@@ -481,8 +531,8 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
       </g>
       <g class="el" data-id="rev" tabindex="0" role="button" aria-label="Fenster Bewertungen">
         <rect class="s fp" x="698" y="322" width="96" height="66" rx="4"/>
-        <text class="h" x="746" y="352" font-size="22" text-anchor="middle">★★★★★</text>
-        <text class="h" x="746" y="377" font-size="16" text-anchor="middle">Bewertungen</text>
+        <text class="h" x="746" y="350" font-size="15" text-anchor="middle" textLength="66" lengthAdjust="spacingAndGlyphs">★★★★★</text>
+        <text class="h" x="746" y="374" font-size="13" text-anchor="middle">Bewertungen</text>
       </g>
       <g class="el" data-id="soc" tabindex="0" role="button" aria-label="Fenster Social Media">
         <rect class="s fp" x="826" y="322" width="96" height="66" rx="4"/>
