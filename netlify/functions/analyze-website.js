@@ -98,40 +98,57 @@ exports.handler = async (event) => {
     hints.push(hasSocial ? 'Mindestens ein Social-Media-Link erkannt.' : 'Keine bekannten Social-Media-Links erkannt.');
     // Extract useful business categories and search terms from visible page content.
     // This is deterministic rule-based extraction, not an AI-generated interpretation.
-    // Build a branch-neutral, noise-filtered vocabulary from the site's own content.
-    // Remove navigation/footer/cookie/technical UI before extracting business terms.
+    // Branch-neutral cleanup: prefer concise, business-relevant phrases from metadata
+    // and headings; avoid technical artefacts and generic navigation across all industries.
     const contentHtml = html
       .replace(/<(nav|footer|script|style|noscript|svg|iframe|form)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, ' ')
-      .replace(/<(?:div|section|aside)\b[^>]*(?:id|class)=["'][^"']*(?:cookie|consent|breadcrumb|breadcrumbs|navigation|nav-menu|footer|menu|social-icons|share-buttons|tracking|widget|storefront-builder)[^"']*["'][^>]*>[\s\S]*?<\/(?:div|section|aside)\s*>/gi, ' ');
+      .replace(/<(?:div|section|aside)\b[^>]*(?:id|class)=["'][^"']*(?:cookie|consent|breadcrumb|navigation|nav-menu|footer|menu|social-icons|share-buttons|tracking|widget|storefront-builder)[^"']*["'][^>]*>[\s\S]*?<\/(?:div|section|aside)\s*>/gi, ' ');
     const contentText = cleanHtml(contentHtml).slice(0, 18000);
     const sourceText = [title, description, ...headings, contentText].filter(Boolean).join(' ').replace(/\s+/g,' ').trim();
     const lower = sourceText.toLocaleLowerCase('de-CH');
-    const stopWords = new Set(('und oder der die das ein eine einer eines einem den dem des im in am an auf aus bei mit für von vom zum zur über unter nach vor als ist sind wird werden wir sie ihr ihre uns ich the and or of a an to for from with on at by is are be our your you we this that these those studio near schweiz schweizer schweizerisch angebot kontakt impressum datenschutz cookies home startseite read more learn more find your way questions before you start location contact hours title true false type com artifact wix wixsite wixstores storefront builder powered by all rights reserved privacy policy terms conditions').split(/\s+/));
-    const normalizeTerm = v => cleanHtml(v).replace(/[|•·]/g,' ').replace(/\s+/g,' ').trim();
-    const isUsefulPhrase = phrase => phrase.length >= 3 && phrase.length <= 65 &&
-      !/^(home|home page|menu|navigation|kontakt|contact|impressum|datenschutz|privacy policy|terms|location|title|true|false|type|com|artifact)$/i.test(phrase) &&
-      !/\b(wixstores|storefront-builder|cookie|consent|javascript|wordpress|shopify|tracking|analytics|powered by)\b/i.test(phrase) &&
-      phrase.split(/\s+/).length <= 9;
+    const stopWords = new Set(('und oder der die das ein eine einer eines einem den dem des im in am an auf aus bei mit für von vom zum zur über unter nach vor als ist sind wird werden wir sie ihr ihre uns ich the and or of a an to for from with on at by is are be our your you we this that these those studio near schweiz schweizer schweizerisch angebot kontakt impressum datenschutz cookies home startseite read more learn more find your way questions before you start location contact hours title true false type com artifact wix wixsite wixstores storefront builder powered by all rights reserved privacy policy terms conditions book now').split(/\s+/));
+    const technicalRe = /\b(wixpress|wixstores|storefront|builder|artifactid|fingerprint|groupid|javascript|wordpress|shopify|cookie|consent|analytics|tracking|true|false|doctype|html|css|svg|json|title|type|com)\b/i;
+    const genericRe = /^(home|home page|menu|navigation|kontakt|contact|contact us|impressum|datenschutz|privacy policy|terms|location|contact & hours|hours|faq|questions before you start|services|our services|welcome|book now|learn more|read more|find your way to begin|title|true|false|type|com|artifact)$/i;
+    const normalizeTerm = v => cleanHtml(v).replace(/[|•·]/g,' ').replace(/\s+/g,' ').trim().replace(/[.!?]+$/,'');
+    const isUsefulPhrase = phrase => {
+      const p=normalizeTerm(phrase);
+      if(p.length<3||p.length>65||genericRe.test(p)||technicalRe.test(p)) return false;
+      const tokens=p.split(/\s+/);
+      if(tokens.length>7) return false;
+      const useful=tokens.filter(w=>!stopWords.has(w.toLocaleLowerCase('de-CH'))&&!/^\d+$/.test(w));
+      return useful.length>=1;
+    };
     const keywordCandidates = [];
-    for (const phrase of [title, ...headings]) {
-      const term = normalizeTerm(phrase);
-      if (isUsefulPhrase(term) && !keywordCandidates.some(x=>x.toLocaleLowerCase('de-CH')===term.toLocaleLowerCase('de-CH'))) keywordCandidates.push(term);
+    const addKeyword = value => {
+      const term=normalizeTerm(value);
+      if(!isUsefulPhrase(term)) return;
+      const key=term.toLocaleLowerCase('de-CH');
+      if(!keywordCandidates.some(x=>x.toLocaleLowerCase('de-CH')===key)) keywordCandidates.push(term);
+    };
+    // Titles and descriptions are split into meaningful chunks rather than copied wholesale.
+    for(const phrase of [title,description,...headings]){
+      const cleaned=normalizeTerm(phrase);
+      if(!cleaned) continue;
+      if(isUsefulPhrase(cleaned)) addKeyword(cleaned);
+      cleaned.split(/[|–—:;.!?•·]+/).map(x=>x.trim()).filter(Boolean).forEach(addKeyword);
     }
     const wordCounts = new Map();
     const words = lower.match(/[\p{L}][\p{L}-]{2,}/gu) || [];
     for (const rawWord of words) {
-      const word = rawWord.replace(/^-+|-+$/g,'');
-      if (stopWords.has(word) || word.length < 4 || /^\d+$/.test(word)) continue;
-      if (/\b(wix|storefront|builder|artifact|cookie|consent|javascript|wordpress|shopify|title|false|true|location|contact|hours)\b/i.test(word)) continue;
-      wordCounts.set(word, (wordCounts.get(word)||0)+1);
+      const word=rawWord.toLocaleLowerCase('de-CH').replace(/^-+|-+$/g,'');
+      if(word.length<4||stopWords.has(word)||technicalRe.test(word)) continue;
+      wordCounts.set(word,(wordCounts.get(word)||0)+1);
     }
-    const frequent = [...wordCounts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'de-CH')).slice(0,16).map(([word])=>word);
-    for (const word of frequent) {
-      if (!keywordCandidates.some(x=>x.toLocaleLowerCase('de-CH')===word)) keywordCandidates.push(word);
+    for(const [word] of [...wordCounts.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'de-CH')).slice(0,10)) addKeyword(word);
+    // Service candidates are concise headings with evidence of an offering, not generic slogans.
+    const serviceCue=/\b(service|services|angebot|angebote|behandlung|behandlungen|beratung|kurs|kurse|training|lektion|lektionen|session|sessions|package|paket|intro|reformer|tower|pilates|massage|therapie|reparatur|installation|wartung|reinigung|planung|coaching|termin|buchung|catering|menu|menü|zimmer|übernachtung|friseur|kosmetik|facial|treatment|class|classes|group|private|shop|produkte|product|produkt|lieferung|transport|umzug|steuer|treuhand|anwalt|zahnarzt|physio|yoga|fitness|personal training)\b/i;
+    const services=[];
+    for(const heading of headings){
+      const term=normalizeTerm(heading);
+      if(!isUsefulPhrase(term)||genericRe.test(term)||!serviceCue.test(term)) continue;
+      if(!services.some(x=>x.toLocaleLowerCase('de-CH')===term.toLocaleLowerCase('de-CH'))) services.push(term);
+      if(services.length>=12) break;
     }
-    // Headings become service candidates only when they resemble a concise, useful service.
-    const genericHeading = /^(home|about|about us|contact|contact us|location|hours|faq|questions|menu|services|our services|welcome|impressum|datenschutz|privacy policy|terms|book now|learn more|find your way|title|true|false|type|com|artifact)$/i;
-    const services = headings.map(normalizeTerm).filter(x=>isUsefulPhrase(x)&&!genericHeading.test(x)).slice(0,12);
     const keywords = keywordCandidates.slice(0,16);
     // Detect a public business logo from structured data or image markup.
     function absolutePublicImage(raw) {
