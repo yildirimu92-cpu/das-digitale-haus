@@ -130,8 +130,51 @@ exports.handler = async (event) => {
     const extraTerms = ['coiffeur','friseur','kosmetik','massage','restaurant','café','cafe','sanitär','heizung','maler','gipser','schreinerei','dachdecker','gartenbau','treuhand','zahnarzt','physiotherapie','garage','autowerkstatt','hotel','anwalt','architekt','reinigung','umzug'];
     for (const term of extraTerms) if (lower.includes(term) && !keywords.includes(term)) keywords.push(term);
     const inferredIndustry = rules.find(rule => rule.terms.some(term => lower.includes(term)));
-    const observations = { title, description, headings:headings.slice(0,12), hasPhone, hasEmail, hasContact, forms, hasBooking, hasSocial, textExcerpt:text.slice(0,5000) };
-    return { statusCode:200, headers, body:JSON.stringify({ok:true,url:u.href,firma:'',branche:'andere',dienstleistungen:services.slice(0,20),stichworte:keywords.slice(0,20),orte:[],beobachtungen:hints,observations,source:'automatischer HTML-Check',checkedAt:new Date().toISOString()}) };
+    // Detect a public business logo from structured data or image markup.
+    function absolutePublicImage(raw) {
+      try {
+        const x = new URL(String(raw || '').replace(/&amp;/g, '&'), u);
+        if (!['http:', 'https:'].includes(x.protocol) || x.username || x.password) return '';
+        return x.href;
+      } catch { return ''; }
+    }
+    let logoUrl = '';
+    // Prefer Organization/LocalBusiness JSON-LD logo values.
+    for (const m of html.matchAll(/<script\\b[^>]*type=["']application\\/ld\\+json["'][^>]*>([\\s\\S]*?)<\\/script>/gi)) {
+      try {
+        const parsed = JSON.parse(m[1].trim());
+        const nodes = Array.isArray(parsed) ? parsed : [parsed];
+        const stack = [...nodes];
+        while (stack.length && !logoUrl) {
+          const node = stack.shift();
+          if (!node || typeof node !== 'object') continue;
+          if (node.logo) {
+            const candidate = typeof node.logo === 'string' ? node.logo : (node.logo.url || node.logo.contentUrl || '');
+            logoUrl = absolutePublicImage(candidate);
+          }
+          if (Array.isArray(node['@graph'])) stack.push(...node['@graph']);
+        }
+      } catch {}
+      if (logoUrl) break;
+    }
+    // Fallback to image tags whose alt, class, id or src suggests a logo.
+    if (!logoUrl) {
+      for (const m of html.matchAll(/<img\\b[^>]*>/gi)) {
+        const tag = m[0];
+        if (!/(?:alt|class|id|src)=["'][^"']*logo[^"']*["']/i.test(tag)) continue;
+        const src = (tag.match(/\\bsrc=["']([^"']+)["']/i) || [])[1];
+        logoUrl = absolutePublicImage(src);
+        if (logoUrl) break;
+      }
+    }
+    // Last resort: social preview image, clearly only a fallback.
+    if (!logoUrl) {
+      const og = first(html, /<meta\\b[^>]*property=["']og:image["'][^>]*content=["']([^"']*)["'][^>]*>/i) ||
+        first(html, /<meta\\b[^>]*content=["']([^"']*)["'][^>]*property=["']og:image["'][^>]*>/i);
+      logoUrl = absolutePublicImage(og);
+    }
+    const observations = { title, description, headings:headings.slice(0,12), hasPhone, hasEmail, hasContact, forms, hasBooking, hasSocial, logoUrl, textExcerpt:text.slice(0,5000) };
+    return { statusCode:200, headers, body:JSON.stringify({ok:true,url:u.href,firma:'',branche:'andere',dienstleistungen:services.slice(0,20),stichworte:keywords.slice(0,20),orte:[],logoUrl,beobachtungen:hints,observations,source:'automatischer HTML-Check',checkedAt:new Date().toISOString()}) };
   } catch (e) {
     return { statusCode:400, headers, body:JSON.stringify({error:e.name==='AbortError'?'Die Website antwortet zu langsam. Bitte später erneut versuchen.':(e.message||'Website-Check fehlgeschlagen.')}) };
   }
