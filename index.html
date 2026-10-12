@@ -276,6 +276,15 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
       <h1><span>Das digitale Haus</span></h1>
       <p class="sub">Wie Kunden dich finden, zu dir kommen und bei dir buchen. Tippe im Bild auf ein Element, um es im gewählten Paket ein- oder auszuschalten.</p>
     </div>
+    <div class="accountbar" style="flex:0 1 480px;min-width:min(100%,300px);margin-left:auto;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card)">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px"><strong style="font-size:13px">Konto & Cloud-Speicherung</strong><span class="note" style="margin:0">Supabase</span></div>
+<div id="dh-auth" style="display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin-top:10px">
+      <label class="field" style="flex:1 1 220px"><span class="label">E-Mail für Cloud-Speicherung</span><input class="t" id="dh-email" type="email" autocomplete="username" placeholder="name@firma.ch"></label>
+      <label class="field" style="flex:1 1 180px"><span class="label">Passwort</span><input class="t" id="dh-password" type="password" autocomplete="current-password" placeholder="Mindestens 8 Zeichen"></label>
+      <button class="btn primary" id="dh-login" type="button">Anmelden</button><button class="btn" id="dh-register" type="button">Konto erstellen</button><button class="btn" id="dh-logout" type="button" hidden>Abmelden</button>
+    </div>
+    <p class="sstat" id="s-stat" aria-live="polite">Supabase wird verbunden …</p>
+    </div>
   </header>
 
 <style>
@@ -395,12 +404,6 @@ svg.scene{min-width:640px}
         <button class="btn" id="reset" type="button">Neu</button>
       </div>
     </div>
-    <div id="dh-auth" style="display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin-top:10px">
-      <label class="field" style="flex:1 1 220px"><span class="label">E-Mail für Cloud-Speicherung</span><input class="t" id="dh-email" type="email" autocomplete="username" placeholder="name@firma.ch"></label>
-      <label class="field" style="flex:1 1 180px"><span class="label">Passwort</span><input class="t" id="dh-password" type="password" autocomplete="current-password" placeholder="Mindestens 8 Zeichen"></label>
-      <button class="btn primary" id="dh-login" type="button">Anmelden</button><button class="btn" id="dh-register" type="button">Konto erstellen</button><button class="btn" id="dh-logout" type="button" hidden>Abmelden</button>
-    </div>
-    <p class="sstat" id="s-stat" aria-live="polite">Supabase wird verbunden …</p>
     <details class="notes" id="s-notes-d">
       <summary>Notizen zum Gespräch</summary>
       <textarea class="t" id="s-notes" rows="4" placeholder="Einwände, nächste Schritte, Termin für Nachfassen …"></textarea>
