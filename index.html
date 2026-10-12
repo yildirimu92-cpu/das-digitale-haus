@@ -1851,7 +1851,7 @@ svg.scene{min-width:640px}
       const response=await fetch(url,{mode:'cors',credentials:'omit'});
       if(!response.ok) return '';
       const blob=await response.blob();
-      if(!/^image\\/(png|jpeg|webp|gif|svg\\+xml)$/i.test(blob.type)) return '';
+      if(!/^image\/(png|jpeg|webp|gif|svg\+xml)$/i.test(blob.type)) return '';
       return await new Promise(resolve=>{
         const reader=new FileReader();
         reader.onload=()=>resolve(typeof reader.result==='string'?reader.result:'');
