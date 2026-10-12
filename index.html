@@ -1302,7 +1302,7 @@ svg.scene{min-width:640px}
         <span class="note">${k===cur?'✓ Gewählt':'Antippen zum Wählen'}</span>
       </div>`; }).join('');
     const c=eff(), P=price(c);
-    $('t-m').textContent=chf(P.m); $('t-o').textContent=chf(P.once); $('t-y').textContent=chf(P.m*12+P.once);
+    $('t-m').textContent=chf(P.m); $('t-o').textContent=chf(P.once); $('t-y').textContent=chf(P.m*12+(P.yr||0)+P.once);
     $('t-tl').textContent=`Total ${fmt(P.lz,0)} Monate`; $('t-t').textContent=chf(P.total);
     $('t-warn').textContent = P.miss.length ? 'Noch offen: '+P.miss.join(', ')+' (in den Einstellungen eintragen).' : '';
     const L=lineItems(c);
@@ -1823,10 +1823,12 @@ ${text.slice(0,40000)}`;
       try{ const H=await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js','html2canvas'); blob=await buildPdfVisual(J,H); }
       catch(err){ blob=buildPdf(J); } // Rückfallebene: schlichtes Text-PDF
       const name=`Zusammenfassung ${(st.cur.name||'Kunde').replace(/[\\/:*?"<>|]+/g,' ').trim()} ${st.cur.date||''}`.trim()+'.pdf';
-      const dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null;
-      if(!dl){ stEl.textContent='Speichern als Datei geht hier nicht. Nutze «Text kopieren».'; stEl.className='sstat bad'; return; }
-      await dl.save({filename:name, data:blob});
-      stEl.textContent='PDF gespeichert.'; stEl.className='sstat ok';
+      /* Browser-native download works in the hosted Netlify app too. */
+      const url=URL.createObjectURL(blob), a=document.createElement('a');
+      a.href=url; a.download=name; a.rel='noopener'; a.style.display='none';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),60000);
+      stEl.textContent='PDF wurde zum Speichern bereitgestellt.'; stEl.className='sstat ok';
     }catch(e){
       const c=e&&e.code;
       stEl.textContent = c==='declined' ? 'Speichern abgebrochen.' : c==='rate_limited' ? 'Bitte kurz warten und nochmals tippen.' : 'PDF konnte nicht erstellt werden. Nutze «Text kopieren».';
