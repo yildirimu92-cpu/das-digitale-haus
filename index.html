@@ -1566,14 +1566,14 @@ svg.scene{min-width:640px}
     if(text.length<80){ stEl.textContent='Bitte zuerst den Website-Text einfügen (mindestens 80 Zeichen).'; stEl.className='sstat bad'; $('a-text').focus(); return; }
     const btn=$('a-go'); btn.disabled=true; stEl.className='sstat'; stEl.textContent='Website-Text wird lokal ausgewertet …';
     try{
-      const titleMatch=text.match(/(?:^|\\n)\\s*(?:titel|title|seitentitel)\\s*:\\s*(.+)/i);
-      const hasPhone=/(?:tel:|\\+41\\s?\\(?\\d|0\\d{2}[\\s./-]?\\d{3})/i.test(text);
-      const hasEmail=/[\\w.+-]+@[\\w.-]+\\.[a-z]{2,}/i.test(text);
+      const titleMatch=text.match(/(?:^|\n)\s*(?:titel|title|seitentitel)\s*:\s*(.+)/i);
+      const hasPhone=/(?:tel:|\+41\s?\(?\d|0\d{2}[\s./-]?\d{3})/i.test(text);
+      const hasEmail=/[\w.+-]+@[\w.-]+\.[a-z]{2,}/i.test(text);
       const hasBooking=/termin buchen|online buchen|reservation|reservieren|appointment|booking/i.test(text);
       const hasContact=/kontakt|contact|kontaktformular|anfrage/i.test(text);
       const hasSocial=/instagram|facebook|linkedin|tiktok|youtube/i.test(text);
       const services=['coiffeur','friseur','kosmetik','massage','restaurant','café','cafe','sanitär','heizung','maler','gipser','schreinerei','dachdecker','gartenbau','treuhand','zahnarzt','physiotherapie','garage','autowerkstatt','hotel','anwalt','architekt','reinigung','umzug'];
-      const words=services.filter(k=>new RegExp(k.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&'),'i').test(text));
+      const words=services.filter(k=>new RegExp(k.replace(/[.*+?^${}()|[\]\]/g,'\$&'),'i').test(text));
       const hints=[
         titleMatch?'Seitentitel im eingefügten Text erkannt.':'Seitentitel nicht eindeutig erkannt – bitte manuell prüfen.',
         hasPhone?'Telefonnummer oder Telefon-Link im Text erkannt.':'Keine Telefonnummer sicher erkannt.',
