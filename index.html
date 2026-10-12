@@ -1678,7 +1678,7 @@ svg.scene{min-width:640px}
   function uniqueTerms(values, limit=20){
     const seen=new Set(), out=[];
     (Array.isArray(values)?values:[]).forEach(value=>{
-      const label=String(value??'').replace(/\\s+/g,' ').trim();
+      const label=String(value??'').replace(/\s+/g,' ').trim();
       if(!label) return;
       const key=label.normalize('NFKC').toLocaleLowerCase('de-CH');
       if(seen.has(key)) return;
@@ -1757,7 +1757,7 @@ svg.scene{min-width:640px}
       for(const p of PLACES){
         if(!p||!p[0])continue;
         const full=String(p[0]).trim();
-        const base=full.replace(/\\s+(?:ZH|BL|BE|LU|SG|AG|SO|TG|GR|VS|VD|GE|FR|NE|JU|TI|SH|SZ|ZG|NW|OW|GL|AR|AI|UR)\\s*$/i,'').trim();
+        const base=full.replace(/\s+(?:ZH|BL|BE|LU|SG|AG|SO|TG|GR|VS|VD|GE|FR|NE|JU|TI|SH|SZ|ZG|NW|OW|GL|AR|AI|UR)\\s*$/i,'').trim();
         if(locationHint&&(hasToken(locationHint,full)||hasToken(locationHint,base))){candidates.push({p,score:1000+full.length});continue;}
         if(hasToken(evidence,full))candidates.push({p,score:100+full.length});
         else if(base.length>=4&&hasToken(evidence,base))candidates.push({p,score:50+base.length});
@@ -1765,7 +1765,7 @@ svg.scene{min-width:640px}
       candidates.sort((a,b)=>b.score-a.score||String(b.p[0]).length-String(a.p[0]).length);
       foundPlace=candidates.length?candidates[0].p:null;
     }
-    const extractedTown=foundPlace?String(foundPlace[0]).replace(/\\s+(?:ZH|BL|BE|LU|SG|AG|SO|TG|GR|VS|VD|GE|FR|NE|JU|TI|SH|SZ|ZG|NW|OW|GL|AR|AI|UR)\\s*$/i,'').trim():locationHint;
+    const extractedTown=foundPlace?String(foundPlace[0]).replace(/\s+(?:ZH|BL|BE|LU|SG|AG|SO|TG|GR|VS|VD|GE|FR|NE|JU|TI|SH|SZ|ZG|NW|OW|GL|AR|AI|UR)\\s*$/i,'').trim():locationHint;
     if(foundPlace){st.reg.mode='umkreis';st.reg.center=pkey(foundPlace);st.reg.radius=10;st.reg.cantons=[];st.reg.add=[];st.reg.rem=[];invalidate();renderRegion();fitSel();}
         if(detectedId && BR[detectedId]){
       const item=INDUSTRIES.find(x=>x.id===detectedId);
