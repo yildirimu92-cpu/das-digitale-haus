@@ -444,7 +444,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
         <button class="chip" type="button" data-p="0">Basis</button>
         <button class="chip" type="button" data-p="1">Wachstum</button>
         <button class="chip" type="button" data-p="2">Marktführer</button>
-        <button class="chip" type="button" data-p="3">Individuell</button>
+        <button class="chip" type="button" data-p="3">Individuell zusammengestellt</button>
       </div>
       <div class="package-guide" id="package-guide">
         <article><strong>Basis</strong><p>Digitales Fundament: Online-Präsenz und Website. Geeignet, wenn zuerst die Grundlagen stimmen müssen.</p></article>
@@ -518,7 +518,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
         <g id="flag">
           <path class="s" d="M810 188 L810 128"/>
           <path class="s" d="M810 130 H898 L884 146 L898 162 H810" style="fill:var(--fire)"/>
-          <text x="814" y="152" font-size="15" font-weight="700" style="font-family:var(--hand);fill:#fff">Platzhirsch</text>
+          <text x="814" y="152" font-size="15" font-weight="700" style="font-family:var(--hand);fill:#fff">Marktführer</text>
         </g>
         <rect class="s fc" x="680" y="300" width="260" height="200"/>
       </g>
@@ -550,7 +550,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
       </g>
     </svg>
     </div>
-    <p class="hint">Bild zeigt: <b class="pkname">Feurig</b> · Antippen schaltet den passenden Baustein im Paket ein oder aus.</p>
+    <p class="hint">Bild zeigt: <b class="pkname">Wachstum</b> · Antippen schaltet den passenden Baustein im Paket ein oder aus.</p>
   </div>
 
   <!-- ========== COCKPIT ========== -->
@@ -777,7 +777,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
           <summary>Berechnungsdetails und Paketvergleich</summary>
           <div class="funnel" aria-live="polite">
             <div class="tier t1"><span class="k">Modellierte Nachfrage</span><span class="n" id="o-q-detail">0</span></div>
-            <div class="tier t15"><span class="k">Potenziell sichtbar (<span id="o-pn">Feurig</span>)</span><span class="n" id="o-s">0</span></div>
+            <div class="tier t15"><span class="k">Potenziell sichtbar (<span id="o-pn">Wachstum</span>)</span><span class="n" id="o-s">0</span></div>
             <div class="tier t2"><span class="k">Anfragen</span><span class="n" id="o-c-detail">0</span></div>
             <div class="tier t3"><span class="k">Neukunden</span><span class="n" id="o-w-detail">0</span></div>
           </div>
@@ -934,8 +934,8 @@ svg.scene{min-width:0;width:100%;max-width:100%}
   BR['yoga-studio']={d:['Probetraining','buchen'],tool:'MyCOCKPIT',q:'Yoga-Studio'};
   const PK = [
     {name:'Basis', flames:1, pitch:'Gefunden werden. Das Fundament steht, alle Wege führen zu dir.'},
-    {name:'Feurig', flames:2, pitch:'Mehr Anfragen. Kunden sehen dich, vertrauen dir und buchen direkt.'},
-    {name:'Platzhirsch', flames:3, pitch:'Erste Adresse in deiner Region. Du bist überall präsent, wo gesucht wird.'},
+    {name:'Wachstum', flames:2, pitch:'Mehr Anfragen. Kunden sehen dich, vertrauen dir und buchen direkt.'},
+    {name:'Marktführer', flames:3, pitch:'Erste Adresse in deiner Region. Du bist überall präsent, wo gesucht wird.'},
     {name:'Massgeschneidert', flames:0, pitch:'Nur das, was der Kunde wirklich will. Vorlage wählen oder unten Produkte zusammenstellen.'}
   ];
   const blank = ()=>({op:'-',bsm:'-',kb:'-',web:'-',shop:'-',ads:'-',loc:false,news:false,mail:'-',tik:false,reno:'-'});
@@ -1482,7 +1482,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     score+=({solo:0,small:1,medium:2,large:3}[size.value]||0);
     score+=({low:0,medium:1,high:2}[cap.value]||0);
     if(cap.value==='low')score=Math.min(score,3);
-    const ix=score>=7?2:score>=4?1:0,tier=['Basis','Feurig','Platzhirsch'][ix];
+    const ix=score>=7?2:score>=4?1:0,tier=['Basis','Wachstum','Marktführer'][ix];
     const why=ix===2?'Hohes geschätztes Potenzial und ausreichende Kapazität können eine stärkere Präsenz rechtfertigen.':ix===1?'Gezielte Werbung und passende Branchenprodukte könnten sinnvoll sein.':'Zuerst das digitale Fundament stärken und Nachfrage validieren.';
     out.innerHTML='<strong>Vorläufige Empfehlung: '+tier+'</strong><div>'+why+'</div><small>Modellbasis: '+fmt(q,0)+' Nachfrageeinheiten/Monat (keine gemessenen Suchanfragen), ca. '+fmt(customers,1)+' mögliche Neukunden und '+chf(potential)+' Umsatzpotenzial. Betriebsgrösse und Kapazität sind berücksichtigt. Annahmen mit dem Kunden prüfen; keine Umsatzgarantie.</small>';
   }
