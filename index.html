@@ -1005,7 +1005,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
   }
   function toCfg(d,l){
     const c=blank();
-    c.op=d.op?l:'-'; c.bsm=d.bsm?(l==='S'?'0':l):'-'; c.kb=d.kb?l:'-'; c.shop=d.shop?l:'-';
+    c.op=d.op?l:'-'; c.bsm=d.bsm&&l!=='S'?l:'-'; c.kb=d.kb?l:'-'; c.shop=d.shop?l:'-';
     c.web=d.web||'-'; c.mail=d.mail||'-'; c.loc=!!d.loc; c.tik=!!d.tik;
     const adsLevel=ADS[d.adsLevel]?d.adsLevel:l; c.ads=d.ads?adsLevel:'-'; if(d.ads){ const A=ADS[adsLevel]; c.budget=Math.min(A.max,Math.max(A.min,num(d.budget)||A.def)); }
     c.reno=RENO[d.reno]?d.reno:'-';
@@ -1300,7 +1300,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     const d=st.def[st.pk], n=selected().length; let h='';
     const row=(nm,sm,ctl,info)=>{ h+=`<div class="crow"><div class="nm">${nm}<small>${sm}</small></div><div>${ctl}${info?`<div class="extra note">${info}</div>`:''}</div></div>`; };
     row('Onlinepräsenz','Verzeichnisse, Navis, KI-Assistenten', seg('op',YN,d.op), d.op?`${fmt(n,0)} ${n===1?'Ortschaft':'Ortschaften'} aus der Karte${num(st.rub)>0?`, ${fmt(Math.round(num(st.rub)),0)} zusätzliche Rubriken`:''}`:'');
-    row('Bewertungen & Soziale Medien','KI-Antworten, Beitragsplaner', seg('bsm',YN,d.bsm), d.bsm?'Stufe S: Gratis-Version. Ab M: KI-Antworten und Beitragsplaner (braucht Onlinepräsenz M).':'');
+    row('Bewertungen & Soziale Medien','digitalONE · ab Onlinepräsenz M verfügbar', seg('bsm',YN,d.bsm), d.bsm?'Wird nur in den Paketstufen M und L berechnet. Onlinepräsenz mindestens M erforderlich.':'');
     if(st.br!=='resto') row('Kunden & Buchungen','MyCOCKPIT, Online-Termine, SMS', seg('kb',YN,d.kb), d.kb?'Ab M mit SMS-Bestätigungen, L mit Newsletter.':'');
     if(st.br==='resto') row('Tischreservation','MyLOCALINA', seg('loc',YN,d.loc), '');
     row('Website','MyWEBSITE, Grösse fest gewählt', seg('web',[['-','–'],['XS','XS'],['S','S'],['M','M'],['L','L']],d.web), d.web!=='-'?MODS[3].info[d.web]:'');
