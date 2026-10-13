@@ -802,7 +802,6 @@ svg.scene{min-width:0;width:100%;max-width:100%}
       <div class="rabatt">
         <label class="field" style="max-width:220px"><span class="label">Sonderrabatt auf Abo-Kosten</span>
           <div class="price"><input class="t" id="rb" type="text" inputmode="decimal" placeholder="0" aria-label="Rabatt in Prozent"><span>%</span></div></label>
-        <p class="note" id="rb-n">Höchstens 30 %. Gilt nicht für advertiseONE und nicht für einmalige Kosten.</p>
       </div>
       <div class="totals">
         <div class="tot main"><span class="label">Pro Monat</span><b id="t-m">CHF 0</b></div>
@@ -811,20 +810,19 @@ svg.scene{min-width:0;width:100%;max-width:100%}
         <div class="tot"><span class="label" id="t-tl">Total 36 Monate</span><b id="t-t">CHF 0</b></div>
       </div>
       <p class="warn" id="t-warn" style="margin:0"></p>
-      <details class="pdet"><summary>Preisdetails der gewählten Stufe</summary><div class="cmpwrap"><table class="cmp" id="pdet"></table></div></details>
       <details class="settings">
-        <summary>Interne Einstellungen und Offertenkontakt</summary>
+        <summary>Interne Einstellungen</summary>
         <div class="sgrid">
           <label class="field"><span class="label">Dein Name (auf dem PDF)</span><input class="t" id="g-bn" type="text" autocomplete="name"></label>
           <label class="field"><span class="label">Deine Telefonnummer</span><input class="t" id="g-bt" type="text" inputmode="tel"></label>
-          <label class="field"><span class="label">Deine E-Mail</span><input class="t" id="g-be" type="text" inputmode="email"></label>
+          <label class="field"><span class="label">Deine E-Mail</span><input class="t" id="g-be" type="email" autocomplete="email"></label>
           <label class="field"><span class="label">Standardlaufzeit übrige Produkte</span><select class="t" id="g-lz"><option value="12">12 Monate</option><option value="24">24 Monate · 10 % Rabatt*</option><option value="36">36 Monate · 20 % Rabatt*</option></select><span class="note">*Laufzeitrabatt gemäss aktueller Modellannahme.</span></label><label class="field"><span class="label">advertiseONE regulär · Laufzeit</span><select class="t" id="g-adsLz"><option value="6">6 Monate</option><option value="12">12 Monate</option><option value="24">24 Monate</option><option value="36">36 Monate</option></select></label><label class="field"><span class="label">advertiseONE TikTok · Laufzeit</span><select class="t" id="g-tikLz"><option value="6">6 Monate</option></select><span class="note">Gemäss deiner Vorgabe aktuell 6 Monate.</span></label>
           <label class="field"><span class="label">Preis pro Ortschaft / Jahr</span><input class="t" id="g-op" type="text" inputmode="decimal"></label>
           <label class="field"><span class="label">Ortschaften inklusive</span><input class="t" id="g-in" type="text" inputmode="numeric"></label>
           <label class="field"><span class="label">MyLOCALINA / Monat</span><input class="t" id="g-loc" type="text" inputmode="decimal" placeholder="eintragen"></label>
           <label class="field"><span class="label">Einrichtung MyLOCALINA</span><input class="t" id="g-sloc" type="text" inputmode="decimal"></label>
-          <label class="field"><span class="label">advertiseONE TikTok-Budget / Monat</span><select class="t" id="g-tik"><option value="">Budget auswählen</option><option value="250">CHF 250 / Monat</option><option value="500">CHF 500 / Monat</option><option value="750">CHF 750 / Monat</option></select></label>
-          <label class="field"><span class="label">Setup advertiseONE TikTok</span><input class="t" id="g-tiks" type="text" value="250" readonly aria-readonly="true"></label>
+          <label class="field"><span class="label">advertiseONE TikTok-Budget / Monat</span><select class="t" id="g-tik"><option value="250">CHF 250 / Monat</option><option value="500">CHF 500 / Monat</option><option value="750">CHF 750 / Monat</option></select><span class="note">Einmalige Einrichtung: CHF 250.</span></label>
+          <input type="hidden" id="g-tiks" value="250" aria-hidden="true">
           <label class="field"><span class="label">SMS inklusive Stufe M</span><input class="t" id="g-smsM" type="text" inputmode="numeric"></label>
           <label class="field"><span class="label">SMS inklusive Stufe L</span><input class="t" id="g-smsL" type="text" inputmode="numeric"></label>
         </div>
@@ -1328,7 +1326,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     $('door1').textContent=b.d[0]; $('door2').textContent=b.d[1]; $('doortool').textContent=b.tool;
     const primary=selected()[0], town=primary&&primary[0]?String(primary[0]).replace(/\s+(?:ZH|BL|BE|LU|SG|AG|SO|TG|GR|VS|VD|GE|FR|NE|JU|TI|SH|SZ|ZG|NW|OW|GL|AR|AI|UR)\s*$/i,'').trim():'';
     const industry=INDUSTRIES.find(x=>x.id===st.br)?.name||BR[st.br]?.q||'';
-    const searchPhrase=String(st.term||'').trim()||(industry&&town?industry+' '+town:industry||town||'');
+    const searchPhrase=industry&&town?industry+' '+town:(String(st.term||'').trim()||industry||town||'');
     $('qtext').textContent=searchPhrase;
     const n=PK[st.pk].flames, offs=n===0?[]:n===1?[0]:n===2?[-9,9]:[-14,0,14];
     $('flames').innerHTML=offs.map((x,i)=>{
@@ -1336,25 +1334,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
       return `<g transform="translate(${x} 0) scale(${s})"><path class="flame1 flick" style="animation-delay:${i*.3}s" d="M0 0 C -14 -8 -12 -26 0 -40 C 3 -28 15 -22 11 -8 C 9 -2 5 0 0 0Z"/><path class="flame2" d="M0 0 C -6 -4 -6 -14 0 -22 C 2 -14 7 -10 5 -4 C 4 -1 2 0 0 0Z"/></g>`;
     }).join('');
     $('flag').style.display = st.pk===2?'':'none';
-    // Place the customer logo in a reserved, compact area inside the house.
-    let logo=document.getElementById('customer-logo');
-    const logoUrl=st.ana&&st.ana.audit&&st.ana.audit.logoUrl;
-    if(logoUrl){
-      if(!logo){
-        logo=document.createElementNS('http://www.w3.org/2000/svg','image');
-        logo.setAttribute('id','customer-logo');
-        // Logo kompakt im Dach platzieren, oberhalb des Hauskörpers.
-        logo.setAttribute('x','770'); logo.setAttribute('y','220');
-        logo.setAttribute('width','80'); logo.setAttribute('height','28');
-        logo.setAttribute('preserveAspectRatio','xMidYMid meet');
-        logo.setAttribute('href',logoUrl);
-        // Insert before the house labels so the logo cannot cover their text.
-        const scene=document.querySelector('svg.scene');
-        const house=scene&&scene.querySelector('[data-id="web"]');
-        if(house) scene.insertBefore(logo,house); else scene?.appendChild(logo);
-      } else if(logo.getAttribute('href')!==logoUrl) logo.setAttribute('href',logoUrl);
-      logo.style.display='';
-    } else if(logo) logo.style.display='none';
+    const logo=document.getElementById('customer-logo'); if(logo) logo.remove();
     const c=eff(), sm=c.kb==='M'?num(st.g.smsM):c.kb==='L'?num(st.g.smsL):0;
     $('smsn').textContent = sm>0 ? `${fmt(sm,0)} SMS pro Monat inklusive` : 'SMS ab Stufe M inklusive';
     document.querySelectorAll('.pkname').forEach(e=>e.textContent=tierName(curTier()));
@@ -1482,7 +1462,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
       + (schedule.termPct>0 ? `<tr><td>Laufzeitrabatt ${fmt(schedule.termPct*100,0)} % auf Abo-Kosten</td><td>− ${chf(Math.max(0,P.m-schedule.monthly))}</td><td>–</td></tr>` : '')
       + `<tr class="key"><td>Total pro Monat im Vertrag</td><td>${chf(schedule.monthly)}</td><td>${chf(P.once)}</td></tr></tbody>`;
     if(document.activeElement!==$('rb')) $('rb').value = st.rabatt||'';
-    const raw=num(st.rabatt); $('rb-n').textContent = raw>30 ? 'Maximal 30 % möglich. Gerechnet wird mit 30 %.' : (P.disc>0 ? `Rabatt: − ${chf(P.disc)} pro Monat. Gilt nicht für advertiseONE und nicht für einmalige Kosten.` : 'Höchstens 30 %. Gilt nicht für advertiseONE und nicht für einmalige Kosten.');
+    const raw=num(st.rabatt); $('rb-n').textContent = raw>30 ? 'Maximal 30 % möglich. Gerechnet wird mit 30 %.' : (P.disc>0 ? `Rabatt: − ${chf(P.disc)} pro Monat.` : '');
   }
   $('rb').addEventListener('input',e=>{ st.rabatt=e.target.value.replace(/[^0-9.,]/g,''); save(); update(); });
   const pickTier = k=>{ st.tier[st.pk]=LV[k]; save(); update(); };
@@ -1685,7 +1665,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     st.tier=['S','M','L','M'];
   }
   function setBranch(b){
-    const prev=st.br;if(!BR[b])return;const confirming=!!(st.ana&&st.ana.audit&&st.ana.audit.classificationStatus==='needs-selection');st.br=b;st.term=BR[st.br].q;$('term').value=st.term;if(confirming)st.ana.audit.classificationStatus='confirmed';if(prev!==b)applyBranchDefaults(b);
+    const prev=st.br;if(!BR[b])return;const confirming=!!(st.ana&&st.ana.audit&&st.ana.audit.classificationStatus==='needs-selection');st.br=b;st.term=BR[st.br].q;$('term').value=st.term;if(confirming)st.ana.audit.classificationStatus='confirmed';if(prev!==b){applyBranchDefaults(b);st.kw=[...(SUG[b]?.kw||[])];st.svc=[...(SUG[b]?.svc||[])];st.rub='';st.vol={};st.volMeta={source:'',importedAt:'',region:'',confirmed:false,matched:0,total:0};}
     const item=INDUSTRIES.find(x=>x.id===b);
     if(item){const cat=$('branche-kategorie'),sub=$('branche-unterkategorie'),search=$('branche-suche');if(cat)cat.value=item.category;if(sub){const arr=INDUSTRIES.filter(x=>x.category===item.category);sub.replaceChildren(...arr.map(x=>{const o=document.createElement('option');o.value=x.id;o.textContent=x.name;return o;}));sub.value=b;}if(search)search.value=item.name;}
     if(st.br==='resto'&&prev!=='resto')st.def.slice(0,3).forEach(x=>{if(x.kb){x.kb=false;x.loc=true;}});
@@ -2130,13 +2110,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     clone.querySelectorAll('.el.off').forEach(g=>g.remove());
     clone.querySelectorAll('rect[fill="transparent"]').forEach(r=>r.remove());
     // Fremde Kundenlogos als Data-URL einbetten, damit PDF-/Canvas-Export nicht am CORS-Bild scheitert.
-    const logo=clone.querySelector('#customer-logo');
-    if(logo){
-      const source=logo.getAttribute('href')||logo.getAttribute('xlink:href')||'';
-      const embedded=await imageAsDataUrl(source);
-      if(embedded){ logo.setAttribute('href',embedded); logo.removeAttribute('xlink:href'); }
-      else logo.remove();
-    }
+    const logo=clone.querySelector('#customer-logo'); if(logo) logo.remove();
     let fonts=''; try{ const [f4,f7]=await Promise.all([fontB64('fonts/kalam-latin-400-normal.woff2'),fontB64('fonts/kalam-latin-700-normal.woff2')]);
       fonts=`@font-face{font-family:"Kalam";font-weight:400;src:url(data:font/woff2;base64,${f4}) format("woff2")}@font-face{font-family:"Kalam";font-weight:700;src:url(data:font/woff2;base64,${f7}) format("woff2")}`; }catch(e){}
     const st=document.createElementNS('http://www.w3.org/2000/svg','style'); st.textContent=fonts; clone.insertBefore(st, clone.firstChild);
