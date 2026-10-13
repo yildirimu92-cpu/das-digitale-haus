@@ -19,7 +19,18 @@
 .roi-highlight{background:var(--marker);color:#1c2836;border-color:var(--ink)}
 .roi-highlight .label{color:#344150}
 .roi-more{border-top:1px dashed var(--line);padding-top:10px}
-.roi-more summary{cursor:pointer;font-weight:600}
+.roi-more{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+ .roi-more[open]{display:grid;gap:12px}
+ .roi-more summary{cursor:pointer;font-weight:600;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px}
+ .roi-more summary::-webkit-details-marker{display:none}
+ .roi-more summary::after{content:"+";font-size:20px;line-height:1;color:var(--muted)}
+ .roi-more[open] summary::after{content:"−"}
+ .roi-more .funnel{padding:4px 0}
+ .roi-more .cmpwrap{border:1px solid var(--line);border-radius:10px;overflow-x:auto;background:var(--card)}
+ .roi-more table.cmp{font-size:12px}
+ .roi-more table.cmp th,.roi-more table.cmp td{padding:7px 8px}
+ .roi-more .note{line-height:1.4}
+ .roi-more summary{cursor:pointer;font-weight:600}
 #f-db{max-width:320px}
 @media(max-width:760px){.roi-results{grid-template-columns:repeat(2,minmax(0,1fr))}.roi-kpi{padding:10px}}
 </style></head><body>
@@ -789,7 +800,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
           <div class="roi-kpi roi-highlight"><span class="label">Umsatzpotenzial / Monat</span><strong id="roi-revenue">CHF 0</strong></div>
         </div>
         <details class="roi-more">
-          <summary>Berechnungsdetails und Paketvergleich</summary>
+          <summary>Details zur Berechnung und Paketvergleich</summary>
           <div class="funnel" aria-live="polite">
             <div class="tier t1"><span class="k">Modellierte Nachfrage</span><span class="n" id="o-q-detail">0</span></div>
             <div class="tier t15"><span class="k">Potenziell sichtbar (<span id="o-pn">Wachstum</span>)</span><span class="n" id="o-s">0</span></div>
