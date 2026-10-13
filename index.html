@@ -1282,14 +1282,18 @@ svg.scene{min-width:0;width:100%;max-width:100%}
   function contractDiscount(months){ return months>=36?0.20:months>=24?0.10:0; }
   function priceSchedule(P){
     const months=Math.max(12,Math.min(36,Math.round((num(st.g.lz)||36)/12)*12));
+    const termPct=contractDiscount(months);
     const annual=(P.orte||0)+(P.rub||0)+(P.mail||0)+(P.webAnnual||0);
-    const cashMonthly=Math.max(0,P.m-(P.mAds||0)-annual/12)+(P.mAds||0);
-    const monthly=cashMonthly+annual/12; // monthly equivalent includes annual location/category/mail costs
+    const ads=Math.max(0,P.mAds||0);
+    const recurring=Math.max(0,P.m-ads-annual/12);
+    // Vertragsrabatt gilt nur auf laufende Produktkosten, nicht auf Werbebudget oder Jahresposten.
+    const cashMonthly=recurring*(1-termPct)+ads;
+    const monthly=cashMonthly+annual/12;
     const years=[];
     for(let y=1;y<=Math.min(3,Math.ceil(months/12));y++){
       years.push({year:y,monthly,annual,setup:y===1?(P.once||0):0,total:cashMonthly*12+annual+(y===1?(P.once||0):0)});
     }
-    return {months,monthly,cashMonthly,annual,years,total:years.reduce((s,y)=>s+y.total,0)};
+    return {months,termPct,monthly,cashMonthly,annual,years,total:years.reduce((s,y)=>s+y.total,0)};
   }
   function yrParts(P){ return [P.orte?`Ortschaften ${chf(P.orte)}`:'', P.rub?`Rubriken ${chf(P.rub)}`:'', P.mail?`Mail ${chf(P.mail)}`:'', P.webAnnual?`MyWEBSITE-Jahresgebühr ${chf(P.webAnnual)}`:''].filter(Boolean).join(', '); }
 
