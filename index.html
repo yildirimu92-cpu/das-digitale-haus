@@ -1242,7 +1242,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     const disc=eligible*pct/100;
     m = mAds + eligible - disc + annual/12;
     const years=Math.ceil(lz/12);
-    return {m, list, disc, pct, mAds, adsMonthly:c.ads!=='-'?budget(c):0, tikMonthly:c.tik?num(g.tik):0, baseMonthly:Math.max(0,m-mAds-(c.tik?num(g.tik):0)-annual/12), mOther:m-mAds, once, yr:0, orte, rub, mail, webAnnual, lz, total:(m-annual/12)*lz+annual*years+once, miss};
+    return {m, list, disc, pct, mAds, adsMonthly:c.ads!=='-'?budget(c):0, tikMonthly:c.tik?num(g.tik):0, baseMonthly:Math.max(0,m-mAds-annual/12), mOther:m-mAds, once, yr:0, orte, rub, mail, webAnnual, lz, total:(m-annual/12)*lz+annual*years+once, miss};
   }
   function feats(i){
     const c=(typeof i==='object')?i:eff(i), out=[], n=selected().length;
