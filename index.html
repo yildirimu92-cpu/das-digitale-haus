@@ -1021,14 +1021,14 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     const d=st.def[st.pk], on=elsFor(eff()).has(id);
     switch(id){
       case 'dir': case 'ai': d.op=!on; if(on && st.tier[st.pk]!=='S') d.bsm=false; break;
-      case 'rev': d.bsm=!on; break;
+      case 'rev': if(on) d.bsm=false; else { d.bsm=true; atLeast('M'); } break;
       case 'hubrev': case 'soc': case 'plan': if(on) d.bsm=false; else { d.bsm=true; atLeast('M'); } break;
       case 'book': if(on){ d.kb=false; d.loc=false; } else if(st.br==='resto') d.loc=true; else d.kb=true; break;
       case 'sms': if(on) d.kb=false; else { d.kb=true; atLeast('M'); } break;
       case 'news': if(on) st.tier[st.pk]='M'; else { d.kb=true; atLeast('L'); } break;
       case 'web': d.web = d.web==='-' ? 'S' : '-'; break;
       case 'gads': d.ads=!on; break;
-      case 'meta': if(on) { d.adsLevel='M'; } else { d.ads=true; d.adsLevel='L'; if(num(d.budget)<ADS.L.min||num(d.budget)>ADS.L.max) d.budget=ADS.L.def; } break;
+      case 'meta': if(on) { d.adsLevel='M'; if(num(d.budget)<ADS.M.min||num(d.budget)>ADS.M.max) d.budget=ADS.M.def; } else { d.ads=true; d.adsLevel='L'; if(num(d.budget)<ADS.L.min||num(d.budget)>ADS.L.max) d.budget=ADS.L.def; } break;
       case 'tik': d.tik=!d.tik; break;
       case 'reno': d.reno = RENO[d.reno] ? '-' : 'Starter'; break;
     }
