@@ -1463,10 +1463,10 @@ svg.scene{min-width:0;width:100%;max-width:100%}
   function renderPrices(){
     const T=tiers(), cur=curTier();
     $('tiers-h').textContent = `Preise: ${PK[st.pk].name} S, M oder L`;
-    $('tiers').innerHTML = T.map((c,k)=>{ const P=price(c);
+    $('tiers').innerHTML = T.map((c,k)=>{ const P=price(c), S=priceSchedule(P);
       return `<div class="pkg" data-t="${k}" role="button" tabindex="0" aria-pressed="${k===cur}">
         <div class="top"><h3>${esc(tierName(k))}</h3><div class="fl">${flameSvg(k+1)}</div></div>
-        <div class="pprice"><span class="m">${chf(P.m)} <small>/ Monat</small></span>${P.disc>0?`<span class="x"><span class="strike">${chf(P.list)}</span> · ${fmt(P.pct,0)} % Rabatt auf Abo-Kosten</span>`:''}<span class="x">+ ${chf(P.once)} einmalig</span></div>
+        <div class="pprice"><span class="m">${chf(S.monthly)} <small>/ Monat im gewählten Vertrag</small></span>${P.disc>0?`<span class="x"><span class="strike">${chf(P.list)}</span> · ${fmt(P.pct,0)} % Sonderrabatt auf Abo-Kosten</span>`:''}<span class="x">+ ${chf(P.once)} einmalig</span></div>
         ${P.miss.length?`<span class="warn">Preis fehlt: ${esc(P.miss.join(', '))}</span>`:''}
         <ul class="feat">${feats(c).map(t=>`<li>${esc(t)}</li>`).join('')||'<li>Noch nichts ausgewählt</li>'}</ul>
         <span class="note">${k===cur?'✓ Gewählt':'Antippen zum Wählen'}</span>
