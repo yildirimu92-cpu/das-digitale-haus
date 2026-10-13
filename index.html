@@ -1028,7 +1028,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
       case 'news': if(on) st.tier[st.pk]='M'; else { d.kb=true; atLeast('L'); } break;
       case 'web': d.web = d.web==='-' ? 'S' : '-'; break;
       case 'gads': d.ads=!on; break;
-      case 'meta': if(on) st.tier[st.pk]='M'; else { d.ads=true; atLeast('L'); } break;
+      case 'meta': if(on) { d.adsLevel='M'; } else { d.ads=true; d.adsLevel='L'; if(num(d.budget)<ADS.L.min||num(d.budget)>ADS.L.max) d.budget=ADS.L.def; } break;
       case 'tik': d.tik=!d.tik; break;
       case 'reno': d.reno = RENO[d.reno] ? '-' : 'Starter'; break;
     }
