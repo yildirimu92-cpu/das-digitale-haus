@@ -1307,7 +1307,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     row('Mail Hosting','E-Mail-Adressen', seg('mail',[['-','–'],['lite','Lite'],['std','Standard'],['pro','Professional']],d.mail), d.mail==='lite'?MAIL.lite.i:'');
     row('Webshop','digitalONE', seg('shop',YN,d.shop), '');
     row('advertiseONE','Werbekampagnen', seg('ads',YN,d.ads), '');
-    if(d.ads) row('Werbebudget','Wunsch pro Monat, wird an die Stufe angepasst', seg('budget',BUDGETS.map(v=>[v,fmt(v,0)]),d.budget), '');
+    if(d.ads){ const adsLevel=st.tier[st.pk], adsOptions=ADS[adsLevel].steps, effectiveBudget=budget(toCfg(d,adsLevel)); row('Werbebudget',`Wunsch pro Monat · ${adsLevel}: CHF ${fmt(ADS[adsLevel].min,0)}–${fmt(ADS[adsLevel].max,0)}`, seg('budget',adsOptions.map(v=>[v,fmt(v,0)]),effectiveBudget), ''); }
     row('advertiseONE TikTok','separates Produkt', seg('tik',YN,d.tik), d.tik ? `<span class="tikp">Preis pro Monat CHF <input class="t" id="tik-m" type="text" inputmode="decimal" value="${esc(st.g.tik)}" placeholder="eintragen"> Setup CHF <input class="t" id="tik-s" type="text" inputmode="decimal" value="${esc(st.g.tiks)}" placeholder="0"></span>${st.g.tik===''?' <b class="warn">Ohne Preis rechnet das Tool TikTok mit 0.</b>':''}` : '');
     if(isCraftBranch(st.br)) row('renovero','Handwerker-Plattform, Jahresabo', seg('reno',[['-','–'],['Presence','Presence'],['Starter','Starter'],['Profi','Profi mit KI']],d.reno), RENO[d.reno]?`${chf(RENO[d.reno].y)} pro Jahr: ${RENO[d.reno].i}`:'');
     $('cfg').innerHTML=h;
