@@ -759,7 +759,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
           <label class="field"><span class="label">Dein Name (auf dem PDF)</span><input class="t" id="g-bn" type="text" autocomplete="name"></label>
           <label class="field"><span class="label">Deine Telefonnummer</span><input class="t" id="g-bt" type="text" inputmode="tel"></label>
           <label class="field"><span class="label">Deine E-Mail</span><input class="t" id="g-be" type="text" inputmode="email"></label>
-          <label class="field"><span class="label">Vertragslaufzeit</span><select class="t" id="g-lz"><option value="12">12 Monate · kein Laufzeitrabatt</option><option value="24">24 Monate · 10 % Rabatt</option><option value="36">36 Monate · 20 % Rabatt</option></select></label>
+          <label class="field"><span class="label">Standardlaufzeit übrige Produkte</span><select class="t" id="g-lz"><option value="12">12 Monate</option><option value="24">24 Monate · 10 % Rabatt*</option><option value="36">36 Monate · 20 % Rabatt*</option></select><span class="note">*Laufzeitrabatt gemäss aktueller Modellannahme.</span></label><label class="field"><span class="label">advertiseONE regulär · Laufzeit</span><select class="t" id="g-adsLz"><option value="6">6 Monate</option><option value="12">12 Monate</option><option value="24">24 Monate</option><option value="36">36 Monate</option></select></label><label class="field"><span class="label">advertiseONE TikTok · Laufzeit</span><select class="t" id="g-tikLz"><option value="6">6 Monate</option></select><span class="note">Gemäss deiner Vorgabe aktuell 6 Monate.</span></label>
           <label class="field"><span class="label">Preis pro Ortschaft / Jahr</span><input class="t" id="g-op" type="text" inputmode="decimal"></label>
           <label class="field"><span class="label">Ortschaften inklusive</span><input class="t" id="g-in" type="text" inputmode="numeric"></label>
           <label class="field"><span class="label">MyLOCALINA / Monat</span><input class="t" id="g-loc" type="text" inputmode="decimal" placeholder="eintragen"></label>
@@ -986,7 +986,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     {l:'Alles leeren', c:{}}
   ];
   const DEF_F = {q:'1000',c:'10',w:'30',v:'500',db:'',vis:['25','50','80']};
-  const DEF_G = {lz:'36', op:'50', in:'1', loc:'120', sloc:'250', nl:'', sshop:'', smsM:'100', smsL:'250', tik:'250', tiks:'250',
+  const DEF_G = {lz:'36', adsLz:'6', tikLz:'6', op:'50', in:'1', loc:'120', sloc:'250', nl:'', sshop:'', smsM:'100', smsL:'250', tik:'250', tiks:'250',
     aS:'150', aM:'250', aL:'500', asS:'150', asM:'250', asL:'450', tik:'', tiks:'', bn:'', bt:'', be:''};
   const DEF_REG = ()=>({mode:'umkreis', cantons:[], center:null, radius:10, add:[], rem:[]});
   const KEY = 'digitales-haus.v3';
@@ -1631,7 +1631,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
   renderIndustryUI();
   $('term').addEventListener('input',e=>{ st.term=e.target.value; save(); renderScene(); });
   ['q','c','w','v','db'].forEach(k=>{ const el=$('f-'+k); if(el){ el.value=st.f[k]??''; el.addEventListener('input',()=>{ st.f[k]=el.value; save(); calc(); renderSum(); }); } });
-  [['lz','g-lz'],['op','g-op'],['in','g-in'],['loc','g-loc'],['sloc','g-sloc'],['tik','g-tik'],['bn','g-bn'],['bt','g-bt'],['be','g-be'],['tiks','g-tiks'],['smsM','g-smsM'],['smsL','g-smsL']].forEach(([k,id])=>{
+  [['lz','g-lz'],['adsLz','g-adsLz'],['tikLz','g-tikLz'],['op','g-op'],['in','g-in'],['loc','g-loc'],['sloc','g-sloc'],['tik','g-tik'],['bn','g-bn'],['bt','g-bt'],['be','g-be'],['tiks','g-tiks'],['smsM','g-smsM'],['smsL','g-smsL']].forEach(([k,id])=>{
     const el=$(id); el.value=st.g[k]; el.addEventListener('input',()=>{ st.g[k]=el.value.trim(); save(); renderScene(); renderRegion(); renderPrices(); calc(); renderSum(); });
     el.addEventListener('change',renderCfg);
   });
@@ -2182,7 +2182,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     }
   });
 
-  const GMAP={'g-lz':'lz','g-op':'op','g-in':'in','g-loc':'loc','g-nl':'nl','g-sloc':'sloc','g-sshop':'sshop','g-aS':'aS','g-aM':'aM','g-aL':'aL','g-asS':'asS','g-asM':'asM','g-asL':'asL','g-tik':'tik','g-bn':'bn','g-bt':'bt','g-be':'be','g-tiks':'tiks','g-smsM':'smsM','g-smsL':'smsL'};
+  const GMAP={'g-lz':'lz','g-adsLz':'adsLz','g-tikLz':'tikLz','g-op':'op','g-in':'in','g-loc':'loc','g-nl':'nl','g-sloc':'sloc','g-sshop':'sshop','g-aS':'aS','g-aM':'aM','g-aL':'aL','g-asS':'asS','g-asM':'asM','g-asL':'asL','g-tik':'tik','g-bn':'bn','g-bt':'bt','g-be':'be','g-tiks':'tiks','g-smsM':'smsM','g-smsL':'smsL'};
 
   /* ---------- Supabase auth and private cloud storage ---------- */
   var DB=null, UID=null, saveT=null, setT=null, lastG='', LIST=[], cloudOk=false, cloudTried=false;
