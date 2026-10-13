@@ -1242,7 +1242,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     const disc=eligible*pct/100;
     m = mAds + eligible - disc + annual/12;
     const years=Math.ceil(lz/12);
-    return {m, list, disc, pct, mAds, adsMonthly:c.ads!=='-'?budget(c):0, tikMonthly:c.tik?num(g.tik):0, mOther:m-mAds, once, yr:0, orte, rub, mail, webAnnual, lz, total:(m-annual/12)*lz+annual*years+once, miss};
+    return {m, list, disc, pct, mAds, adsMonthly:c.ads!=='-'?budget(c):0, tikMonthly:c.tik?num(g.tik):0, baseMonthly:Math.max(0,m-mAds-(c.tik?num(g.tik):0)-annual/12), mOther:m-mAds, once, yr:0, orte, rub, mail, webAnnual, lz, total:(m-annual/12)*lz+annual*years+once, miss};
   }
   function feats(i){
     const c=(typeof i==='object')?i:eff(i), out=[], n=selected().length;
@@ -1305,15 +1305,15 @@ svg.scene{min-width:0;width:100%;max-width:100%}
   const flameSvg=n=>Array.from({length:n},()=>`<svg width="18" height="26" viewBox="-14 -42 28 44" aria-hidden="true"><path class="flame1" d="M0 0 C -14 -8 -12 -26 0 -40 C 3 -28 15 -22 11 -8 C 9 -2 5 0 0 0Z"/><path class="flame2" d="M0 0 C -6 -4 -6 -14 0 -22 C 2 -14 7 -10 5 -4 C 4 -1 2 0 0 0Z"/></svg>`).join('');
   function contractDiscount(months){ return months>=36?0.20:months>=24?0.10:0; }
   function priceSchedule(P){
-    const baseMonths=Math.max(12,Math.min(36,Math.round((num(st.g.lz)||36)/12)*12));
-    const adsMonths=P.adsMonthly?Math.max(6,Math.min(36,num(st.g.adsLz)||6)):0;
-    const tikMonths=P.tikMonthly?6:0;
+    const baseMonths=P.baseMonthly>0?Math.max(12,Math.min(36,Math.round((num(st.g.lz)||36)/12)*12)):0;
+    const adsMonths=P.adsMonthly>0?Math.max(6,Math.min(36,num(st.g.adsLz)||6)):0;
+    const tikMonths=P.tikMonthly>0?Math.max(6,Math.min(6,num(st.g.tikLz)||6)):0;
     const months=Math.max(baseMonths,adsMonths,tikMonths);
-    const termPct=contractDiscount(baseMonths);
+    const termPct=baseMonths?contractDiscount(baseMonths):0;
     const annual=(P.orte||0)+(P.rub||0)+(P.mail||0)+(P.webAnnual||0);
     const ads=Math.max(0,P.adsMonthly||0), tik=Math.max(0,P.tikMonthly||0);
-    const recurring=Math.max(0,P.m-ads-tik-annual/12);
-    const baseMonthly=recurring*(1-termPct);
+    // P.baseMonthly enthält den allfälligen individuellen Rabatt bereits; Laufzeitrabatt wird zusätzlich modelliert.
+    const baseMonthly=Math.max(0,P.baseMonthly||0)*(1-termPct);
     const years=[];
     for(let y=1;y<=Math.ceil(months/12);y++){
       const from=(y-1)*12, to=y*12;
@@ -1323,9 +1323,11 @@ svg.scene{min-width:0;width:100%;max-width:100%}
       const annualActive=baseActive>0?annual:0;
       const setup=y===1?(P.once||0):0;
       const total=baseMonthly*baseActive+ads*adsActive+tik*tikActive+annualActive+setup;
-      years.push({year:y,monthly:baseMonthly+(from<adsMonths?ads:0)+(from<tikMonths?tik:0)+(from<baseMonths?annual/12:0),annual:annualActive,setup,total});
+      const activeMonths=Math.max(baseActive,adsActive,tikActive);
+      const monthly=activeMonths?((baseMonthly*baseActive+ads*adsActive+tik*tikActive)/activeMonths):0;
+      years.push({year:y,monthly,annual:annualActive,setup,total});
     }
-    return {months,baseMonths,adsMonths,tikMonths,termPct,monthly:baseMonthly+ads+tik+annual/12,cashMonthly:baseMonthly+ads+tik,annual,years,total:years.reduce((sum,y)=>sum+y.total,0)};
+    return {months,baseMonths,adsMonths,tikMonths,termPct,monthly:baseMonthly+ads+tik+annual/12, cashMonthly:baseMonthly+ads+tik,annual,years,total:years.reduce((sum,y)=>sum+y.total,0)};
   }
   function yrParts(P){ return [P.orte?`Ortschaften ${chf(P.orte)}`:'', P.rub?`Rubriken ${chf(P.rub)}`:'', P.mail?`Mail ${chf(P.mail)}`:'', P.webAnnual?`MyWEBSITE-Jahresgebühr ${chf(P.webAnnual)}`:''].filter(Boolean).join(', '); }
 
