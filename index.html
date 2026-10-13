@@ -940,7 +940,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
   ];
   const blank = ()=>({op:'-',bsm:'-',kb:'-',web:'-',shop:'-',ads:'-',loc:false,news:false,mail:'-',tik:false,reno:'-'});
   // Definition = welche Bausteine der Kunde will; die Stufe (S/M/L) bestimmt die Ausprägung
-  const blankDef = ()=>({op:false,bsm:false,kb:false,loc:false,web:'-',mail:'-',shop:false,ads:false,budget:250,tik:false,reno:'-'});
+  const blankDef = ()=>({op:false,bsm:false,kb:false,loc:false,web:'-',mail:'-',shop:false,ads:false,adsLevel:'M',budget:250,tik:false,reno:'-'});
   const DEF_DEF = ()=>[
     {...blankDef(), op:true, bsm:true, web:'S'},
     {...blankDef(), op:true, bsm:true, kb:true, web:'M', ads:true, budget:250},
@@ -1007,7 +1007,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     const c=blank();
     c.op=d.op?l:'-'; c.bsm=d.bsm?(l==='S'?'0':l):'-'; c.kb=d.kb?l:'-'; c.shop=d.shop?l:'-';
     c.web=d.web||'-'; c.mail=d.mail||'-'; c.loc=!!d.loc; c.tik=!!d.tik;
-    c.ads=d.ads?l:'-'; if(d.ads){ const A=ADS[l]; c.budget=Math.min(A.max,Math.max(A.min,num(d.budget)||A.def)); }
+    const adsLevel=ADS[d.adsLevel]?d.adsLevel:l; c.ads=d.ads?adsLevel:'-'; if(d.ads){ const A=ADS[adsLevel]; c.budget=Math.min(A.max,Math.max(A.min,num(d.budget)||A.def)); }
     c.reno=RENO[d.reno]?d.reno:'-';
     if(PAID(c.bsm) && !(c.op==='M'||c.op==='L')) c.op='M';
     return c;
@@ -1307,7 +1307,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     row('Mail Hosting','E-Mail-Adressen', seg('mail',[['-','–'],['lite','Lite'],['std','Standard'],['pro','Professional']],d.mail), d.mail==='lite'?MAIL.lite.i:'');
     row('Webshop','digitalONE', seg('shop',YN,d.shop), '');
     row('advertiseONE','Werbekampagnen', seg('ads',YN,d.ads), '');
-    if(d.ads){ const adsLevel=st.tier[st.pk], adsOptions=ADS[adsLevel].steps, effectiveBudget=budget(toCfg(d,adsLevel)); row('Werbebudget',`Wunsch pro Monat · ${adsLevel}: CHF ${fmt(ADS[adsLevel].min,0)}–${fmt(ADS[adsLevel].max,0)}`, seg('budget',adsOptions.map(v=>[v,fmt(v,0)]),effectiveBudget), ''); }
+    if(d.ads){ const adsLevel=ADS[d.adsLevel]?d.adsLevel:st.tier[st.pk], adsOptions=ADS[adsLevel].steps, effectiveBudget=budget(toCfg(d,adsLevel)); row('advertiseONE-Stufe','Kanäle unabhängig vom Gesamtpaket', seg('adsLevel',[['S','S · Google'],['M','M · zusätzlich local.ch / search.ch'],['L','L · zusätzlich Social Media & Top-Websites']],adsLevel), `${ADS[adsLevel].ch}`); row('Werbebudget',`Wunsch pro Monat · advertiseONE ${adsLevel}: CHF ${fmt(ADS[adsLevel].min,0)}–${fmt(ADS[adsLevel].max,0)}`, seg('budget',adsOptions.map(v=>[v,fmt(v,0)]),effectiveBudget), ''); }
     row('advertiseONE TikTok','separates Produkt', seg('tik',YN,d.tik), d.tik ? `<span class="tikp">Preis pro Monat CHF <input class="t" id="tik-m" type="text" inputmode="decimal" value="${esc(st.g.tik)}" placeholder="eintragen"> Setup CHF <input class="t" id="tik-s" type="text" inputmode="decimal" value="${esc(st.g.tiks)}" placeholder="0"></span>${st.g.tik===''?' <b class="warn">Ohne Preis rechnet das Tool TikTok mit 0.</b>':''}` : '');
     if(isCraftBranch(st.br)) row('renovero','Handwerker-Plattform, Jahresabo', seg('reno',[['-','–'],['Presence','Presence'],['Starter','Starter'],['Profi','Profi mit KI']],d.reno), RENO[d.reno]?`${chf(RENO[d.reno].y)} pro Jahr: ${RENO[d.reno].i}`:'');
     $('cfg').innerHTML=h;
@@ -1318,6 +1318,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     const k=btn.parentElement.dataset.k, v=btn.dataset.v, d=st.def[st.pk];
     if(['op','bsm','kb','loc','shop','ads','tik'].includes(k)) d[k]=(v==='true');
     else if(k==='budget') d.budget=+v;
+    else if(k==='adsLevel') { d.adsLevel=v; const A=ADS[v]; if(num(d.budget)<A.min||num(d.budget)>A.max) d.budget=A.def; }
     else d[k]=v;
     save(); update();
   });
