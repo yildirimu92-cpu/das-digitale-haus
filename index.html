@@ -1,5 +1,18 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important} .business-profile{border:1.5px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:10px;margin:12px 0}.biz-recommendation{background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:12px;display:grid;gap:6px}.biz-recommendation strong{font-size:18px} section[aria-labelledby="fh"]{display:none!important}</style><style>
-.roi-simple{display:grid;gap:14px}
+/* Responsive summary card: prevent price columns from overflowing on narrow screens */
+ .sumcard{width:100%;max-width:100%;min-width:0;overflow:hidden;padding:clamp(12px,2.5vw,24px)}
+ .sumcard table{table-layout:fixed;width:100%;font-size:12px}
+ .sumcard th,.sumcard td{overflow-wrap:anywhere;vertical-align:top;padding:6px 4px}
+ .sumcard th{font-size:11px;text-align:left;color:#5b6878}
+ .sumcard td:last-child,.sumcard th:last-child{text-align:right;padding-left:4px}
+ .sumcard .cost-table th:nth-child(1),.sumcard .cost-table td:nth-child(1){width:17%}
+ .sumcard .cost-table th:nth-child(2),.sumcard .cost-table td:nth-child(2){width:18%}
+ .sumcard .cost-table th:nth-child(3),.sumcard .cost-table td:nth-child(3){width:22%}
+ .sumcard .cost-table th:nth-child(4),.sumcard .cost-table td:nth-child(4){width:18%}
+ .sumcard .cost-table th:nth-child(5),.sumcard .cost-table td:nth-child(5){width:25%}
+ .sumcard .cost-table .total-row td{font-weight:700;border-top:2px solid #cbd5df}
+ @media(max-width:520px){.sumcard{padding:12px;font-size:12.5px}.sumcard .cost-table{font-size:10px}.sumcard .cost-table th{font-size:9.5px}.sumcard .cost-table th,.sumcard .cost-table td{padding:6px 2px}}
+ .roi-simple{display:grid;gap:14px}
 .roi-results{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .roi-kpi{border:1.5px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:5px;min-width:0}
 .roi-kpi strong{font-size:clamp(19px,2.4vw,28px);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
@@ -730,7 +743,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
       <p class="warn" id="t-warn" style="margin:0"></p>
       <details class="pdet"><summary>Preisdetails der gewählten Stufe</summary><div class="cmpwrap"><table class="cmp" id="pdet"></table></div></details>
       <details class="settings">
-        <summary>Einstellungen (Preise und deine Kontaktangaben)</summary>
+        <summary>Interne Einstellungen und Offertenkontakt</summary>
         <div class="sgrid">
           <label class="field"><span class="label">Dein Name (auf dem PDF)</span><input class="t" id="g-bn" type="text" autocomplete="name"></label>
           <label class="field"><span class="label">Deine Telefonnummer</span><input class="t" id="g-bt" type="text" inputmode="tel"></label>
@@ -1927,7 +1940,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     if(d.digitalPotential) h+=`<h4>Digitaler Potenzialindex: ${d.digitalPotential.score}/100</h4><p style="margin:0"><b>${esc(d.digitalPotential.level)}</b> · Bewertet wird die Vollständigkeit der digitalen Grundlagen – nicht das tatsächliche Google-Suchvolumen.</p><p class="fine" style="margin-top:4px">${d.digitalPotential.parts.map(p=>esc(p.label)+': '+fmt(p.points,0)+'/'+fmt(p.max,0)).join(' · ')}</p>`;
     if(d.svc.length||d.kw.length) h+=`<h4>Wofür möchten Sie gefunden werden?</h4>${d.svc.length?`<p style="margin:0 0 4px"><b>Dienstleistungen:</b> ${esc(d.svc.join(', '))}</p>`:''}${d.kw.length?`<p style="margin:0"><b>Stichworte:</b> ${esc(d.kw.join(', '))}</p>`:''}`;
     h+=`<h4>Unsere Empfehlung: ${esc(d.pkg)}${d.sub?' ('+esc(d.sub)+')':''}</h4><ul>${d.feats.map(f=>`<li>${esc(f)}</li>`).join('')||'<li>Noch keine Produkte gewählt</li>'}</ul>`;
-    const S=priceSchedule(P); h+=`<h4>Kosten und Vertragslaufzeit</h4><p style="margin:0 0 6px">Laufzeit: ${S.months} Monate${S.termPct?` · Laufzeitrabatt ${fmt(S.termPct*100,0)} % auf laufende Produktkosten (ohne Werbebudget und Einmalkosten)`:''}</p><table><tr><th>Zeitraum</th><th>Monatlich¹</th><th>Jahres-/Zusatzkosten</th><th>Einmalig</th><th>Total</th></tr>${S.years.map(y=>`<tr${y.year===1?' class="b"':''}><td>${y.year}. Jahr</td><td>${chf(y.monthly)}</td><td>${chf(y.annual)}</td><td>${chf(y.setup)}</td><td>${chf(y.total)}</td></tr>`).join('')}<tr class="b"><td>Vertragsgesamtbetrag</td><td colspan="3">${S.months} Monate</td><td>${chf(S.total)}</td></tr></table><p class="fine" style="margin:6px 0 0">¹ Monatsbetrag ohne separat ausgewiesene Jahres- und Einmalkosten. Jahreskosten werden dem tatsächlichen Zahlungsjahr zugeordnet. Preisannahme gemäss gewählter Laufzeit; massgebend ist das konkrete Angebot.</p><p style="margin:8px 0 0"><b>Zahlungsweise:</b> ${payLines().map(esc).join(' · ')}</p>`;
+    const S=priceSchedule(P); h+=`<h4>Kosten und Vertragslaufzeit</h4><p style="margin:0 0 6px">Laufzeit: ${S.months} Monate${S.termPct?` · Laufzeitrabatt ${fmt(S.termPct*100,0)} % auf laufende Produktkosten (ohne Werbebudget und Einmalkosten)`:''}</p><table class="cost-table"><tr><th>Zeitraum</th><th>Monatlich¹</th><th>Jahres-/Zusatzkosten</th><th>Einmalig</th><th>Total</th></tr>${S.years.map(y=>`<tr${y.year===1?' class="b"':''}><td>${y.year}. Jahr</td><td>${chf(y.monthly)}</td><td>${chf(y.annual)}</td><td>${chf(y.setup)}</td><td>${chf(y.total)}</td></tr>`).join('')}<tr class="b total-row"><td colspan="4">Vertragsgesamtbetrag · ${S.months} Monate</td><td>${chf(S.total)}</td></tr></table><p class="fine" style="margin:6px 0 0">¹ Monatsbetrag ohne separat ausgewiesene Jahres- und Einmalkosten. Jahreskosten werden dem tatsächlichen Zahlungsjahr zugeordnet. Preisannahme gemäss gewählter Laufzeit; massgebend ist das konkrete Angebot.</p><p style="margin:8px 0 0"><b>Zahlungsweise:</b> ${payLines().map(esc).join(' · ')}</p>`;
     if(d.cmp) h+=`<h4>Die drei Stufen im Vergleich</h4><table><tr><td></td><td>pro Monat</td><td>1. Jahr</td></tr>${d.cmp.map(x=>`<tr${x.cur?' class="b"':''}><td>${esc(x.name)}</td><td>${chf(x.m)}</td><td>${chf(x.first)}</td></tr>`).join('')}</table>`;
     if(d.pts.length) h+=`<h4>Was wir vereinbart haben</h4><ul>${d.pts.map(p=>`<li>${esc(p.t)}${p.d?` <span class="meta">(bis ${esc(dch(p.d))})</span>`:''}</li>`).join('')}</ul>`;
     if(d.next||d.topic) h+=`<h4>Nächster Termin</h4><p style="margin:0">${esc(d.next||'Datum folgt')}${d.topic?`<br>Thema: ${esc(d.topic)}`:''}</p>`;
