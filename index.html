@@ -1316,7 +1316,11 @@ svg.scene{min-width:0;width:100%;max-width:100%}
   $('cfg').addEventListener('click',e=>{
     const btn=e.target.closest('.seg button'); if(!btn) return;
     const k=btn.parentElement.dataset.k, v=btn.dataset.v, d=st.def[st.pk];
-    if(['op','bsm','kb','loc','shop','ads','tik'].includes(k)) d[k]=(v==='true');
+    if(['op','bsm','kb','loc','shop','ads','tik'].includes(k)) {
+      d[k]=(v==='true');
+      if(k==='bsm' && d.bsm){ d.op=true; if(['S','M','L'].indexOf(st.tier[st.pk])<1) st.tier[st.pk]='M'; }
+      if(k==='op' && !d.op) d.bsm=false;
+    }
     else if(k==='budget') d.budget=+v;
     else if(k==='adsLevel') { d.adsLevel=v; const A=ADS[v]; if(num(d.budget)<A.min||num(d.budget)>A.max) d.budget=A.def; }
     else d[k]=v;
