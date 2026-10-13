@@ -338,6 +338,38 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
   </header>
 
 <style>
+/* Responsive polish v3: practical mobile workflow */
+@media(max-width:760px){
+  .bar{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;width:100%;min-width:0}
+  .bar>.field{width:100%;max-width:none!important;min-width:0!important}
+  .bar .inputs{grid-template-columns:minmax(0,1fr)!important}
+  .package-guide{grid-template-columns:minmax(0,1fr);gap:8px}
+  .package-guide article{padding:12px}
+  .package-guide article strong{font-size:15px}
+  .package-guide article p{font-size:13px;line-height:1.45}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{min-height:44px;padding:9px 12px;line-height:1.25}
+  .seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .seg button{min-width:0;min-height:44px;padding:9px 10px;white-space:normal;line-height:1.25}
+  .field{min-width:0}
+  .field .note{line-height:1.45}
+  .boardhead{align-items:flex-start;gap:6px}
+  .boardhead h2{font-size:clamp(20px,6vw,26px);overflow-wrap:anywhere}
+  .scene-wrap{width:100%;min-width:0;overflow:hidden}
+  .board,.panel,.side,.ana,.mapgrid,.wrap{min-width:0;max-width:100%}
+  .tagrow{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+  #c-go{width:100%;align-self:stretch!important}
+  .slist input,.field input,.field select,.field textarea{font-size:16px}
+  .foot{align-items:stretch}
+  .foot .btn{width:100%}
+  .sumcard .meta{overflow-wrap:anywhere}
+  #z-pdf,#z-copy{min-height:46px}
+  #z-pdf{flex:1 1 100%;width:100%}
+  #z-copy{flex:1 1 100%;width:100%}
+}
+@media(pointer:coarse){
+  button.chip,.seg button,.btn,summary{touch-action:manipulation}
+}
 /* Responsive polish v2: mobile controls, price tables and PDF cost layout */
 @media(max-width:760px){
   html,body{max-width:100%;overflow-x:hidden}
