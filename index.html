@@ -943,19 +943,19 @@ svg.scene{min-width:0;width:100%;max-width:100%}
   ];
   const blank = ()=>({op:'-',bsm:'-',kb:'-',kbMode:'module',web:'-',webMode:'module',shop:'-',ads:'-',loc:false,news:false,mail:'-',tik:false,reno:'-'});
   // Definition = welche Bausteine der Kunde will; die Stufe (S/M/L) bestimmt die Ausprägung
-  const blankDef = ()=>({op:false,bsm:false,kb:false,kbMode:'module',loc:false,web:'-',webMode:'module',mail:'-',shop:false,ads:false,adsLevel:'M',budget:250,tik:false,reno:'-'});
+  const blankDef = ()=>({op:false,opLevel:'S',bsm:false,kb:false,kbMode:'module',loc:false,web:'-',webMode:'module',mail:'-',shop:false,ads:false,adsLevel:'M',budget:250,tik:false,reno:'-'});
   const DEF_DEF = ()=>[
-    {...blankDef(), op:true, bsm:true, web:'S'},
-    {...blankDef(), op:true, bsm:true, kb:true, web:'M', ads:true, budget:250},
-    {...blankDef(), op:true, bsm:true, kb:true, web:'L', ads:true, budget:1000, tik:true},
+    {...blankDef(), op:true, opLevel:'S', bsm:true, web:'S'},
+    {...blankDef(), op:true, opLevel:'M', bsm:true, kb:true, web:'M', ads:true, budget:250},
+    {...blankDef(), op:true, opLevel:'L', bsm:true, kb:true, web:'L', ads:true, budget:1000, tik:true},
     {...blankDef(), op:true}
   ];
   const DEF_TIER = ()=>['S','M','L','M'];
   const PRESETS = [
-    {l:'Nur Onlinepräsenz', c:{op:true}},
+    {l:'Nur Onlinepräsenz', c:{op:true,opLevel:'S'}, t:'S'},
     {l:'Nur Tischreservation', c:{loc:true}, br:'resto'},
     {l:'Nur Terminbuchung', c:{kb:true}, br:'beauty'},
-    {l:'Bewertungen & Social', c:{op:true, bsm:true}, t:'M'},
+    {l:'Bewertungen & Social', c:{op:true,opLevel:'M', bsm:true}, t:'M'},
     {l:'Nur Werbung', c:{ads:true, budget:250}},
     {l:'Nur TikTok', c:{tik:true}},
     {l:'Nur renovero', c:{reno:'Starter'}, br:'craft'},
@@ -1008,7 +1008,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
   }
   function toCfg(d,l){
     const c=blank();
-    c.op=d.op?l:'-'; c.bsm=d.bsm&&l!=='S'?l:'-'; c.kb=d.kb?l:'-'; c.kbMode=d.kbMode==='standalone'?'standalone':'module'; c.shop=d.shop?l:'-';
+    c.op=d.op?(['S','M','L'].includes(d.opLevel)?d.opLevel:l):'-'; c.bsm=d.bsm&&l!=='S'?l:'-'; c.kb=d.kb?l:'-'; c.kbMode=d.kbMode==='standalone'?'standalone':'module'; c.shop=d.shop?l:'-';
     c.web=d.web||'-'; c.webMode=d.webMode==='standalone'?'standalone':'module'; c.mail=d.mail||'-'; c.loc=!!d.loc; c.tik=!!d.tik;
     const adsLevel=ADS[d.adsLevel]?d.adsLevel:l; c.ads=d.ads?adsLevel:'-'; if(d.ads){ const A=ADS[adsLevel]; c.budget=Math.min(A.max,Math.max(A.min,num(d.budget)||A.def)); }
     c.reno=RENO[d.reno]?d.reno:'-';
@@ -1021,8 +1021,8 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     const d=st.def[st.pk], on=elsFor(eff()).has(id);
     switch(id){
       case 'dir': case 'ai': d.op=!on; if(on && st.tier[st.pk]!=='S') d.bsm=false; break;
-      case 'rev': if(on) d.bsm=false; else { d.bsm=true; atLeast('M'); } break;
-      case 'hubrev': case 'soc': case 'plan': if(on) d.bsm=false; else { d.bsm=true; atLeast('M'); } break;
+      case 'rev': if(on) d.bsm=false; else { d.bsm=true; d.opLevel=['M','L'].includes(d.opLevel)?d.opLevel:'M'; atLeast('M'); } break;
+      case 'hubrev': case 'soc': case 'plan': if(on) d.bsm=false; else { d.bsm=true; d.opLevel=['M','L'].includes(d.opLevel)?d.opLevel:'M'; atLeast('M'); } break;
       case 'book': if(on){ d.kb=false; d.loc=false; } else if(st.br==='resto') d.loc=true; else d.kb=true; break;
       case 'sms': if(on) d.kb=false; else { d.kb=true; atLeast('M'); } break;
       case 'news': if(on) st.tier[st.pk]='M'; else { d.kb=true; atLeast('L'); } break;
@@ -1303,6 +1303,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     const d=st.def[st.pk], n=selected().length; let h='';
     const row=(nm,sm,ctl,info)=>{ h+=`<div class="crow"><div class="nm">${nm}<small>${sm}</small></div><div>${ctl}${info?`<div class="extra note">${info}</div>`:''}</div></div>`; };
     row('Onlinepräsenz','Verzeichnisse, Navis, KI-Assistenten', seg('op',YN,d.op), d.op?`${fmt(n,0)} ${n===1?'Ortschaft':'Ortschaften'} aus der Karte${num(st.rub)>0?`, ${fmt(Math.round(num(st.rub)),0)} zusätzliche Rubriken`:''}`:'');
+    if(d.op) row('Onlinepräsenz-Stufe','Unabhängig von der Gesamtpaket-Stufe', seg('opLevel',[['S','S · CHF 69'],['M','M · CHF 159'],['L','L · CHF 229']],d.opLevel||st.tier[st.pk]), 'Die gewählte Stufe bleibt erhalten, auch wenn du andere Produkte hinzufügst. Bewertungen & Soziale Medien benötigen mindestens M.');
     row('Bewertungen & Soziale Medien','digitalONE · ab Onlinepräsenz M verfügbar', seg('bsm',YN,d.bsm), d.bsm?'Wird nur in den Paketstufen M und L berechnet. Onlinepräsenz mindestens M erforderlich.':'');
     if(st.br!=='resto') { row('Kunden & Buchungen','MyCOCKPIT, Online-Termine, SMS', seg('kb',YN,d.kb), d.kb?'Ab M mit SMS-Bestätigungen, L mit Newsletter.':''); if(d.kb) row('Vertragsmodell Kunden & Buchungen','Preislogik', seg('kbMode',[['module','digitalONE-Modul'],['standalone','MyCOCKPIT separat']],d.kbMode||'module'), d.kbMode==='standalone'?`Einrichtung einmalig CHF ${fmt(SETUP.kb[st.tier[st.pk]]||0,0)}.`:'Monatspreis gemäss digitalONE; keine separate MyCOCKPIT-Einrichtungsgebühr.'); }
     if(st.br==='resto') row('Tischreservation','MyLOCALINA', seg('loc',YN,d.loc), '');
@@ -1322,7 +1323,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     const k=btn.parentElement.dataset.k, v=btn.dataset.v, d=st.def[st.pk];
     if(['op','bsm','kb','loc','shop','ads','tik'].includes(k)) {
       d[k]=(v==='true');
-      if(k==='bsm' && d.bsm){ d.op=true; if(['S','M','L'].indexOf(st.tier[st.pk])<1) st.tier[st.pk]='M'; }
+      if(k==='bsm' && d.bsm){ d.op=true; if(!['M','L'].includes(d.opLevel)) d.opLevel='M'; if(['S','M','L'].indexOf(st.tier[st.pk])<1) st.tier[st.pk]='M'; }
       if(k==='op' && !d.op) d.bsm=false;
     }
     else if(k==='budget') d.budget=+v;
