@@ -889,6 +889,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
   const budget = c=>{ const A=ADS[c.ads]; if(!A) return 0; const b=num(c.budget); return b>=A.min&&b<=A.max ? b : A.def; };
   const adsS = l=>ADS[l].setup;
   const SETUP = {kb:{S:149,M:249,L:349}, web:{XS:199,S:790,M:2490,L:5090}};
+  const WEB_ANNUAL = {XS:0,S:348,M:588,L:1188};
   const RENO = {Presence:{y:499,i:'Eintrag, Logo, 4 Kategorien'},Starter:{y:1499,i:'Bilder, Bewertungen, Ausschreibungen, unlimitierte Offerten'},Profi:{y:2099,i:'Premium-Darstellung, Direktanfragen, KI-Preisrechner (mit KI)'}};
   const MAIL = {lite:{n:'Lite',p:90,i:'bis 10 E-Mail-Adressen'},std:{n:'Standard',p:190,i:''},pro:{n:'Professional',p:190,i:''}};
   const LVNAME = (l,k)=> l==='0' ? (k==='web'?'XS':'Gratis') : l;
@@ -940,9 +941,9 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     {name:'Marktführer', flames:3, pitch:'Erste Adresse in deiner Region. Du bist überall präsent, wo gesucht wird.'},
     {name:'Individuell zusammengestellt', flames:0, pitch:'Nur das, was der Kunde wirklich will. Vorlage wählen oder unten Produkte zusammenstellen.'}
   ];
-  const blank = ()=>({op:'-',bsm:'-',kb:'-',web:'-',shop:'-',ads:'-',loc:false,news:false,mail:'-',tik:false,reno:'-'});
+  const blank = ()=>({op:'-',bsm:'-',kb:'-',web:'-',webMode:'module',shop:'-',ads:'-',loc:false,news:false,mail:'-',tik:false,reno:'-'});
   // Definition = welche Bausteine der Kunde will; die Stufe (S/M/L) bestimmt die Ausprägung
-  const blankDef = ()=>({op:false,bsm:false,kb:false,loc:false,web:'-',mail:'-',shop:false,ads:false,adsLevel:'M',budget:250,tik:false,reno:'-'});
+  const blankDef = ()=>({op:false,bsm:false,kb:false,loc:false,web:'-',webMode:'module',mail:'-',shop:false,ads:false,adsLevel:'M',budget:250,tik:false,reno:'-'});
   const DEF_DEF = ()=>[
     {...blankDef(), op:true, bsm:true, web:'S'},
     {...blankDef(), op:true, bsm:true, kb:true, web:'M', ads:true, budget:250},
@@ -1008,7 +1009,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
   function toCfg(d,l){
     const c=blank();
     c.op=d.op?l:'-'; c.bsm=d.bsm&&l!=='S'?l:'-'; c.kb=d.kb?l:'-'; c.shop=d.shop?l:'-';
-    c.web=d.web||'-'; c.mail=d.mail||'-'; c.loc=!!d.loc; c.tik=!!d.tik;
+    c.web=d.web||'-'; c.webMode=d.webMode==='standalone'?'standalone':'module'; c.mail=d.mail||'-'; c.loc=!!d.loc; c.tik=!!d.tik;
     const adsLevel=ADS[d.adsLevel]?d.adsLevel:l; c.ads=d.ads?adsLevel:'-'; if(d.ads){ const A=ADS[adsLevel]; c.budget=Math.min(A.max,Math.max(A.min,num(d.budget)||A.def)); }
     c.reno=RENO[d.reno]?d.reno:'-';
     if(PAID(c.bsm) && !(c.op==='M'||c.op==='L')) c.op='M';
@@ -1200,18 +1201,18 @@ svg.scene{min-width:0;width:100%;max-width:100%}
   /* ---------- Preise ---------- */
   function price(i){
     const c=(typeof i==='object')?i:eff(i), g=st.g; let m=0, once=0; const miss=[];
-    MODS.forEach(M=>{ const l=c[M.k]; if(l==='-'||M.k==='ads') return; m+=M.lv[l]||0; });
+    MODS.forEach(M=>{ const l=c[M.k]; if(l==='-'||M.k==='ads'||(M.k==='web'&&c.webMode==='standalone')) return; m+=M.lv[l]||0; });
     let mAds=0;
     if(c.ads!=='-'){ m+=budget(c); mAds+=budget(c); once+=adsS(c.ads); }
     if(c.reno && RENO[c.reno]) m+=RENO[c.reno].y/12;
     if(c.tik){ if(![250,500,750].includes(num(g.tik))) miss.push('TikTok-Budget auswählen'); m+=num(g.tik); mAds+=num(g.tik); once+=250; }
     if(c.loc){ if(g.loc==='') miss.push('MyLOCALINA-Preis'); m+=num(g.loc); once+=num(g.sloc); }
-    once += (SETUP.kb[c.kb]||0) + (SETUP.web[c.web]||0);
-    const orte=ortCost(c), rub=c.op==='-'?0:Math.max(0,Math.round(num(st.rub)))*50, mail=hasMail(c)?MAIL[c.mail].p:0, lz=Math.max(1,num(g.lz)||36);
-    m += (orte+rub+mail)/12;   // Jahresposten als Monatsanteil – ein einziger Monatspreis
+    once += (SETUP.kb[c.kb]||0) + (c.web!=='-'&&c.webMode==='standalone'?(SETUP.web[c.web]||0):0);
+    const orte=ortCost(c), rub=c.op==='-'?0:Math.max(0,Math.round(num(st.rub)))*50, mail=hasMail(c)?MAIL[c.mail].p:0, webAnnual=c.web!=='-'&&c.webMode==='standalone'?(WEB_ANNUAL[c.web]||0):0, lz=Math.max(1,num(g.lz)||36);
+    m += (orte+rub+mail+webAnnual)/12;   // Jahresposten als Monatsanteil – ein einziger Monatspreis
     // Annual items (locations, extra categories, mail) are shown as a monthly equivalent,
     // but are not eligible for subscription discounts. Ad spend is also excluded from discounts.
-    const annual=orte+rub+mail;
+    const annual=orte+rub+mail+webAnnual;
     const pct=Math.min(30,Math.max(0,num(st.rabatt))), list=m;
     const eligible=Math.max(0,m-mAds-annual/12);
     const disc=eligible*pct/100;
@@ -1226,7 +1227,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     if(c.kb!=='-'){ const sm = c.kb==='M'?num(st.g.smsM):c.kb==='L'?num(st.g.smsL):0;
       out.push(`Kunden & Buchungen ${LVNAME(c.kb)} (MyCOCKPIT)${sm?`: ${fmt(sm,0)} SMS / Monat`:''}${c.kb==='L'?', Newsletter':''}`); }
     if(c.loc) out.push('Tischreservation (MyLOCALINA)');
-    if(c.web!=='-') out.push(`Website ${LVNAME(c.web,'web')}: ${MODS[3].info[c.web]}`);
+    if(c.web!=='-') out.push(`${c.webMode==='standalone'?'MyWEBSITE':'Website-Modul digitalONE'} ${LVNAME(c.web,'web')}: ${MODS[3].info[c.web]}`);
     if(hasMail(c)) out.push(`Mail Hosting ${MAIL[c.mail].n}${MAIL[c.mail].i?': '+MAIL[c.mail].i:''}`);
     if(c.shop!=='-') out.push(`Webshop ${LVNAME(c.shop)}: ${MODS[4].info[c.shop]}`);
     if(c.ads!=='-') out.push(`advertiseONE ${c.ads}: ${ADS[c.ads].ch}`);
@@ -1305,7 +1306,8 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     row('Bewertungen & Soziale Medien','digitalONE · ab Onlinepräsenz M verfügbar', seg('bsm',YN,d.bsm), d.bsm?'Wird nur in den Paketstufen M und L berechnet. Onlinepräsenz mindestens M erforderlich.':'');
     if(st.br!=='resto') row('Kunden & Buchungen','MyCOCKPIT, Online-Termine, SMS', seg('kb',YN,d.kb), d.kb?'Ab M mit SMS-Bestätigungen, L mit Newsletter.':'');
     if(st.br==='resto') row('Tischreservation','MyLOCALINA', seg('loc',YN,d.loc), '');
-    row('Website','MyWEBSITE, Grösse fest gewählt', seg('web',[['-','–'],['XS','XS'],['S','S'],['M','M'],['L','L']],d.web), d.web!=='-'?MODS[3].info[d.web]:'');
+    row('Website','Website-Modul oder eigenständiges MyWEBSITE', seg('web',[['-','–'],['XS','XS'],['S','S'],['M','M'],['L','L']],d.web), d.web!=='-'?MODS[3].info[d.web]:'');
+    if(d.web!=='-') row('Website-Vertragsmodell','Preislogik', seg('webMode',[['module','digitalONE-Modul'],['standalone','MyWEBSITE separat']],d.webMode||'module'), d.webMode==='standalone'?`Einrichtung einmalig CHF ${fmt(SETUP.web[d.web]||0,0)} + CHF ${fmt(WEB_ANNUAL[d.web]||0,0)} pro Jahr.`:'Monatspreis gemäss digitalONE; keine separate MyWEBSITE-Einrichtungsgebühr.');
     row('Mail Hosting','E-Mail-Adressen', seg('mail',[['-','–'],['lite','Lite'],['std','Standard'],['pro','Professional']],d.mail), d.mail==='lite'?MAIL.lite.i:'');
     row('Webshop','digitalONE', seg('shop',YN,d.shop), '');
     row('advertiseONE','Werbekampagnen', seg('ads',YN,d.ads), '');
@@ -1347,7 +1349,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     if(c.bsm!=='-') add(`Bewertungen & Soziale Medien ${LVNAME(c.bsm)}`, MODS[1].lv[c.bsm]||0, 0) || (c.bsm==='0' && L.push({n:'Bewertungen & Soziale Medien Gratis',m:0,o:0}));
     if(c.kb!=='-') add(`Kunden & Buchungen ${c.kb}`, MODS[2].lv[c.kb], SETUP.kb[c.kb]||0);
     if(c.loc) add('Tischreservation MyLOCALINA', num(g.loc), num(g.sloc));
-    if(c.web!=='-') add(`Website ${c.web}`, MODS[3].lv[c.web], SETUP.web[c.web]||0);
+    if(c.web!=='-') add(c.webMode==='standalone'?`MyWEBSITE ${c.web} (Jahresgebühr /12)`:`Website ${c.web} (digitalONE-Modul)`, c.webMode==='standalone'?(WEB_ANNUAL[c.web]||0)/12:MODS[3].lv[c.web], c.webMode==='standalone'?(SETUP.web[c.web]||0):0);
     if(hasMail(c)) add(`Mail Hosting ${MAIL[c.mail].n} (Jahrespreis /12)`, MAIL[c.mail].p/12, 0);
     if(c.shop!=='-') add(`Webshop ${c.shop}`, MODS[4].lv[c.shop], 0);
     if(c.ads!=='-') add(`advertiseONE ${c.ads} (Werbebudget)`, budget(c), ADS[c.ads].setup);
