@@ -986,7 +986,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     delete o.cfg; delete o.sub;
     if(!Array.isArray(o.def)||o.def.length<4) o.def=DEF_DEF();
     if(!Array.isArray(o.tier)||o.tier.length<4) o.tier=DEF_TIER();
-    o.def=o.def.map(d=>{ const x={...blankDef(),...d}; if(x.reno===true) x.reno='Starter'; if(x.reno===false) x.reno='-'; return x; });
+    o.def=o.def.map((d,i)=>{ const hasOpLevel=['S','M','L'].includes(d.opLevel); const x={...blankDef(),...d}; if(!hasOpLevel) x.opLevel=PAID(o.tier[i])?o.tier[i]:'S'; if(x.reno===true) x.reno='Starter'; if(x.reno===false) x.reno='-'; return x; });
     return o;
   }
   migrate(st);
