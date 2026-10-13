@@ -1046,7 +1046,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
   ];
   const DEF_F = {q:'1000',c:'10',w:'30',v:'500',db:'',vis:['25','50','80']};
   const DEF_G = {lz:'36', adsLz:'6', tikLz:'6', op:'50', in:'1', loc:'120', sloc:'250', nl:'', sshop:'', smsM:'100', smsL:'250',
-    aS:'150', aM:'250', aL:'500', asS:'150', asM:'250', asL:'450', tik:'', tiks:'', bn:'', bt:'', be:''};
+    aS:'150', aM:'250', aL:'500', asS:'150', asM:'250', asL:'450', tik:'', tiks:'250', bn:'', bt:'', be:''};
   const DEF_REG = ()=>({mode:'umkreis', cantons:[], center:null, radius:10, add:[], rem:[]});
   const KEY = 'digitales-haus.v3';
 
@@ -1289,7 +1289,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     let mAds=0;
     if(c.ads!=='-'){ m+=budget(c); mAds+=budget(c); once+=adsS(c.ads); }
     if(c.reno && RENO[c.reno]) m+=RENO[c.reno].y/12;
-    if(c.tik){ if(![250,500,750].includes(num(g.tik))) miss.push('TikTok-Budget auswählen'); m+=num(g.tik); mAds+=num(g.tik); once+=250; }
+    if(c.tik){ if(![250,500,750].includes(num(g.tik))) miss.push('TikTok-Budget auswählen'); m+=num(g.tik); mAds+=num(g.tik); once+=Math.max(0,num(g.tiks)); }
     if(c.loc){ if(g.loc==='') miss.push('MyLOCALINA-Preis'); m+=num(g.loc); once+=num(g.sloc); }
     once += (c.kb!=='-'?(SETUP.kb[c.kb]||0):0) + (c.web!=='-'?(SETUP.web[c.web]||0):0);
     const orte=ortCost(c), rub=c.op==='-'?0:Math.max(0,Math.round(num(st.rub)))*50, mail=hasMail(c)?MAIL[c.mail].p:0, webAnnual=c.web!=='-'&&c.webMode==='standalone'?(WEB_ANNUAL[c.web]||0):0, lz=Math.max(1,num(g.lz)||36);
