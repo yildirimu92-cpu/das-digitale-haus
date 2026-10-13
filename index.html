@@ -1479,7 +1479,8 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     $('pdet').innerHTML = `<thead><tr><th class="l">${esc(tierName(cur))}</th><th>pro Monat</th><th>einmalig</th></tr></thead><tbody>`
       + L.map(x=>`<tr><td>${esc(x.n)}</td><td>${chf(x.m)}</td><td>${x.o?chf(x.o):'–'}</td></tr>`).join('')
       + (P.disc>0 ? `<tr><td>Sonderrabatt ${fmt(P.pct,0)} % auf Abo-Kosten</td><td>− ${chf(P.disc)}</td><td>–</td></tr>` : '')
-      + `<tr class="key"><td>Total</td><td>${chf(P.m)}</td><td>${chf(P.once)}</td></tr></tbody>`;
+      + (schedule.termPct>0 ? `<tr><td>Laufzeitrabatt ${fmt(schedule.termPct*100,0)} % auf Abo-Kosten</td><td>− ${chf(Math.max(0,P.m-schedule.monthly))}</td><td>–</td></tr>` : '')
+      + `<tr class="key"><td>Total pro Monat im Vertrag</td><td>${chf(schedule.monthly)}</td><td>${chf(P.once)}</td></tr></tbody>`;
     if(document.activeElement!==$('rb')) $('rb').value = st.rabatt||'';
     const raw=num(st.rabatt); $('rb-n').textContent = raw>30 ? 'Maximal 30 % möglich. Gerechnet wird mit 30 %.' : (P.disc>0 ? `Rabatt: − ${chf(P.disc)} pro Monat. Gilt nicht für advertiseONE und nicht für einmalige Kosten.` : 'Höchstens 30 %. Gilt nicht für advertiseONE und nicht für einmalige Kosten.');
   }
