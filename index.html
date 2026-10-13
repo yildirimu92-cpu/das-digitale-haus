@@ -67,7 +67,9 @@ svg.scene{display:block;width:100%;min-width:0;height:auto}
 .h{font-family:var(--hand);fill:var(--ink)} .hm{font-family:var(--hand);fill:var(--muted)}
 .road{stroke:var(--road);stroke-width:38;fill:none;stroke-linecap:round}
 .roadmid{stroke:var(--card);stroke-width:3;fill:none;stroke-dasharray:14 14}
-.el{cursor:pointer;transition:opacity .25s}
+.el{cursor:pointer;transition:opacity .25s,filter .2s}
+.el:not(.off) .s{stroke-width:3.5}
+.el:not(.off){filter:drop-shadow(0 0 1.5px var(--fire))}
 .el.off{opacity:.22}
 .el.off .s{stroke-dasharray:5 6}
 .el:focus-visible{outline:none}
@@ -1522,15 +1524,16 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     $('sg-'+k).addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; if(!st[k].includes(b.dataset.v)) st[k].push(b.dataset.v); save(); renderTags(k); });
   });
 
-  // Grössere Tippflächen für die Wegweiser (iPad)
-  ['gads','meta','tik','sms','news','hubrev','plan','reno'].forEach(id=>{ const g=document.querySelector(`.el[data-id="${id}"]`); if(!g) return;
-    try{ const b=g.getBBox(), r=document.createElementNS('http://www.w3.org/2000/svg','rect');
-      r.setAttribute('x',b.x-6); r.setAttribute('y',b.y-6); r.setAttribute('width',b.width+12); r.setAttribute('height',b.height+12);
-      r.setAttribute('fill','transparent'); r.setAttribute('pointer-events','all'); g.insertBefore(r,g.firstChild); }catch(e){} });
-  /* ---------- Events ---------- */
-  document.querySelectorAll('.el').forEach(g=>{
-    g.addEventListener('click',()=>tapEl(g.dataset.id));
-    g.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); tapEl(g.dataset.id); }});
+  /* ---------- Events: delegiert, damit SVG-Klicks auch nach DOM-Updates funktionieren ---------- */
+  document.addEventListener('click',e=>{
+    const g=e.target.closest && e.target.closest('.el[data-id]');
+    if(!g) return;
+    tapEl(g.dataset.id);
+  });
+  document.addEventListener('keydown',e=>{
+    const g=e.target.closest && e.target.closest('.el[data-id]');
+    if(!g || (e.key!=='Enter' && e.key!==' ')) return;
+    e.preventDefault(); tapEl(g.dataset.id);
   });
   document.querySelectorAll('#viewpk .chip').forEach(c=>c.addEventListener('click',()=>{ st.pk=+c.dataset.p; save(); update(); }));
   function renderIndustryUI(){
