@@ -2007,7 +2007,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
       pts: (st.pts||[]).filter(p=>(p.t||'').trim()), next: dtch(st.next), topic:(st.topic||'').trim(),
       ki: st.ki&&st.ki.r ? `Test im Gespräch${st.ki.q?` («${st.ki.q.trim()}»)`:''}: ${st.ki.r==='ja'?'Sie wurden genannt.':'Sie wurden nicht genannt.'}` : '', opt: st.zopt||{},
       berater: [st.g.bn, st.g.bt, st.g.be].filter(Boolean) };
-    if(d.opt.cmp){ const T=tiers(), cur=curTier(); d.cmp=T.map((t,k)=>{ const Q=price(t), S=priceSchedule(Q); return {name:tierName(k), cur:k===cur, m:Q.m, once:Q.once, first:S.years[0]?.total ?? (Q.m*12+Q.once)}; }); }
+    if(d.opt.cmp){ const T=tiers(), cur=curTier(); d.cmp=T.map((t,k)=>{ const Q=price(t), S=priceSchedule(Q); return {name:tierName(k), cur:k===cur, m:S.years[0]?.monthly ?? Q.m, once:Q.once, first:S.years[0]?.total ?? (Q.m*12+Q.once)}; }); }
 
     return d;
   }
