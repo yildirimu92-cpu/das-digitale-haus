@@ -1045,7 +1045,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     {l:'Alles leeren', c:{}}
   ];
   const DEF_F = {q:'1000',c:'10',w:'30',v:'500',db:'',vis:['25','50','80']};
-  const DEF_G = {lz:'36', adsLz:'6', tikLz:'6', op:'50', in:'1', loc:'120', sloc:'250', nl:'', sshop:'', smsM:'100', smsL:'250', tik:'250', tiks:'250',
+  const DEF_G = {lz:'36', adsLz:'6', tikLz:'6', op:'50', in:'1', loc:'120', sloc:'250', nl:'', sshop:'', smsM:'100', smsL:'250',
     aS:'150', aM:'250', aL:'500', asS:'150', asM:'250', asL:'450', tik:'', tiks:'', bn:'', bt:'', be:''};
   const DEF_REG = ()=>({mode:'umkreis', cantons:[], center:null, radius:10, add:[], rem:[]});
   const KEY = 'digitales-haus.v3';
@@ -1089,9 +1089,10 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     if(c.kb==='L') s.add('news');
     return s;
   }
-  function toCfg(d,l){
+  function toCfg(d,l,scaleOnlinePresence=false){
     const c=blank();
-    c.op=d.op?l:'-'; c.bsm=d.bsm&&l!=='S'?l:'-'; c.kb=d.kb?l:'-'; c.kbMode=d.kbMode==='standalone'?'standalone':'module'; c.shop=d.shop?l:'-';
+    const opLevel=scaleOnlinePresence?l:(['S','M','L'].includes(d.opLevel)?d.opLevel:l);
+    c.op=d.op?opLevel:'-'; c.bsm=d.bsm&&l!=='S'?l:'-'; c.kb=d.kb?l:'-'; c.kbMode=d.kbMode==='standalone'?'standalone':'module'; c.shop=d.shop?l:'-';
     c.web=d.web||'-'; c.webMode=d.webMode==='standalone'?'standalone':'module'; c.mail=d.mail||'-'; c.loc=!!d.loc; c.tik=!!d.tik;
     const adsLevel=ADS[d.adsLevel]?d.adsLevel:l; c.ads=d.ads?adsLevel:'-'; if(d.ads){ const A=ADS[adsLevel]; c.budget=Math.min(A.max,Math.max(A.min,num(d.budget)||A.def)); }
     c.reno=RENO[d.reno]?d.reno:'-';
@@ -1438,7 +1439,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
 
   /* ---------- Preise: die definierte Lösung in S, M, L ---------- */
   const LV=['S','M','L'];
-  function tiers(){ const d=st.def[st.pk]; return LV.map(l=>toCfg(d,l)); }
+  function tiers(){ const d=st.def[st.pk]; return LV.map(l=>toCfg(d,l,true)); }
   function curTier(){ return LV.indexOf(st.tier[st.pk]); }
   const tierName = k=>`${PK[st.pk].name} ${LV[k]}`;
   function lineItems(c){
