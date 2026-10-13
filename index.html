@@ -338,6 +338,33 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
   </header>
 
 <style>
+/* Responsive polish v2: mobile controls, price tables and PDF cost layout */
+@media(max-width:760px){
+  html,body{max-width:100%;overflow-x:hidden}
+  .btn,button.chip,.seg button{min-height:42px}
+  .panel h2,.panel h3{line-height:1.2}
+  .sumcard{padding:14px 12px;font-size:13px;overflow:hidden}
+  .sumcard .cost-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .sumcard table.cost-table{min-width:560px;table-layout:fixed}
+  .sumcard .cost-table th,.sumcard .cost-table td{padding:6px 5px;white-space:normal;overflow-wrap:anywhere;text-align:left}
+  .sumcard .cost-table th:nth-child(1),.sumcard .cost-table td:nth-child(1){width:17%}
+  .sumcard .cost-table th:nth-child(2),.sumcard .cost-table td:nth-child(2){width:17%}
+  .sumcard .cost-table th:nth-child(3),.sumcard .cost-table td:nth-child(3){width:23%}
+  .sumcard .cost-table th:nth-child(4),.sumcard .cost-table td:nth-child(4){width:17%}
+  .sumcard .cost-table th:nth-child(5),.sumcard .cost-table td:nth-child(5){width:26%}
+  .sumcard .cost-table td:last-child{padding-left:5px;white-space:normal}
+  .settings summary,.pdet summary{padding:10px 0;line-height:1.35}
+}
+.pr table.cost-table{table-layout:fixed;width:100%;font-size:10.5px}
+.pr .cost-table th,.pr .cost-table td{padding:6px 5px;text-align:left;white-space:normal;overflow-wrap:anywhere;vertical-align:top;border-bottom:1px solid #e6ebf0}
+.pr .cost-table th{font-size:9.5px;color:#5b6878;font-weight:700}
+.pr .cost-table th:nth-child(1),.pr .cost-table td:nth-child(1){width:17%}
+.pr .cost-table th:nth-child(2),.pr .cost-table td:nth-child(2){width:17%}
+.pr .cost-table th:nth-child(3),.pr .cost-table td:nth-child(3){width:23%}
+.pr .cost-table th:nth-child(4),.pr .cost-table td:nth-child(4){width:17%}
+.pr .cost-table th:nth-child(5),.pr .cost-table td:nth-child(5){width:26%}
+.pr .cost-table tr{break-inside:avoid;page-break-inside:avoid}
+.pr .cost-table thead{display:table-header-group}
 /* Responsive polish v1 */
 *,*::before,*::after{box-sizing:border-box}
 img,svg,canvas{max-width:100%}
@@ -1961,7 +1988,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     if(d.digitalPotential) h+=`<h4>Digitaler Potenzialindex: ${d.digitalPotential.score}/100</h4><p style="margin:0"><b>${esc(d.digitalPotential.level)}</b> · Bewertet wird die Vollständigkeit der digitalen Grundlagen – nicht das tatsächliche Google-Suchvolumen.</p><p class="fine" style="margin-top:4px">${d.digitalPotential.parts.map(p=>esc(p.label)+': '+fmt(p.points,0)+'/'+fmt(p.max,0)).join(' · ')}</p>`;
     if(d.svc.length||d.kw.length) h+=`<h4>Wofür möchten Sie gefunden werden?</h4>${d.svc.length?`<p style="margin:0 0 4px"><b>Dienstleistungen:</b> ${esc(d.svc.join(', '))}</p>`:''}${d.kw.length?`<p style="margin:0"><b>Stichworte:</b> ${esc(d.kw.join(', '))}</p>`:''}`;
     h+=`<h4>Unsere Empfehlung: ${esc(d.pkg)}${d.sub?' ('+esc(d.sub)+')':''}</h4><ul>${d.feats.map(f=>`<li>${esc(f)}</li>`).join('')||'<li>Noch keine Produkte gewählt</li>'}</ul>`;
-    const S=priceSchedule(P); h+=`<h4>Kosten und Vertragslaufzeit</h4><p style="margin:0 0 6px">Standardprodukte: ${S.baseMonths} Monate${S.adsMonths?` · advertiseONE: ${S.adsMonths} Monate`:``}${S.tikMonths?` · advertiseONE TikTok: ${S.tikMonths} Monate`:``}${S.termPct?` · Laufzeitrabatt ${fmt(S.termPct*100,0)} % auf laufende Produktkosten (ohne Werbebudget und Einmalkosten)`:''}</p><table class="cost-table"><tr><th>Zeitraum</th><th>Monatlich¹</th><th>Jahres-/Zusatzkosten</th><th>Einmalig</th><th>Total</th></tr>${S.years.map(y=>`<tr${y.year===1?' class="b"':''}><td>${y.year}. Jahr</td><td>${chf(y.monthly)}</td><td>${chf(y.annual)}</td><td>${chf(y.setup)}</td><td>${chf(y.total)}</td></tr>`).join('')}<tr class="b total-row"><td colspan="4">Vertragsgesamtbetrag · ${S.months} Monate</td><td>${chf(S.total)}</td></tr></table><p class="fine" style="margin:6px 0 0">¹ Monatsbetrag ohne separat ausgewiesene Jahres- und Einmalkosten. Jahreskosten werden dem tatsächlichen Zahlungsjahr zugeordnet. Preisannahme gemäss gewählter Laufzeit; massgebend ist das konkrete Angebot.</p><p style="margin:8px 0 0"><b>Zahlungsweise:</b> ${payLines().map(esc).join(' · ')}</p>`;
+    const S=priceSchedule(P); h+=`<h4>Kosten und Vertragslaufzeit</h4><p style="margin:0 0 6px">Standardprodukte: ${S.baseMonths} Monate${S.adsMonths?` · advertiseONE: ${S.adsMonths} Monate`:``}${S.tikMonths?` · advertiseONE TikTok: ${S.tikMonths} Monate`:``}${S.termPct?` · Laufzeitrabatt ${fmt(S.termPct*100,0)} % auf laufende Produktkosten (ohne Werbebudget und Einmalkosten)`:''}</p><div class="cost-table-wrap"><table class="cost-table"><tr><th>Zeitraum</th><th>Monatlich¹</th><th>Jahres-/Zusatzkosten</th><th>Einmalig</th><th>Total</th></tr>${S.years.map(y=>`<tr${y.year===1?' class="b"':''}><td>${y.year}. Jahr</td><td>${chf(y.monthly)}</td><td>${chf(y.annual)}</td><td>${chf(y.setup)}</td><td>${chf(y.total)}</td></tr>`).join('')}<tr class="b total-row"><td colspan="4">Vertragsgesamtbetrag · ${S.months} Monate</td><td>${chf(S.total)}</td></tr></table><p class="fine" style="margin:6px 0 0">¹ Monatsbetrag ohne separat ausgewiesene Jahres- und Einmalkosten. Jahreskosten werden dem tatsächlichen Zahlungsjahr zugeordnet. Preisannahme gemäss gewählter Laufzeit; massgebend ist das konkrete Angebot.</p><p style="margin:8px 0 0"><b>Zahlungsweise:</b> ${payLines().map(esc).join(' · ')}</p>`;
     if(d.cmp) h+=`<h4>Die drei Stufen im Vergleich</h4><table><tr><td></td><td>pro Monat</td><td>1. Jahr</td></tr>${d.cmp.map(x=>`<tr${x.cur?' class="b"':''}><td>${esc(x.name)}</td><td>${chf(x.m)}</td><td>${chf(x.first)}</td></tr>`).join('')}</table>`;
     if(d.pts.length) h+=`<h4>Was wir vereinbart haben</h4><ul>${d.pts.map(p=>`<li>${esc(p.t)}${p.d?` <span class="meta">(bis ${esc(dch(p.d))})</span>`:''}</li>`).join('')}</ul>`;
     if(d.next||d.topic) h+=`<h4>Nächster Termin</h4><p style="margin:0">${esc(d.next||'Datum folgt')}${d.topic?`<br>Thema: ${esc(d.topic)}`:''}</p>`;
