@@ -1290,7 +1290,7 @@ svg.scene{min-width:0;width:100%;max-width:100%}
     if(c.reno && RENO[c.reno]) m+=RENO[c.reno].y/12;
     if(c.tik){ if(![250,500,750].includes(num(g.tik))) miss.push('TikTok-Budget auswählen'); m+=num(g.tik); mAds+=num(g.tik); once+=250; }
     if(c.loc){ if(g.loc==='') miss.push('MyLOCALINA-Preis'); m+=num(g.loc); once+=num(g.sloc); }
-    once += (c.kb!=='-'&&c.kbMode==='standalone'?(SETUP.kb[c.kb]||0):0) + (c.web!=='-'&&c.webMode==='standalone'?(SETUP.web[c.web]||0):0);
+    once += (c.kb!=='-'?(SETUP.kb[c.kb]||0):0) + (c.web!=='-'?(SETUP.web[c.web]||0):0);
     const orte=ortCost(c), rub=c.op==='-'?0:Math.max(0,Math.round(num(st.rub)))*50, mail=hasMail(c)?MAIL[c.mail].p:0, webAnnual=c.web!=='-'&&c.webMode==='standalone'?(WEB_ANNUAL[c.web]||0):0, lz=Math.max(1,num(g.lz)||36);
     m += (orte+rub+mail+webAnnual)/12;   // Jahresposten als Monatsanteil – ein einziger Monatspreis
     // Annual items (locations, extra categories, mail) are shown as a monthly equivalent,
