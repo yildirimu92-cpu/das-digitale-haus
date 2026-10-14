@@ -1,12 +1,36 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important} .business-profile{border:1.5px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:10px;margin:12px 0}.biz-recommendation{background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:12px;display:grid;gap:6px}.biz-recommendation strong{font-size:18px} </style><style>
-.roi-simple{display:grid;gap:14px}
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important} .business-profile{border:1.5px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:10px;margin:12px 0}.biz-recommendation{background:var(--paper);border:1.5px solid var(--ink);border-radius:10px;padding:12px;display:grid;gap:6px}.biz-recommendation strong{font-size:18px} section[aria-labelledby="fh"]{display:none!important}</style><style>
+/* Responsive summary card: prevent price columns from overflowing on narrow screens */
+ .sumcard{width:100%;max-width:100%;min-width:0;overflow:hidden;padding:clamp(12px,2.5vw,24px)}
+ .sumcard table{table-layout:fixed;width:100%;font-size:12px}
+ .sumcard th,.sumcard td{overflow-wrap:anywhere;vertical-align:top;padding:6px 4px}
+ .sumcard th{font-size:11px;text-align:left;color:#5b6878}
+ .sumcard td:last-child,.sumcard th:last-child{text-align:right;padding-left:4px}
+ .sumcard .cost-table th:nth-child(1),.sumcard .cost-table td:nth-child(1){width:17%}
+ .sumcard .cost-table th:nth-child(2),.sumcard .cost-table td:nth-child(2){width:18%}
+ .sumcard .cost-table th:nth-child(3),.sumcard .cost-table td:nth-child(3){width:22%}
+ .sumcard .cost-table th:nth-child(4),.sumcard .cost-table td:nth-child(4){width:18%}
+ .sumcard .cost-table th:nth-child(5),.sumcard .cost-table td:nth-child(5){width:25%}
+ .sumcard .cost-table .total-row td{font-weight:700;border-top:2px solid #cbd5df}
+ @media(max-width:520px){.sumcard{padding:12px;font-size:12.5px}.sumcard .cost-table{font-size:10px}.sumcard .cost-table th{font-size:9.5px}.sumcard .cost-table th,.sumcard .cost-table td{padding:6px 2px}}
+ .roi-simple{display:grid;gap:14px}
 .roi-results{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .roi-kpi{border:1.5px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:5px;min-width:0}
 .roi-kpi strong{font-size:clamp(19px,2.4vw,28px);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .roi-highlight{background:var(--marker);color:#1c2836;border-color:var(--ink)}
 .roi-highlight .label{color:#344150}
 .roi-more{border-top:1px dashed var(--line);padding-top:10px}
-.roi-more summary{cursor:pointer;font-weight:600}
+.roi-more{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+ .roi-more[open]{display:grid;gap:12px}
+ .roi-more summary{cursor:pointer;font-weight:600;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px}
+ .roi-more summary::-webkit-details-marker{display:none}
+ .roi-more summary::after{content:"+";font-size:20px;line-height:1;color:var(--muted)}
+ .roi-more[open] summary::after{content:"−"}
+ .roi-more .funnel{padding:4px 0}
+ .roi-more .cmpwrap{border:1px solid var(--line);border-radius:10px;overflow-x:auto;background:var(--card)}
+ .roi-more table.cmp{font-size:12px}
+ .roi-more table.cmp th,.roi-more table.cmp td{padding:7px 8px}
+ .roi-more .note{line-height:1.4}
+ .roi-more summary{cursor:pointer;font-weight:600}
 #f-db{max-width:320px}
 @media(max-width:760px){.roi-results{grid-template-columns:repeat(2,minmax(0,1fr))}.roi-kpi{padding:10px}}
 </style></head><body>
@@ -58,7 +82,7 @@ input.t:focus{border-color:var(--ink)}
 .board{background:var(--card);border:2px solid var(--ink);border-radius:18px;padding:10px;box-shadow:5px 5px 0 var(--ink);min-width:0}
 .boardhead{padding:6px 8px 2px;display:grid;gap:2px}
 .scene-wrap{overflow-x:auto}
-svg.scene{display:block;width:100%;min-width:640px;height:auto}
+svg.scene{display:block;width:100%;min-width:0;height:auto}
 .hint{color:var(--muted);font-size:13px;margin:8px 6px 2px}
 .hint b{color:var(--ink)}
 /* SVG sketch */
@@ -67,7 +91,9 @@ svg.scene{display:block;width:100%;min-width:640px;height:auto}
 .h{font-family:var(--hand);fill:var(--ink)} .hm{font-family:var(--hand);fill:var(--muted)}
 .road{stroke:var(--road);stroke-width:38;fill:none;stroke-linecap:round}
 .roadmid{stroke:var(--card);stroke-width:3;fill:none;stroke-dasharray:14 14}
-.el{cursor:pointer;transition:opacity .25s}
+.el{cursor:pointer;transition:opacity .25s,filter .2s}
+.el:not(.off) .s{stroke-width:3.5}
+.el:not(.off){filter:drop-shadow(0 0 1.5px var(--fire))}
 .el.off{opacity:.22}
 .el.off .s{stroke-dasharray:5 6}
 .el:focus-visible{outline:none}
@@ -227,7 +253,7 @@ table.cmp{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeri
 .sumcard .fine{color:#5b6878;font-size:11.5px;margin-top:14px}
 details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
 .cmp td.l{text-align:left}
-.brand{display:block;height:36px;width:auto;background:#fff;border-radius:8px;padding:5px 8px;box-sizing:content-box;margin-bottom:10px}
+.brand{display:block;height:30px;width:auto;max-width:150px;object-fit:contain;background:#fff;border-radius:6px;padding:3px 5px;box-sizing:border-box;margin-bottom:10px}
 .ana{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;padding:6px 8px 8px}
 @media (max-width:860px){.ana{grid-template-columns:1fr}}
 .ana textarea{min-height:130px;resize:vertical;font-family:var(--ui)}
@@ -240,11 +266,11 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
 .cmp input.vin{width:110px}
 /* Drucklayout für das PDF (immer hell, wie ein Whiteboard-Blatt) */
 .pr{position:absolute;left:-30000px;top:0;width:794px;font-family:"Archivo",system-ui,sans-serif;color:#1c2836;font-size:13px;line-height:1.45;color-scheme:light}
-.pr .pg{width:794px;height:1123px;box-sizing:border-box;padding:44px 52px 60px;background-color:#ffffff;background-image:linear-gradient(#edf1f5 1px,transparent 1px),linear-gradient(90deg,#edf1f5 1px,transparent 1px);background-size:24px 24px;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:16px}
-.pr .ms{width:690px;display:flex;flex-direction:column;gap:16px}
+.pr .pg{width:794px;height:1123px;box-sizing:border-box;padding:36px 34px 52px;background-color:#ffffff;background-image:linear-gradient(#edf1f5 1px,transparent 1px),linear-gradient(90deg,#edf1f5 1px,transparent 1px);background-size:24px 24px;position:relative;overflow:hidden;display:flex;flex-direction:column;gap:16px}
+.pr .ms{width:726px;display:flex;flex-direction:column;gap:13px}
 .pr .hd{display:flex;justify-content:space-between;align-items:center;gap:16px;width:100%;min-width:0;flex:0 0 auto;box-sizing:border-box}
 .pr .hd>div{flex:1 1 auto;min-width:0;max-width:100%}
-.pr .hd img{display:block;flex:0 0 auto;height:auto;max-height:30px;max-width:112px;width:auto;object-fit:contain;background:#fff;border-radius:6px;padding:4px 6px;box-sizing:border-box}
+.pr .hd img{display:block;flex:0 0 auto;height:auto;max-height:24px;max-width:88px;width:auto;object-fit:contain;background:#fff;border-radius:6px;padding:4px 6px;box-sizing:border-box}
 .pr h1{font-family:"Kalam",cursive;font-weight:700;font-size:42px;margin:0;line-height:1.08;max-width:100%;overflow-wrap:anywhere}
 .pr h1 span{background:linear-gradient(transparent 55%,#ffdc4d 55%,#ffdc4d 88%,transparent 88%);padding:0 4px}
 .pr .meta{color:#5b6878;font-size:13px;margin-top:6px}
@@ -270,12 +296,12 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
 .pr .ptier{border:1.5px solid #cbd5df;border-radius:12px;padding:10px 12px;background:#fff}
 .pr .ptier.on{border:2px solid #1c2836;box-shadow:3px 3px 0 #1c2836}
 .pr .ptier b{font-family:"Kalam",cursive;font-size:20px;display:block;line-height:1.1}
-.pr .house{break-inside:avoid;page-break-inside:avoid;overflow:hidden}.pr .house img{display:block;width:auto;height:auto;max-width:100%;max-height:220px;object-fit:contain;object-position:center;margin-inline:auto}
+.pr .house{break-inside:avoid;page-break-inside:avoid;overflow:hidden}.pr .house img{display:block;width:100%;height:auto;max-width:100%;max-height:300px;object-fit:contain;object-position:center;margin-inline:auto}
 .pr .fun{display:grid;gap:5px;justify-items:center}
 .pr .fun div{display:flex;justify-content:space-between;padding:6px 22px;font-weight:600;clip-path:polygon(0 0,100% 0,calc(100% - 16px) 100%,16px 100%)}
 .pr .fun b{font-family:"Kalam",cursive;font-size:20px}
 .pr .fine{font-size:10.5px;color:#5b6878}
-.pr .ft{position:absolute;left:52px;right:52px;bottom:24px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#5b6878}
+.pr .ft{position:absolute;left:34px;right:34px;bottom:20px;display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#5b6878}
 .rabatt{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:flex-end}
 .rabatt .price{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;align-items:center}
 .rabatt .price input{text-align:right}
@@ -295,7 +321,7 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
       <p class="sub">Wie Kunden dich finden, zu dir kommen und bei dir buchen. Tippe im Bild auf ein Element, um es im gewählten Paket ein- oder auszuschalten.</p>
     </div>
     <div class="accountbar" style="flex:0 1 480px;min-width:min(100%,300px);margin-left:auto;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card)">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px"><strong style="font-size:13px">Konto & Cloud-Speicherung</strong><span class="note" style="margin:0">Supabase</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px"><strong style="font-size:13px">Konto</strong></div>
 <div id="dh-auth-fields" style="display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin-top:10px">
       <label class="field" style="flex:1 1 220px"><span class="label">E-Mail</span><input class="t" id="dh-email" type="email" autocomplete="username" placeholder="name@firma.ch"></label>
       <label class="field" style="flex:1 1 180px"><span class="label">Passwort</span><input class="t" id="dh-password" type="password" autocomplete="current-password" placeholder="Mindestens 8 Zeichen"></label>
@@ -312,6 +338,65 @@ details.pdet summary{cursor:pointer;font-weight:600;font-size:14px}
   </header>
 
 <style>
+/* Responsive polish v3: practical mobile workflow */
+@media(max-width:760px){
+  .bar{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;width:100%;min-width:0}
+  .bar>.field{width:100%;max-width:none!important;min-width:0!important}
+  .bar .inputs{grid-template-columns:minmax(0,1fr)!important}
+  .package-guide{grid-template-columns:minmax(0,1fr);gap:8px}
+  .package-guide article{padding:12px}
+  .package-guide article strong{font-size:15px}
+  .package-guide article p{font-size:13px;line-height:1.45}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{min-height:44px;padding:9px 12px;line-height:1.25}
+  .seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .seg button{min-width:0;min-height:44px;padding:9px 10px;white-space:normal;line-height:1.25}
+  .field{min-width:0}
+  .field .note{line-height:1.45}
+  .boardhead{align-items:flex-start;gap:6px}
+  .boardhead h2{font-size:clamp(20px,6vw,26px);overflow-wrap:anywhere}
+  .scene-wrap{width:100%;min-width:0;overflow:hidden}
+  .board,.panel,.side,.ana,.mapgrid,.wrap{min-width:0;max-width:100%}
+  .tagrow{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+  #c-go{width:100%;align-self:stretch!important}
+  .slist input,.field input,.field select,.field textarea{font-size:16px}
+  .foot{align-items:stretch}
+  .foot .btn{width:100%}
+  .sumcard .meta{overflow-wrap:anywhere}
+  #z-pdf,#z-copy{min-height:46px}
+  #z-pdf{flex:1 1 100%;width:100%}
+  #z-copy{flex:1 1 100%;width:100%}
+}
+@media(pointer:coarse){
+  button.chip,.seg button,.btn,summary{touch-action:manipulation}
+}
+/* Responsive polish v2: mobile controls, price tables and PDF cost layout */
+@media(max-width:760px){
+  html,body{max-width:100%;overflow-x:hidden}
+  .btn,button.chip,.seg button{min-height:42px}
+  .panel h2,.panel h3{line-height:1.2}
+  .sumcard{padding:14px 12px;font-size:13px;overflow:hidden}
+  .sumcard .cost-table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .sumcard table.cost-table{min-width:560px;table-layout:fixed}
+  .sumcard .cost-table th,.sumcard .cost-table td{padding:6px 5px;white-space:normal;overflow-wrap:anywhere;text-align:left}
+  .sumcard .cost-table th:nth-child(1),.sumcard .cost-table td:nth-child(1){width:17%}
+  .sumcard .cost-table th:nth-child(2),.sumcard .cost-table td:nth-child(2){width:17%}
+  .sumcard .cost-table th:nth-child(3),.sumcard .cost-table td:nth-child(3){width:23%}
+  .sumcard .cost-table th:nth-child(4),.sumcard .cost-table td:nth-child(4){width:17%}
+  .sumcard .cost-table th:nth-child(5),.sumcard .cost-table td:nth-child(5){width:26%}
+  .sumcard .cost-table td:last-child{padding-left:5px;white-space:normal}
+  .settings summary,.pdet summary{padding:10px 0;line-height:1.35}
+}
+.pr table.cost-table{table-layout:fixed;width:100%;font-size:10.5px}
+.pr .cost-table th,.pr .cost-table td{padding:6px 5px;text-align:left;white-space:normal;overflow-wrap:anywhere;vertical-align:top;border-bottom:1px solid #e6ebf0}
+.pr .cost-table th{font-size:9.5px;color:#5b6878;font-weight:700}
+.pr .cost-table th:nth-child(1),.pr .cost-table td:nth-child(1){width:17%}
+.pr .cost-table th:nth-child(2),.pr .cost-table td:nth-child(2){width:17%}
+.pr .cost-table th:nth-child(3),.pr .cost-table td:nth-child(3){width:23%}
+.pr .cost-table th:nth-child(4),.pr .cost-table td:nth-child(4){width:17%}
+.pr .cost-table th:nth-child(5),.pr .cost-table td:nth-child(5){width:26%}
+.pr .cost-table tr{break-inside:avoid;page-break-inside:avoid}
+.pr .cost-table thead{display:table-header-group}
 /* Responsive polish v1 */
 *,*::before,*::after{box-sizing:border-box}
 img,svg,canvas{max-width:100%}
@@ -338,13 +423,13 @@ h2{font-size:23px}
 .inputs,.sgrid{grid-template-columns:minmax(0,1fr)!important}
 .sessrow{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
 .field{width:100%;max-width:none!important}
-input.t,select.t{width:100%;min-height:42px}
+input.t,select.t{width:100%;min-width:0;max-width:100%;min-height:42px}input[type="date"].t{display:block;width:100%;min-width:0;max-width:100%;padding-inline:10px}
 .chips{gap:7px}
 .chip{max-width:100%;white-space:normal;text-align:left}
 .board{padding:8px}
 .boardhead{padding:6px}
 .scene-wrap{margin-inline:-2px}
-svg.scene{min-width:600px;width:600px;max-width:none}
+svg.scene{min-width:0;width:100%;max-width:100%}
 .mapgrid{grid-template-columns:minmax(0,1fr);padding:0}
 .mapbox{width:100%}
 .mapctl{position:static;justify-content:flex-end;padding:8px}
@@ -357,16 +442,16 @@ svg.scene{min-width:600px;width:600px;max-width:none}
 .two{gap:14px}
 .panel{padding:16px}
 .scene-wrap{overflow-x:auto}
-svg.scene{min-width:640px}
+svg.scene{min-width:0;width:100%;max-width:100%}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 </style>
   <!-- ========== GESPRÄCH ========== -->
-  <section class="sess" id="kundenstart" aria-label="Start: Kunde vorbereiten">
+  <section class="board sess" id="kundenstart" aria-label="Marktbearbeitung vorbereiten">
     <div class="boardhead" style="padding:4px 0 8px">
-      <p class="label">Start</p>
-      <h2>Start: Kunde vorbereiten</h2>
-      <p class="note">Gespeicherten Kunden öffnen oder eine neue Vorbereitung starten. Änderungen werden mit dem Kundendossier gespeichert.</p>
+      <p class="label">Kundenstrategie</p>
+      <h2>Marktbearbeitung vorbereiten</h2>
+      <p class="note">Kundengespräch, Zielregion und nächste Schritte vorbereiten.</p>
     </div>
     <div class="sessrow">
       <label class="field" style="flex:2 1 240px">
@@ -397,11 +482,11 @@ svg.scene{min-width:640px}
   <section class="board" aria-labelledby="ah">
     <div class="boardhead">
       <h2 id="ah">Website und Online-Auftritt prüfen</h2>
-      <p class="note">Website eintragen, automatisch prüfen und die Erkenntnisse für das digitale Haus übernehmen.</p>
+      <p class="note">Website prüfen und Erkenntnisse für das digitale Haus übernehmen.</p>
     </div>
     <div class="ana">
       <div class="side">
-        <div class="tagrow"><label class="field"><span class="label">Website</span><input class="t" id="a-url" type="url" inputmode="url" placeholder="www.beispiel.ch" autocomplete="off"></label><button class="btn primary" type="button" id="c-go" style="align-self:end">Check starten</button></div>
+        <div class="tagrow"><label class="field"><span class="label">Website</span><input class="t" id="a-url" type="url" inputmode="url" placeholder="www.beispiel.ch" autocomplete="off"></label><button class="btn primary" type="button" id="c-go" style="align-self:end">Website prüfen</button></div>
         <p class="sstat" id="c-stat"></p>
         <div class="links" id="a-links"></div>
         <details class="pdet">
@@ -442,15 +527,15 @@ svg.scene{min-width:640px}
       <span class="label">Startpunkt</span>
       <div class="chips" id="viewpk">
         <button class="chip" type="button" data-p="0">Basis</button>
-        <button class="chip" type="button" data-p="1">Feurig</button>
-        <button class="chip" type="button" data-p="2">Platzhirsch</button>
-        <button class="chip" type="button" data-p="3">Individuell</button>
+        <button class="chip" type="button" data-p="1">Wachstum</button>
+        <button class="chip" type="button" data-p="2">Marktführer</button>
+        <button class="chip" type="button" data-p="3">Individuell zusammengestellt</button>
       </div>
       <div class="package-guide" id="package-guide">
         <article><strong>Basis</strong><p>Digitales Fundament: Online-Präsenz und Website. Geeignet, wenn zuerst die Grundlagen stimmen müssen.</p></article>
-        <article><strong>Feurig</strong><p>Mehr Nachfrage: Basis plus gezielte Werbung und passende Kontakt- oder Buchungswege.</p></article>
-        <article><strong>Platzhirsch</strong><p>Breitere Präsenz: stärkere Werbung und zusätzliche digitale Bausteine – wenn Nachfrage, Kundenwert und Kapazität dazu passen.</p></article>
-        <article><strong>Individuell</strong><p>Nur die Bausteine, die für diesen Betrieb sinnvoll sind.</p><p id="branch-product-note">Branchenprodukte werden passend zur Tätigkeit ausgewählt.</p></article>
+        <article><strong>Wachstum</strong><p>Grundlagen plus gezielte Werbung und passende Kontakt- oder Buchungswege, um mehr Interessenten zu erreichen.</p></article>
+        <article><strong>Marktführer</strong><p>Breite digitale Präsenz mit zusätzlichen Werbekanälen und Kontaktmöglichkeiten für ambitionierte Wachstumsziele.</p></article>
+        <article><strong>Individuell zusammengestellt</strong><p>Massgeschneiderte Auswahl passender Bausteine – statt eines fixen Standardpakets.</p></article>
       </div>
     </div>
   </div>
@@ -459,8 +544,8 @@ svg.scene{min-width:640px}
   <div class="board">
     <div class="scene-wrap">
     <svg class="scene" viewBox="0 0 1000 600" role="img" aria-label="Skizze: Suchmaschinen, Weg mit Navigationssystemen und Werbe-Wegweisern, Haus mit Website als Fundament">
-      <path class="road" d="M180 175 C 170 300, 330 300, 430 385 S 560 505, 660 525"/>
-      <path class="roadmid" d="M180 175 C 170 300, 330 300, 430 385 S 560 505, 660 525"/>
+      <path class="road" d="M180 175 C 168 255, 238 294, 332 324 S 505 424, 668 466"/>
+      <path class="roadmid" d="M180 175 C 168 255, 238 294, 332 324 S 505 424, 668 466"/>
       <g>
         <rect class="s fc" x="28" y="30" width="330" height="58" rx="29"/>
         <circle class="s" cx="64" cy="57" r="11"/><path class="s" d="M72 65 L82 75"/>
@@ -518,7 +603,7 @@ svg.scene{min-width:640px}
         <g id="flag">
           <path class="s" d="M810 188 L810 128"/>
           <path class="s" d="M810 130 H898 L884 146 L898 162 H810" style="fill:var(--fire)"/>
-          <text x="814" y="152" font-size="15" font-weight="700" style="font-family:var(--hand);fill:#fff">Platzhirsch</text>
+          <text x="814" y="152" font-size="15" font-weight="700" style="font-family:var(--hand);fill:#fff">Marktführer</text>
         </g>
         <rect class="s fc" x="680" y="300" width="260" height="200"/>
       </g>
@@ -550,7 +635,7 @@ svg.scene{min-width:640px}
       </g>
     </svg>
     </div>
-    <p class="hint">Bild zeigt: <b class="pkname">Feurig</b> · Antippen schaltet den passenden Baustein im Paket ein oder aus.</p>
+    <p class="hint">Bild zeigt: <b class="pkname">Wachstum</b> · Antippen schaltet den passenden Baustein im Paket ein oder aus.</p>
   </div>
 
   <!-- ========== COCKPIT ========== -->
@@ -717,7 +802,6 @@ svg.scene{min-width:640px}
       <div class="rabatt">
         <label class="field" style="max-width:220px"><span class="label">Sonderrabatt auf Abo-Kosten</span>
           <div class="price"><input class="t" id="rb" type="text" inputmode="decimal" placeholder="0" aria-label="Rabatt in Prozent"><span>%</span></div></label>
-        <p class="note" id="rb-n">Höchstens 30 %. Gilt nicht für advertiseONE und nicht für einmalige Kosten.</p>
       </div>
       <div class="totals">
         <div class="tot main"><span class="label">Pro Monat</span><b id="t-m">CHF 0</b></div>
@@ -726,20 +810,19 @@ svg.scene{min-width:640px}
         <div class="tot"><span class="label" id="t-tl">Total 36 Monate</span><b id="t-t">CHF 0</b></div>
       </div>
       <p class="warn" id="t-warn" style="margin:0"></p>
-      <details class="pdet"><summary>Preisdetails der gewählten Stufe</summary><div class="cmpwrap"><table class="cmp" id="pdet"></table></div></details>
       <details class="settings">
-        <summary>Einstellungen (Preise und deine Kontaktangaben)</summary>
+        <summary>Interne Einstellungen</summary>
         <div class="sgrid">
           <label class="field"><span class="label">Dein Name (auf dem PDF)</span><input class="t" id="g-bn" type="text" autocomplete="name"></label>
           <label class="field"><span class="label">Deine Telefonnummer</span><input class="t" id="g-bt" type="text" inputmode="tel"></label>
-          <label class="field"><span class="label">Deine E-Mail</span><input class="t" id="g-be" type="text" inputmode="email"></label>
-          <label class="field"><span class="label">Laufzeit (Monate)</span><input class="t" id="g-lz" type="text" inputmode="numeric"></label>
+          <label class="field"><span class="label">Deine E-Mail</span><input class="t" id="g-be" type="email" autocomplete="email"></label>
+          <label class="field"><span class="label">Standardlaufzeit übrige Produkte</span><select class="t" id="g-lz"><option value="12">12 Monate</option><option value="24">24 Monate · 10 % Rabatt*</option><option value="36">36 Monate · 20 % Rabatt*</option></select><span class="note">*Laufzeitrabatt gemäss aktueller Modellannahme.</span></label><label class="field"><span class="label">advertiseONE regulär · Laufzeit</span><select class="t" id="g-adsLz"><option value="6">6 Monate</option><option value="12">12 Monate</option><option value="24">24 Monate</option><option value="36">36 Monate</option></select></label><label class="field"><span class="label">advertiseONE TikTok · Laufzeit</span><select class="t" id="g-tikLz"><option value="6">6 Monate</option></select><span class="note">Gemäss deiner Vorgabe aktuell 6 Monate.</span></label>
           <label class="field"><span class="label">Preis pro Ortschaft / Jahr</span><input class="t" id="g-op" type="text" inputmode="decimal"></label>
           <label class="field"><span class="label">Ortschaften inklusive</span><input class="t" id="g-in" type="text" inputmode="numeric"></label>
           <label class="field"><span class="label">MyLOCALINA / Monat</span><input class="t" id="g-loc" type="text" inputmode="decimal" placeholder="eintragen"></label>
           <label class="field"><span class="label">Einrichtung MyLOCALINA</span><input class="t" id="g-sloc" type="text" inputmode="decimal"></label>
-          <label class="field"><span class="label">advertiseONE TikTok-Budget / Monat</span><select class="t" id="g-tik"><option value="">Budget auswählen</option><option value="250">CHF 250 / Monat</option><option value="500">CHF 500 / Monat</option><option value="750">CHF 750 / Monat</option></select></label>
-          <label class="field"><span class="label">Setup advertiseONE TikTok</span><input class="t" id="g-tiks" type="text" value="250" readonly aria-readonly="true"></label>
+          <label class="field"><span class="label">advertiseONE TikTok-Budget / Monat</span><select class="t" id="g-tik"><option value="250">CHF 250 / Monat</option><option value="500">CHF 500 / Monat</option><option value="750">CHF 750 / Monat</option></select><span class="note">Einmalige Einrichtung: CHF 250.</span></label>
+          <input type="hidden" id="g-tiks" value="250" aria-hidden="true">
           <label class="field"><span class="label">SMS inklusive Stufe M</span><input class="t" id="g-smsM" type="text" inputmode="numeric"></label>
           <label class="field"><span class="label">SMS inklusive Stufe L</span><input class="t" id="g-smsL" type="text" inputmode="numeric"></label>
         </div>
@@ -762,22 +845,22 @@ svg.scene{min-width:640px}
       <div class="business-profile"><h3>Individuelle Paketempfehlung</h3><p class="note">Die Empfehlung berücksichtigt Branche, Suchpotenzial, Kundenwert, Betriebsgrösse und freie Kapazität. Nicht bekannte Werte sind Schätzungen.</p><div class="inputs"><label class="field"><span class="label">Betriebsgrösse</span><select class="t" id="biz-size"><option value="solo">Einzelunternehmen</option><option value="small" selected>2–9 Mitarbeitende</option><option value="medium">10–49 Mitarbeitende</option><option value="large">50+ Mitarbeitende</option></select></label><label class="field"><span class="label">Kapazität für zusätzliche Kunden</span><select class="t" id="biz-capacity"><option value="low">Begrenzt</option><option value="medium" selected>Teilweise vorhanden</option><option value="high">Gute Wachstumskapazität</option></select></label></div><div id="biz-recommendation" class="biz-recommendation" aria-live="polite">Empfehlung wird berechnet …</div></div>
       <div class="roi-simple">
         <div class="inputs">
-          <label class="field"><span class="label" id="f-ql">Suchanfragen pro Monat</span><input class="t" id="f-q" type="text" inputmode="numeric"></label>
+          <label class="field"><span class="label" id="f-ql">Angenommene monatliche Nachfrage (Modellwert)</span><input class="t" id="f-q" type="text" inputmode="numeric"></label>
           <label class="field"><span class="label">Wie viele melden sich? (%)</span><input class="t" id="f-c" type="text" inputmode="decimal"></label>
           <label class="field"><span class="label">Wie viele werden Kunden? (%)</span><input class="t" id="f-w" type="text" inputmode="decimal"></label>
           <label class="field"><span class="label">Umsatz pro Neukunde (CHF)</span><input class="t" id="f-v" type="text" inputmode="decimal"></label>
         </div>
         <div class="roi-results" aria-live="polite">
-          <div class="roi-kpi"><span class="label">Suchanfragen</span><strong id="o-q">0</strong></div>
+          <div class="roi-kpi"><span class="label">Modellierte Nachfrage</span><strong id="o-q">0</strong></div>
           <div class="roi-kpi"><span class="label">Mögliche Anfragen</span><strong id="o-c">0</strong></div>
           <div class="roi-kpi"><span class="label">Mögliche Neukunden</span><strong id="o-w">0</strong></div>
           <div class="roi-kpi roi-highlight"><span class="label">Umsatzpotenzial / Monat</span><strong id="roi-revenue">CHF 0</strong></div>
         </div>
         <details class="roi-more">
-          <summary>Berechnungsdetails und Paketvergleich</summary>
+          <summary>Details zur Berechnung und Paketvergleich</summary>
           <div class="funnel" aria-live="polite">
-            <div class="tier t1"><span class="k">Suchanfragen</span><span class="n" id="o-q-detail">0</span></div>
-            <div class="tier t15"><span class="k">Potenziell sichtbar (<span id="o-pn">Feurig</span>)</span><span class="n" id="o-s">0</span></div>
+            <div class="tier t1"><span class="k">Modellierte Nachfrage</span><span class="n" id="o-q-detail">0</span></div>
+            <div class="tier t15"><span class="k">Potenziell sichtbar (<span id="o-pn">Wachstum</span>)</span><span class="n" id="o-s">0</span></div>
             <div class="tier t2"><span class="k">Anfragen</span><span class="n" id="o-c-detail">0</span></div>
             <div class="tier t3"><span class="k">Neukunden</span><span class="n" id="o-w-detail">0</span></div>
           </div>
@@ -828,7 +911,7 @@ svg.scene{min-width:640px}
         <div class="field">
           <span class="label">Im PDF zeigen</span>
           <label class="ck"><input type="checkbox" id="z-cmp"> Vergleich der Stufen S, M, L</label>
-          <label class="ck"><input type="checkbox" id="z-pot"> Potenzialrechnung (Trichter)</label>
+          <label class="ck" style="display:none"><input type="checkbox" id="z-pot"> Potenzialrechnung (Trichter)</label>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn primary" type="button" id="z-pdf">PDF für den Kunden speichern</button>
@@ -887,6 +970,7 @@ svg.scene{min-width:640px}
   const budget = c=>{ const A=ADS[c.ads]; if(!A) return 0; const b=num(c.budget); return b>=A.min&&b<=A.max ? b : A.def; };
   const adsS = l=>ADS[l].setup;
   const SETUP = {kb:{S:149,M:249,L:349}, web:{XS:199,S:790,M:2490,L:5090}};
+  const WEB_ANNUAL = {XS:0,S:348,M:588,L:1188};
   const RENO = {Presence:{y:499,i:'Eintrag, Logo, 4 Kategorien'},Starter:{y:1499,i:'Bilder, Bewertungen, Ausschreibungen, unlimitierte Offerten'},Profi:{y:2099,i:'Premium-Darstellung, Direktanfragen, KI-Preisrechner (mit KI)'}};
   const MAIL = {lite:{n:'Lite',p:90,i:'bis 10 E-Mail-Adressen'},std:{n:'Standard',p:190,i:''},pro:{n:'Professional',p:190,i:''}};
   const LVNAME = (l,k)=> l==='0' ? (k==='web'?'XS':'Gratis') : l;
@@ -934,33 +1018,33 @@ svg.scene{min-width:640px}
   BR['yoga-studio']={d:['Probetraining','buchen'],tool:'MyCOCKPIT',q:'Yoga-Studio'};
   const PK = [
     {name:'Basis', flames:1, pitch:'Gefunden werden. Das Fundament steht, alle Wege führen zu dir.'},
-    {name:'Feurig', flames:2, pitch:'Mehr Anfragen. Kunden sehen dich, vertrauen dir und buchen direkt.'},
-    {name:'Platzhirsch', flames:3, pitch:'Erste Adresse in deiner Region. Du bist überall präsent, wo gesucht wird.'},
-    {name:'Massgeschneidert', flames:0, pitch:'Nur das, was der Kunde wirklich will. Vorlage wählen oder unten Produkte zusammenstellen.'}
+    {name:'Wachstum', flames:2, pitch:'Mehr Anfragen. Kunden sehen dich, vertrauen dir und buchen direkt.'},
+    {name:'Marktführer', flames:3, pitch:'Erste Adresse in deiner Region. Du bist überall präsent, wo gesucht wird.'},
+    {name:'Individuell zusammengestellt', flames:0, pitch:'Nur das, was der Kunde wirklich will. Vorlage wählen oder unten Produkte zusammenstellen.'}
   ];
-  const blank = ()=>({op:'-',bsm:'-',kb:'-',web:'-',shop:'-',ads:'-',loc:false,news:false,mail:'-',tik:false,reno:'-'});
+  const blank = ()=>({op:'-',bsm:'-',kb:'-',kbMode:'module',web:'-',webMode:'module',shop:'-',ads:'-',loc:false,news:false,mail:'-',tik:false,reno:'-'});
   // Definition = welche Bausteine der Kunde will; die Stufe (S/M/L) bestimmt die Ausprägung
-  const blankDef = ()=>({op:false,bsm:false,kb:false,loc:false,web:'-',mail:'-',shop:false,ads:false,budget:250,tik:false,reno:'-'});
+  const blankDef = ()=>({op:false,opLevel:'S',bsm:false,kb:false,kbMode:'module',loc:false,web:'-',webMode:'module',mail:'-',shop:false,ads:false,adsLevel:'M',budget:250,tik:false,reno:'-'});
   const DEF_DEF = ()=>[
-    {...blankDef(), op:true, bsm:true, web:'S'},
-    {...blankDef(), op:true, bsm:true, kb:true, web:'M', ads:true, budget:250},
-    {...blankDef(), op:true, bsm:true, kb:true, web:'L', ads:true, budget:1000, tik:true},
+    {...blankDef(), op:true, opLevel:'S', bsm:true, web:'S'},
+    {...blankDef(), op:true, opLevel:'M', bsm:true, kb:true, web:'M', ads:true, budget:250},
+    {...blankDef(), op:true, opLevel:'L', bsm:true, kb:true, web:'L', ads:true, budget:1000, tik:true},
     {...blankDef(), op:true}
   ];
   const DEF_TIER = ()=>['S','M','L','M'];
   const PRESETS = [
-    {l:'Nur Onlinepräsenz', c:{op:true}},
+    {l:'Nur Onlinepräsenz', c:{op:true,opLevel:'S'}, t:'S'},
     {l:'Nur Tischreservation', c:{loc:true}, br:'resto'},
     {l:'Nur Terminbuchung', c:{kb:true}, br:'beauty'},
-    {l:'Bewertungen & Social', c:{op:true, bsm:true}, t:'M'},
+    {l:'Bewertungen & Social', c:{op:true,opLevel:'M', bsm:true}, t:'M'},
     {l:'Nur Werbung', c:{ads:true, budget:250}},
     {l:'Nur TikTok', c:{tik:true}},
     {l:'Nur renovero', c:{reno:'Starter'}, br:'craft'},
     {l:'Alles leeren', c:{}}
   ];
   const DEF_F = {q:'1000',c:'10',w:'30',v:'500',db:'',vis:['25','50','80']};
-  const DEF_G = {lz:'36', op:'50', in:'1', loc:'120', sloc:'250', nl:'', sshop:'', smsM:'100', smsL:'250', tik:'250', tiks:'250',
-    aS:'150', aM:'250', aL:'500', asS:'150', asM:'250', asL:'450', tik:'', tiks:'', bn:'', bt:'', be:''};
+  const DEF_G = {lz:'36', adsLz:'6', tikLz:'6', op:'50', in:'1', loc:'120', sloc:'250', nl:'', sshop:'', smsM:'100', smsL:'250',
+    aS:'150', aM:'250', aL:'500', asS:'150', asM:'250', asL:'450', tik:'', tiks:'250', bn:'', bt:'', be:''};
   const DEF_REG = ()=>({mode:'umkreis', cantons:[], center:null, radius:10, add:[], rem:[]});
   const KEY = 'digitales-haus.v3';
 
@@ -983,7 +1067,7 @@ svg.scene{min-width:640px}
     delete o.cfg; delete o.sub;
     if(!Array.isArray(o.def)||o.def.length<4) o.def=DEF_DEF();
     if(!Array.isArray(o.tier)||o.tier.length<4) o.tier=DEF_TIER();
-    o.def=o.def.map(d=>{ const x={...blankDef(),...d}; if(x.reno===true) x.reno='Starter'; if(x.reno===false) x.reno='-'; return x; });
+    o.def=o.def.map((d,i)=>{ const hasOpLevel=['S','M','L'].includes(d.opLevel); const x={...blankDef(),...d}; if(!hasOpLevel) x.opLevel=PAID(o.tier[i])?o.tier[i]:'S'; if(x.reno===true) x.reno='Starter'; if(x.reno===false) x.reno='-'; return x; });
     return o;
   }
   migrate(st);
@@ -1003,11 +1087,12 @@ svg.scene{min-width:640px}
     if(c.kb==='L') s.add('news');
     return s;
   }
-  function toCfg(d,l){
+  function toCfg(d,l,scaleOnlinePresence=false){
     const c=blank();
-    c.op=d.op?l:'-'; c.bsm=d.bsm?(l==='S'?'0':l):'-'; c.kb=d.kb?l:'-'; c.shop=d.shop?l:'-';
-    c.web=d.web||'-'; c.mail=d.mail||'-'; c.loc=!!d.loc; c.tik=!!d.tik;
-    c.ads=d.ads?l:'-'; if(d.ads){ const A=ADS[l]; c.budget=Math.min(A.max,Math.max(A.min,num(d.budget)||A.def)); }
+    const opLevel=scaleOnlinePresence?l:(['S','M','L'].includes(d.opLevel)?d.opLevel:l);
+    c.op=d.op?opLevel:'-'; c.bsm=d.bsm&&l!=='S'?l:'-'; c.kb=d.kb?l:'-'; c.kbMode=d.kbMode==='standalone'?'standalone':'module'; c.shop=d.shop?l:'-';
+    c.web=d.web||'-'; c.webMode=d.webMode==='standalone'?'standalone':'module'; c.mail=d.mail||'-'; c.loc=!!d.loc; c.tik=!!d.tik;
+    const adsLevel=ADS[d.adsLevel]?d.adsLevel:l; c.ads=d.ads?adsLevel:'-'; if(d.ads){ const A=ADS[adsLevel]; c.budget=Math.min(A.max,Math.max(A.min,num(d.budget)||A.def)); }
     c.reno=RENO[d.reno]?d.reno:'-';
     if(PAID(c.bsm) && !(c.op==='M'||c.op==='L')) c.op='M';
     return c;
@@ -1018,14 +1103,14 @@ svg.scene{min-width:640px}
     const d=st.def[st.pk], on=elsFor(eff()).has(id);
     switch(id){
       case 'dir': case 'ai': d.op=!on; if(on && st.tier[st.pk]!=='S') d.bsm=false; break;
-      case 'rev': d.bsm=!on; break;
-      case 'hubrev': case 'soc': case 'plan': if(on) d.bsm=false; else { d.bsm=true; atLeast('M'); } break;
+      case 'rev': if(on) d.bsm=false; else { d.bsm=true; d.opLevel=['M','L'].includes(d.opLevel)?d.opLevel:'M'; atLeast('M'); } break;
+      case 'hubrev': case 'soc': case 'plan': if(on) d.bsm=false; else { d.bsm=true; d.opLevel=['M','L'].includes(d.opLevel)?d.opLevel:'M'; atLeast('M'); } break;
       case 'book': if(on){ d.kb=false; d.loc=false; } else if(st.br==='resto') d.loc=true; else d.kb=true; break;
       case 'sms': if(on) d.kb=false; else { d.kb=true; atLeast('M'); } break;
       case 'news': if(on) st.tier[st.pk]='M'; else { d.kb=true; atLeast('L'); } break;
       case 'web': d.web = d.web==='-' ? 'S' : '-'; break;
       case 'gads': d.ads=!on; break;
-      case 'meta': if(on) st.tier[st.pk]='M'; else { d.ads=true; atLeast('L'); } break;
+      case 'meta': if(on) { d.adsLevel='M'; if(num(d.budget)<ADS.M.min||num(d.budget)>ADS.M.max) d.budget=ADS.M.def; } else { d.ads=true; d.adsLevel='L'; if(num(d.budget)<ADS.L.min||num(d.budget)>ADS.L.max) d.budget=ADS.L.def; } break;
       case 'tik': d.tik=!d.tik; break;
       case 'reno': d.reno = RENO[d.reno] ? '-' : 'Starter'; break;
     }
@@ -1198,33 +1283,33 @@ svg.scene{min-width:640px}
   /* ---------- Preise ---------- */
   function price(i){
     const c=(typeof i==='object')?i:eff(i), g=st.g; let m=0, once=0; const miss=[];
-    MODS.forEach(M=>{ const l=c[M.k]; if(l==='-'||M.k==='ads') return; m+=M.lv[l]||0; });
+    MODS.forEach(M=>{ const l=c[M.k]; if(l==='-'||M.k==='ads'||(M.k==='web'&&c.webMode==='standalone')) return; m+=M.lv[l]||0; });
     let mAds=0;
     if(c.ads!=='-'){ m+=budget(c); mAds+=budget(c); once+=adsS(c.ads); }
     if(c.reno && RENO[c.reno]) m+=RENO[c.reno].y/12;
-    if(c.tik){ if(![250,500,750].includes(num(g.tik))) miss.push('TikTok-Budget auswählen'); m+=num(g.tik); mAds+=num(g.tik); once+=250; }
+    if(c.tik){ if(![250,500,750].includes(num(g.tik))) miss.push('TikTok-Budget auswählen'); m+=num(g.tik); mAds+=num(g.tik); once+=Math.max(0,num(g.tiks)); }
     if(c.loc){ if(g.loc==='') miss.push('MyLOCALINA-Preis'); m+=num(g.loc); once+=num(g.sloc); }
-    once += (SETUP.kb[c.kb]||0) + (SETUP.web[c.web]||0);
-    const orte=ortCost(c), rub=c.op==='-'?0:Math.max(0,Math.round(num(st.rub)))*50, mail=hasMail(c)?MAIL[c.mail].p:0, lz=Math.max(1,num(g.lz)||36);
-    m += (orte+rub+mail)/12;   // Jahresposten als Monatsanteil – ein einziger Monatspreis
+    once += (c.kb!=='-'?(SETUP.kb[c.kb]||0):0) + (c.web!=='-'?(SETUP.web[c.web]||0):0);
+    const orte=ortCost(c), rub=c.op==='-'?0:Math.max(0,Math.round(num(st.rub)))*50, mail=hasMail(c)?MAIL[c.mail].p:0, webAnnual=c.web!=='-'&&c.webMode==='standalone'?(WEB_ANNUAL[c.web]||0):0, lz=Math.max(1,num(g.lz)||36);
+    m += (orte+rub+mail+webAnnual)/12;   // Jahresposten als Monatsanteil – ein einziger Monatspreis
     // Annual items (locations, extra categories, mail) are shown as a monthly equivalent,
     // but are not eligible for subscription discounts. Ad spend is also excluded from discounts.
-    const annual=orte+rub+mail;
+    const annual=orte+rub+mail+webAnnual;
     const pct=Math.min(30,Math.max(0,num(st.rabatt))), list=m;
     const eligible=Math.max(0,m-mAds-annual/12);
     const disc=eligible*pct/100;
     m = mAds + eligible - disc + annual/12;
     const years=Math.ceil(lz/12);
-    return {m, list, disc, pct, mAds, mOther:m-mAds, once, yr:0, orte, rub, mail, lz, total:(m-annual/12)*lz+annual*years+once, miss};
+    return {m, list, disc, pct, mAds, adsMonthly:c.ads!=='-'?budget(c):0, tikMonthly:c.tik?num(g.tik):0, baseMonthly:Math.max(0,m-mAds-annual/12), mOther:m-mAds, once, yr:0, orte, rub, mail, webAnnual, lz, total:(m-annual/12)*lz+annual*years+once, miss};
   }
   function feats(i){
     const c=(typeof i==='object')?i:eff(i), out=[], n=selected().length;
     if(c.op!=='-'){ out.push(`Onlinepräsenz ${c.op}: ${MODS[0].info[c.op]}`); out.push('Sichtbar für KI-Assistenten (ChatGPT, Gemini)'); if(n) out.push(`${fmt(n,0)} ${n===1?'Ortschaft':'Ortschaften'}`); const rb=Math.round(num(st.rub)); if(rb>0) out.push(`${fmt(rb,0)} zusätzliche Rubriken`); }
     if(c.bsm!=='-') out.push(c.bsm==='0' ? 'Bewertungen & Social (Gratis)' : `Bewertungen & Social ${c.bsm}: KI-Antworten${c.bsm!=='S'?', Beitragsplaner':''}`);
     if(c.kb!=='-'){ const sm = c.kb==='M'?num(st.g.smsM):c.kb==='L'?num(st.g.smsL):0;
-      out.push(`Kunden & Buchungen ${LVNAME(c.kb)} (MyCOCKPIT)${sm?`: ${fmt(sm,0)} SMS / Monat`:''}${c.kb==='L'?', Newsletter':''}`); }
+      out.push(`${c.kbMode==='standalone'?'MyCOCKPIT':'Kunden & Buchungen digitalONE'} ${LVNAME(c.kb)}${sm?`: ${fmt(sm,0)} SMS / Monat`:''}${c.kb==='L'?', Newsletter':''}`); }
     if(c.loc) out.push('Tischreservation (MyLOCALINA)');
-    if(c.web!=='-') out.push(`Website ${LVNAME(c.web,'web')}: ${MODS[3].info[c.web]}`);
+    if(c.web!=='-') out.push(`${c.webMode==='standalone'?'MyWEBSITE':'Website-Modul digitalONE'} ${LVNAME(c.web,'web')}: ${MODS[3].info[c.web]}`);
     if(hasMail(c)) out.push(`Mail Hosting ${MAIL[c.mail].n}${MAIL[c.mail].i?': '+MAIL[c.mail].i:''}`);
     if(c.shop!=='-') out.push(`Webshop ${LVNAME(c.shop)}: ${MODS[4].info[c.shop]}`);
     if(c.ads!=='-') out.push(`advertiseONE ${c.ads}: ${ADS[c.ads].ch}`);
@@ -1239,32 +1324,17 @@ svg.scene{min-width:640px}
     document.querySelectorAll('.el').forEach(g=>{ const on=set.has(g.dataset.id); g.classList.toggle('off',!on); g.setAttribute('aria-pressed',on); });
     const b=BR[st.br];
     $('door1').textContent=b.d[0]; $('door2').textContent=b.d[1]; $('doortool').textContent=b.tool;
-    $('qtext').textContent=st.term||'…';
+    const primary=selected()[0], town=primary&&primary[0]?String(primary[0]).replace(/\s+(?:ZH|BL|BE|LU|SG|AG|SO|TG|GR|VS|VD|GE|FR|NE|JU|TI|SH|SZ|ZG|NW|OW|GL|AR|AI|UR)\s*$/i,'').trim():'';
+    const industry=INDUSTRIES.find(x=>x.id===st.br)?.name||BR[st.br]?.q||'';
+    const searchPhrase=industry&&town?industry+' '+town:(String(st.term||'').trim()||industry||town||'');
+    $('qtext').textContent=searchPhrase;
     const n=PK[st.pk].flames, offs=n===0?[]:n===1?[0]:n===2?[-9,9]:[-14,0,14];
     $('flames').innerHTML=offs.map((x,i)=>{
       const s= i===Math.floor(offs.length/2)&&n>1 ? 1.25 : 1;
       return `<g transform="translate(${x} 0) scale(${s})"><path class="flame1 flick" style="animation-delay:${i*.3}s" d="M0 0 C -14 -8 -12 -26 0 -40 C 3 -28 15 -22 11 -8 C 9 -2 5 0 0 0Z"/><path class="flame2" d="M0 0 C -6 -4 -6 -14 0 -22 C 2 -14 7 -10 5 -4 C 4 -1 2 0 0 0Z"/></g>`;
     }).join('');
     $('flag').style.display = st.pk===2?'':'none';
-    // Place the customer logo in a reserved, compact area inside the house.
-    let logo=document.getElementById('customer-logo');
-    const logoUrl=st.ana&&st.ana.audit&&st.ana.audit.logoUrl;
-    if(logoUrl){
-      if(!logo){
-        logo=document.createElementNS('http://www.w3.org/2000/svg','image');
-        logo.setAttribute('id','customer-logo');
-        // Logo kompakt im Dach platzieren, oberhalb des Hauskörpers.
-        logo.setAttribute('x','770'); logo.setAttribute('y','220');
-        logo.setAttribute('width','80'); logo.setAttribute('height','28');
-        logo.setAttribute('preserveAspectRatio','xMidYMid meet');
-        logo.setAttribute('href',logoUrl);
-        // Insert before the house labels so the logo cannot cover their text.
-        const scene=document.querySelector('svg.scene');
-        const house=scene&&scene.querySelector('[data-id="web"]');
-        if(house) scene.insertBefore(logo,house); else scene?.appendChild(logo);
-      } else if(logo.getAttribute('href')!==logoUrl) logo.setAttribute('href',logoUrl);
-      logo.style.display='';
-    } else if(logo) logo.style.display='none';
+    const logo=document.getElementById('customer-logo'); if(logo) logo.remove();
     const c=eff(), sm=c.kb==='M'?num(st.g.smsM):c.kb==='L'?num(st.g.smsL):0;
     $('smsn').textContent = sm>0 ? `${fmt(sm,0)} SMS pro Monat inklusive` : 'SMS ab Stufe M inklusive';
     document.querySelectorAll('.pkname').forEach(e=>e.textContent=tierName(curTier()));
@@ -1275,17 +1345,32 @@ svg.scene{min-width:640px}
   const flameSvg=n=>Array.from({length:n},()=>`<svg width="18" height="26" viewBox="-14 -42 28 44" aria-hidden="true"><path class="flame1" d="M0 0 C -14 -8 -12 -26 0 -40 C 3 -28 15 -22 11 -8 C 9 -2 5 0 0 0Z"/><path class="flame2" d="M0 0 C -6 -4 -6 -14 0 -22 C 2 -14 7 -10 5 -4 C 4 -1 2 0 0 0Z"/></svg>`).join('');
   function contractDiscount(months){ return months>=36?0.20:months>=24?0.10:0; }
   function priceSchedule(P){
-    const months=Math.max(12,Math.min(36,Math.round((num(st.g.lz)||36)/12)*12));
-    const annual=(P.orte||0)+(P.rub||0)+(P.mail||0);
-    const cashMonthly=Math.max(0,P.m-(P.mAds||0)-annual/12)+(P.mAds||0);
-    const monthly=cashMonthly+annual/12; // monthly equivalent includes annual location/category/mail costs
+    const annual=(P.orte||0)+(P.rub||0)+(P.mail||0)+(P.webAnnual||0);
+    // Jährliche Gebühren sind auch dann Vertragskosten, wenn kein monatlich abgerechnetes Grundprodukt gewählt ist.
+    const baseMonths=(P.baseMonthly>0||annual>0)?Math.max(12,Math.min(36,Math.round((num(st.g.lz)||36)/12)*12)):0;
+    const adsMonths=P.adsMonthly>0?Math.max(6,Math.min(36,num(st.g.adsLz)||6)):0;
+    const tikMonths=P.tikMonthly>0?Math.max(6,Math.min(6,num(st.g.tikLz)||6)):0;
+    const months=Math.max(baseMonths,adsMonths,tikMonths);
+    const termPct=baseMonths?contractDiscount(baseMonths):0;
+    const ads=Math.max(0,P.adsMonthly||0), tik=Math.max(0,P.tikMonthly||0);
+    // P.baseMonthly enthält den allfälligen individuellen Rabatt bereits; Laufzeitrabatt wird zusätzlich modelliert.
+    const baseMonthly=Math.max(0,P.baseMonthly||0)*(1-termPct);
     const years=[];
-    for(let y=1;y<=Math.min(3,Math.ceil(months/12));y++){
-      years.push({year:y,monthly,annual,setup:y===1?(P.once||0):0,total:cashMonthly*12+annual+(y===1?(P.once||0):0)});
+    for(let y=1;y<=Math.ceil(months/12);y++){
+      const from=(y-1)*12, to=y*12;
+      const baseActive=Math.max(0,Math.min(to,baseMonths)-from);
+      const adsActive=Math.max(0,Math.min(to,adsMonths)-from);
+      const tikActive=Math.max(0,Math.min(to,tikMonths)-from);
+      const annualActive=baseActive>0?annual:0;
+      const setup=y===1?(P.once||0):0;
+      const total=baseMonthly*baseActive+ads*adsActive+tik*tikActive+annualActive+setup;
+      const activeMonths=Math.max(baseActive,adsActive,tikActive);
+      const monthly=activeMonths?((baseMonthly*baseActive+ads*adsActive+tik*tikActive)/activeMonths):0;
+      years.push({year:y,monthly,annual:annualActive,setup,total});
     }
-    return {months,monthly,cashMonthly,annual,years,total:years.reduce((s,y)=>s+y.total,0)};
+    return {months,baseMonths,adsMonths,tikMonths,termPct,monthly:baseMonthly+ads+tik+annual/12, cashMonthly:baseMonthly+ads+tik,annual,years,total:years.reduce((sum,y)=>sum+y.total,0)};
   }
-  function yrParts(P){ return [P.orte?`Ortschaften ${chf(P.orte)}`:'', P.rub?`Rubriken ${chf(P.rub)}`:'', P.mail?`Mail ${chf(P.mail)}`:''].filter(Boolean).join(', '); }
+  function yrParts(P){ return [P.orte?`Ortschaften ${chf(P.orte)}`:'', P.rub?`Rubriken ${chf(P.rub)}`:'', P.mail?`Mail ${chf(P.mail)}`:'', P.webAnnual?`MyWEBSITE-Jahresgebühr ${chf(P.webAnnual)}`:''].filter(Boolean).join(', '); }
 
   /* ---------- Definition: was braucht der Kunde? (ohne Preise) ---------- */
   function seg(k, opts, cur){
@@ -1297,14 +1382,16 @@ svg.scene{min-width:640px}
     const d=st.def[st.pk], n=selected().length; let h='';
     const row=(nm,sm,ctl,info)=>{ h+=`<div class="crow"><div class="nm">${nm}<small>${sm}</small></div><div>${ctl}${info?`<div class="extra note">${info}</div>`:''}</div></div>`; };
     row('Onlinepräsenz','Verzeichnisse, Navis, KI-Assistenten', seg('op',YN,d.op), d.op?`${fmt(n,0)} ${n===1?'Ortschaft':'Ortschaften'} aus der Karte${num(st.rub)>0?`, ${fmt(Math.round(num(st.rub)),0)} zusätzliche Rubriken`:''}`:'');
-    row('Bewertungen & Soziale Medien','KI-Antworten, Beitragsplaner', seg('bsm',YN,d.bsm), d.bsm?'Stufe S: Gratis-Version. Ab M: KI-Antworten und Beitragsplaner (braucht Onlinepräsenz M).':'');
-    if(st.br!=='resto') row('Kunden & Buchungen','MyCOCKPIT, Online-Termine, SMS', seg('kb',YN,d.kb), d.kb?'Ab M mit SMS-Bestätigungen, L mit Newsletter.':'');
+    if(d.op) row('Onlinepräsenz-Stufe','Unabhängig von der Gesamtpaket-Stufe', seg('opLevel',[['S','S · CHF 69'],['M','M · CHF 159'],['L','L · CHF 229']],d.opLevel||st.tier[st.pk]), 'Die gewählte Stufe bleibt erhalten, auch wenn du andere Produkte hinzufügst. Bewertungen & Soziale Medien benötigen mindestens M.');
+    row('Bewertungen & Soziale Medien','digitalONE · ab Onlinepräsenz M verfügbar', seg('bsm',YN,d.bsm), d.bsm?'Wird nur in den Paketstufen M und L berechnet. Onlinepräsenz mindestens M erforderlich.':'');
+    if(st.br!=='resto') { row('Kunden & Buchungen','MyCOCKPIT, Online-Termine, SMS', seg('kb',YN,d.kb), d.kb?'Ab M mit SMS-Bestätigungen, L mit Newsletter.':''); if(d.kb) row('Vertragsmodell Kunden & Buchungen','Preislogik', seg('kbMode',[['module','digitalONE-Modul'],['standalone','MyCOCKPIT separat']],d.kbMode||'module'), d.kbMode==='standalone'?`Einrichtung einmalig CHF ${fmt(SETUP.kb[st.tier[st.pk]]||0,0)}.`:`Monatspreis gemäss digitalONE; einmalige Einrichtung CHF ${fmt(SETUP.kb[st.tier[st.pk]]||0,0)}.`); }
     if(st.br==='resto') row('Tischreservation','MyLOCALINA', seg('loc',YN,d.loc), '');
-    row('Website','MyWEBSITE, Grösse fest gewählt', seg('web',[['-','–'],['XS','XS'],['S','S'],['M','M'],['L','L']],d.web), d.web!=='-'?MODS[3].info[d.web]:'');
+    row('Website','Website-Modul oder eigenständiges MyWEBSITE', seg('web',[['-','–'],['XS','XS'],['S','S'],['M','M'],['L','L']],d.web), d.web!=='-'?MODS[3].info[d.web]:'');
+    if(d.web!=='-') row('Website-Vertragsmodell','Preislogik', seg('webMode',[['module','digitalONE-Modul'],['standalone','MyWEBSITE separat']],d.webMode||'module'), d.webMode==='standalone'?`Einrichtung einmalig CHF ${fmt(SETUP.web[d.web]||0,0)} + CHF ${fmt(WEB_ANNUAL[d.web]||0,0)} pro Jahr.`:`Monatspreis gemäss digitalONE; einmalige Einrichtung CHF ${fmt(SETUP.web[d.web]||0,0)}.`);
     row('Mail Hosting','E-Mail-Adressen', seg('mail',[['-','–'],['lite','Lite'],['std','Standard'],['pro','Professional']],d.mail), d.mail==='lite'?MAIL.lite.i:'');
     row('Webshop','digitalONE', seg('shop',YN,d.shop), '');
     row('advertiseONE','Werbekampagnen', seg('ads',YN,d.ads), '');
-    if(d.ads) row('Werbebudget','Wunsch pro Monat, wird an die Stufe angepasst', seg('budget',BUDGETS.map(v=>[v,fmt(v,0)]),d.budget), '');
+    if(d.ads){ const adsLevel=ADS[d.adsLevel]?d.adsLevel:st.tier[st.pk], adsOptions=ADS[adsLevel].steps, effectiveBudget=budget(toCfg(d,adsLevel)); row('advertiseONE-Stufe','Kanäle unabhängig vom Gesamtpaket', seg('adsLevel',[['S','S · Google'],['M','M · zusätzlich local.ch / search.ch'],['L','L · zusätzlich Social Media & Top-Websites']],adsLevel), `${ADS[adsLevel].ch}`); row('Werbebudget',`Wunsch pro Monat · advertiseONE ${adsLevel}: CHF ${fmt(ADS[adsLevel].min,0)}–${fmt(ADS[adsLevel].max,0)}`, seg('budget',adsOptions.map(v=>[v,fmt(v,0)]),effectiveBudget), ''); }
     row('advertiseONE TikTok','separates Produkt', seg('tik',YN,d.tik), d.tik ? `<span class="tikp">Preis pro Monat CHF <input class="t" id="tik-m" type="text" inputmode="decimal" value="${esc(st.g.tik)}" placeholder="eintragen"> Setup CHF <input class="t" id="tik-s" type="text" inputmode="decimal" value="${esc(st.g.tiks)}" placeholder="0"></span>${st.g.tik===''?' <b class="warn">Ohne Preis rechnet das Tool TikTok mit 0.</b>':''}` : '');
     if(isCraftBranch(st.br)) row('renovero','Handwerker-Plattform, Jahresabo', seg('reno',[['-','–'],['Presence','Presence'],['Starter','Starter'],['Profi','Profi mit KI']],d.reno), RENO[d.reno]?`${chf(RENO[d.reno].y)} pro Jahr: ${RENO[d.reno].i}`:'');
     $('cfg').innerHTML=h;
@@ -1313,8 +1400,13 @@ svg.scene{min-width:640px}
   $('cfg').addEventListener('click',e=>{
     const btn=e.target.closest('.seg button'); if(!btn) return;
     const k=btn.parentElement.dataset.k, v=btn.dataset.v, d=st.def[st.pk];
-    if(['op','bsm','kb','loc','shop','ads','tik'].includes(k)) d[k]=(v==='true');
+    if(['op','bsm','kb','loc','shop','ads','tik'].includes(k)) {
+      d[k]=(v==='true');
+      if(k==='bsm' && d.bsm){ d.op=true; if(!['M','L'].includes(d.opLevel)) d.opLevel='M'; if(['S','M','L'].indexOf(st.tier[st.pk])<1) st.tier[st.pk]='M'; }
+      if(k==='op' && !d.op) d.bsm=false;
+    }
     else if(k==='budget') d.budget=+v;
+    else if(k==='adsLevel') { d.adsLevel=v; const A=ADS[v]; if(num(d.budget)<A.min||num(d.budget)>A.max) d.budget=A.def; }
     else d[k]=v;
     save(); update();
   });
@@ -1328,16 +1420,16 @@ svg.scene{min-width:640px}
 
   /* ---------- Preise: die definierte Lösung in S, M, L ---------- */
   const LV=['S','M','L'];
-  function tiers(){ const d=st.def[st.pk]; return LV.map(l=>toCfg(d,l)); }
+  function tiers(){ const d=st.def[st.pk]; return LV.map(l=>toCfg(d,l,true)); }
   function curTier(){ return LV.indexOf(st.tier[st.pk]); }
   const tierName = k=>`${PK[st.pk].name} ${LV[k]}`;
   function lineItems(c){
     const L=[], g=st.g, add=(n,m,o)=>{ if(m||o) L.push({n,m,o}); };
     if(c.op!=='-') add(`Onlinepräsenz ${c.op}`, MODS[0].lv[c.op], 0);
     if(c.bsm!=='-') add(`Bewertungen & Soziale Medien ${LVNAME(c.bsm)}`, MODS[1].lv[c.bsm]||0, 0) || (c.bsm==='0' && L.push({n:'Bewertungen & Soziale Medien Gratis',m:0,o:0}));
-    if(c.kb!=='-') add(`Kunden & Buchungen ${c.kb}`, MODS[2].lv[c.kb], SETUP.kb[c.kb]||0);
+    if(c.kb!=='-') add(c.kbMode==='standalone'?`MyCOCKPIT ${c.kb}`:`Kunden & Buchungen ${c.kb} (digitalONE-Modul)`, MODS[2].lv[c.kb], SETUP.kb[c.kb]||0);
     if(c.loc) add('Tischreservation MyLOCALINA', num(g.loc), num(g.sloc));
-    if(c.web!=='-') add(`Website ${c.web}`, MODS[3].lv[c.web], SETUP.web[c.web]||0);
+    if(c.web!=='-') add(c.webMode==='standalone'?`MyWEBSITE ${c.web} (Jahresgebühr /12)`:`Website ${c.web} (digitalONE-Modul)`, c.webMode==='standalone'?(WEB_ANNUAL[c.web]||0)/12:MODS[3].lv[c.web], SETUP.web[c.web]||0);
     if(hasMail(c)) add(`Mail Hosting ${MAIL[c.mail].n} (Jahrespreis /12)`, MAIL[c.mail].p/12, 0);
     if(c.shop!=='-') add(`Webshop ${c.shop}`, MODS[4].lv[c.shop], 0);
     if(c.ads!=='-') add(`advertiseONE ${c.ads} (Werbebudget)`, budget(c), ADS[c.ads].setup);
@@ -1351,25 +1443,26 @@ svg.scene{min-width:640px}
   function renderPrices(){
     const T=tiers(), cur=curTier();
     $('tiers-h').textContent = `Preise: ${PK[st.pk].name} S, M oder L`;
-    $('tiers').innerHTML = T.map((c,k)=>{ const P=price(c);
+    $('tiers').innerHTML = T.map((c,k)=>{ const P=price(c), S=priceSchedule(P);
       return `<div class="pkg" data-t="${k}" role="button" tabindex="0" aria-pressed="${k===cur}">
         <div class="top"><h3>${esc(tierName(k))}</h3><div class="fl">${flameSvg(k+1)}</div></div>
-        <div class="pprice"><span class="m">${chf(P.m)} <small>/ Monat</small></span>${P.disc>0?`<span class="x"><span class="strike">${chf(P.list)}</span> · ${fmt(P.pct,0)} % Rabatt auf Abo-Kosten</span>`:''}<span class="x">+ ${chf(P.once)} einmalig</span></div>
+        <div class="pprice"><span class="m">${chf(S.monthly)} <small>/ Monat im gewählten Vertrag</small></span>${P.disc>0?`<span class="x"><span class="strike">${chf(P.list)}</span> · ${fmt(P.pct,0)} % Sonderrabatt auf Abo-Kosten</span>`:''}<span class="x">+ ${chf(P.once)} einmalig</span></div>
         ${P.miss.length?`<span class="warn">Preis fehlt: ${esc(P.miss.join(', '))}</span>`:''}
         <ul class="feat">${feats(c).map(t=>`<li>${esc(t)}</li>`).join('')||'<li>Noch nichts ausgewählt</li>'}</ul>
         <span class="note">${k===cur?'✓ Gewählt':'Antippen zum Wählen'}</span>
       </div>`; }).join('');
     const c=eff(), P=price(c);
-    $('t-m').textContent=chf(P.m); $('t-o').textContent=chf(P.once); $('t-y').textContent=chf(P.m*12+(P.yr||0)+P.once);
-    $('t-tl').textContent=`Total ${fmt(P.lz,0)} Monate`; $('t-t').textContent=chf(P.total);
+    const schedule=priceSchedule(P); $('t-m').textContent=chf(schedule.monthly); $('t-o').textContent=chf(P.once); $('t-y').textContent=chf(schedule.years[0]?.total||P.m*12+P.once);
+    $('t-tl').textContent=`Gesamtkosten · bis ${fmt(schedule.months,0)} Monate`; $('t-t').textContent=chf(schedule.total);
     $('t-warn').textContent = P.miss.length ? 'Noch offen: '+P.miss.join(', ')+' (in den Einstellungen eintragen).' : '';
     const L=lineItems(c);
     $('pdet').innerHTML = `<thead><tr><th class="l">${esc(tierName(cur))}</th><th>pro Monat</th><th>einmalig</th></tr></thead><tbody>`
       + L.map(x=>`<tr><td>${esc(x.n)}</td><td>${chf(x.m)}</td><td>${x.o?chf(x.o):'–'}</td></tr>`).join('')
       + (P.disc>0 ? `<tr><td>Sonderrabatt ${fmt(P.pct,0)} % auf Abo-Kosten</td><td>− ${chf(P.disc)}</td><td>–</td></tr>` : '')
-      + `<tr class="key"><td>Total</td><td>${chf(P.m)}</td><td>${chf(P.once)}</td></tr></tbody>`;
+      + (schedule.termPct>0 ? `<tr><td>Laufzeitrabatt ${fmt(schedule.termPct*100,0)} % auf Abo-Kosten</td><td>− ${chf(Math.max(0,P.m-schedule.monthly))}</td><td>–</td></tr>` : '')
+      + `<tr class="key"><td>Total pro Monat im Vertrag</td><td>${chf(schedule.monthly)}</td><td>${chf(P.once)}</td></tr></tbody>`;
     if(document.activeElement!==$('rb')) $('rb').value = st.rabatt||'';
-    const raw=num(st.rabatt); $('rb-n').textContent = raw>30 ? 'Maximal 30 % möglich. Gerechnet wird mit 30 %.' : (P.disc>0 ? `Rabatt: − ${chf(P.disc)} pro Monat. Gilt nicht für advertiseONE und nicht für einmalige Kosten.` : 'Höchstens 30 %. Gilt nicht für advertiseONE und nicht für einmalige Kosten.');
+    const raw=num(st.rabatt); $('rb-n').textContent = raw>30 ? 'Maximal 30 % möglich. Gerechnet wird mit 30 %.' : (P.disc>0 ? `Rabatt: − ${chf(P.disc)} pro Monat.` : '');
   }
   $('rb').addEventListener('input',e=>{ st.rabatt=e.target.value.replace(/[^0-9.,]/g,''); save(); update(); });
   const pickTier = k=>{ st.tier[st.pk]=LV[k]; save(); update(); };
@@ -1449,7 +1542,7 @@ svg.scene{min-width:640px}
     const res=T.map((t,k)=>calcFor(t, num(st.f.vis[k])));
     const r=res[cur];
     const fromVol=volSum()>0; const fq=$('f-q'); fq.readOnly=fromVol; if(fromVol){ fq.value=fmt(q,0); } else if(document.activeElement!==fq){ fq.value=st.f.q; }
-    $('f-ql').textContent = fromVol ? 'Suchen pro Monat (aus Stichworten)' : 'Suchen in der Region / Monat';
+    $('f-ql').textContent = fromVol ? 'Suchvolumen aus importierten Keyword-Daten' : 'Angenommene monatliche Nachfrage (Modellwert)';
     $('o-q').textContent=fmt(q,0); $('o-s').textContent=fmt(r.seen,0); $('o-c').textContent=fmt(r.leads,0); $('o-w').textContent=fmt(r.kunden,1);
     $('o-q-detail').textContent=fmt(q,0); $('o-c-detail').textContent=fmt(r.leads,0); $('o-w-detail').textContent=fmt(r.kunden,1);
     $('roi-revenue').textContent=chf(r.ums);
@@ -1458,7 +1551,7 @@ svg.scene{min-width:640px}
     const row=(lab,f,cls)=>`<tr${cls?` class="${cls}"`:''}><td>${lab}</td>${cols.map(i=>`<td ${hd(i)}>${f(res[i],i)}</td>`).join('')}</tr>`;
     const focusId = document.activeElement && document.activeElement.id;
     $('cmp').innerHTML = `<thead><tr><th></th>${cols.map(i=>`<th ${hd(i)}>${esc(tierName(i))}</th>`).join('')}</tr></thead><tbody>`
-      + row('Gefunden von %', (x,i)=>`<input class="t" id="vis-${i}" type="text" inputmode="numeric" value="${esc(st.f.vis[i])}" aria-label="Gefunden von Prozent ${esc(tierName(i))}">`)
+      + row('Angenommene Sichtbarkeit %', (x,i)=>`<input class="t" id="vis-${i}" type="text" inputmode="numeric" value="${esc(st.f.vis[i])}" aria-label="Angenommene Sichtbarkeit Prozent ${esc(tierName(i))}">`)
       + row('Anfragen', x=>fmt(x.leads,0))
       + row('Neukunden', x=>fmt(x.kunden,1))
       + row('Umsatzpotenzial (kein Gewinn)', x=>chf(x.ums), 'key')
@@ -1479,9 +1572,9 @@ svg.scene{min-width:640px}
     score+=({solo:0,small:1,medium:2,large:3}[size.value]||0);
     score+=({low:0,medium:1,high:2}[cap.value]||0);
     if(cap.value==='low')score=Math.min(score,3);
-    const ix=score>=7?2:score>=4?1:0,tier=['Basis','Feurig','Platzhirsch'][ix];
+    const ix=score>=7?2:score>=4?1:0,tier=['Basis','Wachstum','Marktführer'][ix];
     const why=ix===2?'Hohes geschätztes Potenzial und ausreichende Kapazität können eine stärkere Präsenz rechtfertigen.':ix===1?'Gezielte Werbung und passende Branchenprodukte könnten sinnvoll sein.':'Zuerst das digitale Fundament stärken und Nachfrage validieren.';
-    out.innerHTML='<strong>Vorläufige Empfehlung: '+tier+'</strong><div>'+why+'</div><small>Rechenbasis: '+fmt(q,0)+' Suchanfragen/Monat, ca. '+fmt(customers,1)+' mögliche Neukunden und '+chf(potential)+' Umsatzpotenzial. Betriebsgrösse und Kapazität sind berücksichtigt. Annahmen mit dem Kunden prüfen; keine Umsatzgarantie.</small>';
+    out.innerHTML='<strong>Vorläufige Empfehlung: '+tier+'</strong><div>'+why+'</div><small>Modellbasis: '+fmt(q,0)+' Nachfrageeinheiten/Monat (keine gemessenen Suchanfragen), ca. '+fmt(customers,1)+' mögliche Neukunden und '+chf(potential)+' Umsatzpotenzial. Betriebsgrösse und Kapazität sind berücksichtigt. Annahmen mit dem Kunden prüfen; keine Umsatzgarantie.</small>';
   }
   ['biz-size','biz-capacity'].forEach(id=>{const el=$(id);if(el)el.addEventListener('change',()=>{save();calc();});});
 
@@ -1514,15 +1607,16 @@ svg.scene{min-width:640px}
     $('sg-'+k).addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; if(!st[k].includes(b.dataset.v)) st[k].push(b.dataset.v); save(); renderTags(k); });
   });
 
-  // Grössere Tippflächen für die Wegweiser (iPad)
-  ['gads','meta','tik','sms','news','hubrev','plan','reno'].forEach(id=>{ const g=document.querySelector(`.el[data-id="${id}"]`); if(!g) return;
-    try{ const b=g.getBBox(), r=document.createElementNS('http://www.w3.org/2000/svg','rect');
-      r.setAttribute('x',b.x-6); r.setAttribute('y',b.y-6); r.setAttribute('width',b.width+12); r.setAttribute('height',b.height+12);
-      r.setAttribute('fill','transparent'); r.setAttribute('pointer-events','all'); g.insertBefore(r,g.firstChild); }catch(e){} });
-  /* ---------- Events ---------- */
-  document.querySelectorAll('.el').forEach(g=>{
-    g.addEventListener('click',()=>tapEl(g.dataset.id));
-    g.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); tapEl(g.dataset.id); }});
+  /* ---------- Events: delegiert, damit SVG-Klicks auch nach DOM-Updates funktionieren ---------- */
+  document.addEventListener('click',e=>{
+    const g=e.target.closest && e.target.closest('.el[data-id]');
+    if(!g) return;
+    tapEl(g.dataset.id);
+  });
+  document.addEventListener('keydown',e=>{
+    const g=e.target.closest && e.target.closest('.el[data-id]');
+    if(!g || (e.key!=='Enter' && e.key!==' ')) return;
+    e.preventDefault(); tapEl(g.dataset.id);
   });
   document.querySelectorAll('#viewpk .chip').forEach(c=>c.addEventListener('click',()=>{ st.pk=+c.dataset.p; save(); update(); }));
   function renderIndustryUI(){
@@ -1571,7 +1665,7 @@ svg.scene{min-width:640px}
     st.tier=['S','M','L','M'];
   }
   function setBranch(b){
-    const prev=st.br;if(!BR[b])return;const confirming=!!(st.ana&&st.ana.audit&&st.ana.audit.classificationStatus==='needs-selection');st.br=b;st.term=BR[st.br].q;$('term').value=st.term;if(confirming)st.ana.audit.classificationStatus='confirmed';if(prev!==b)applyBranchDefaults(b);
+    const prev=st.br;if(!BR[b])return;const confirming=!!(st.ana&&st.ana.audit&&st.ana.audit.classificationStatus==='needs-selection');st.br=b;st.term=BR[st.br].q;$('term').value=st.term;if(confirming)st.ana.audit.classificationStatus='confirmed';if(prev!==b){applyBranchDefaults(b);st.kw=[...(SUG[b]?.kw||[])];st.svc=[...(SUG[b]?.svc||[])];st.rub='';st.vol={};st.volMeta={source:'',importedAt:'',region:'',confirmed:false,matched:0,total:0};}
     const item=INDUSTRIES.find(x=>x.id===b);
     if(item){const cat=$('branche-kategorie'),sub=$('branche-unterkategorie'),search=$('branche-suche');if(cat)cat.value=item.category;if(sub){const arr=INDUSTRIES.filter(x=>x.category===item.category);sub.replaceChildren(...arr.map(x=>{const o=document.createElement('option');o.value=x.id;o.textContent=x.name;return o;}));sub.value=b;}if(search)search.value=item.name;}
     if(st.br==='resto'&&prev!=='resto')st.def.slice(0,3).forEach(x=>{if(x.kb){x.kb=false;x.loc=true;}});
@@ -1589,7 +1683,7 @@ svg.scene{min-width:640px}
   renderIndustryUI();
   $('term').addEventListener('input',e=>{ st.term=e.target.value; save(); renderScene(); });
   ['q','c','w','v','db'].forEach(k=>{ const el=$('f-'+k); if(el){ el.value=st.f[k]??''; el.addEventListener('input',()=>{ st.f[k]=el.value; save(); calc(); renderSum(); }); } });
-  [['lz','g-lz'],['op','g-op'],['in','g-in'],['loc','g-loc'],['sloc','g-sloc'],['tik','g-tik'],['bn','g-bn'],['bt','g-bt'],['be','g-be'],['tiks','g-tiks'],['smsM','g-smsM'],['smsL','g-smsL']].forEach(([k,id])=>{
+  [['lz','g-lz'],['adsLz','g-adsLz'],['tikLz','g-tikLz'],['op','g-op'],['in','g-in'],['loc','g-loc'],['sloc','g-sloc'],['tik','g-tik'],['bn','g-bn'],['bt','g-bt'],['be','g-be'],['tiks','g-tiks'],['smsM','g-smsM'],['smsL','g-smsL']].forEach(([k,id])=>{
     const el=$(id); el.value=st.g[k]; el.addEventListener('input',()=>{ st.g[k]=el.value.trim(); save(); renderScene(); renderRegion(); renderPrices(); calc(); renderSum(); });
     el.addEventListener('change',renderCfg);
   });
@@ -1871,16 +1965,33 @@ svg.scene{min-width:640px}
 
   const dch = d=> d ? new Date(d+'T12:00').toLocaleDateString('de-CH') : '';
   const dtch = d=> d ? new Date(d).toLocaleString('de-CH',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+  function digitalPotentialScore(){
+    // Kostenloser Profil-Score: Vollständigkeit der digitalen Grundlagen, kein Suchvolumen.
+    const kw=uniqueTerms((st.kw||[]).map(x=>String(x||'').trim()).filter(Boolean));
+    const svc=uniqueTerms((st.svc||[]).map(x=>String(x||'').trim()).filter(Boolean));
+    const places=selected().length;
+    const websiteChecked=!!(st.ana&&st.ana.url);
+    const classification=!!(st.br&&BR[st.br]);
+    const parts=[
+      {label:'Branche zugeordnet',points:classification?20:0,max:20},
+      {label:'Relevante Stichworte',points:Math.min(kw.length,8)*3.75,max:30},
+      {label:'Dienstleistungen erfasst',points:Math.min(svc.length,6)*5,max:30},
+      {label:'Lokale Zielregion definiert',points:places>0?10:0,max:10},
+      {label:'Website analysiert',points:websiteChecked?10:0,max:10}
+    ];
+    const score=Math.round(parts.reduce((n,p)=>n+p.points,0));
+    const level=score>=75?'Gute Datengrundlage':score>=45?'Ausbaufähige Datengrundlage':'Datengrundlage lückenhaft';
+    return {score:Math.max(0,Math.min(100,score)),level,parts};
+  }
   function sumData(){
     const i=st.pk, P=price(i), n=selected().length;
     const d={ kunde: st.cur.name.trim() || 'Kunde', datum: dch(st.cur.date), pkg: tierName(curTier()), sub: '', feats: feats(i),
-      region: regText(), orte: n, svc: st.svc||[], kw: st.kw||[], P, yrParts: yrParts(P),
+      region: regText(), orte: n, svc: st.svc||[], kw: st.kw||[], digitalPotential: digitalPotentialScore(), P, yrParts: yrParts(P),
       pts: (st.pts||[]).filter(p=>(p.t||'').trim()), next: dtch(st.next), topic:(st.topic||'').trim(),
       ki: st.ki&&st.ki.r ? `Test im Gespräch${st.ki.q?` («${st.ki.q.trim()}»)`:''}: ${st.ki.r==='ja'?'Sie wurden genannt.':'Sie wurden nicht genannt.'}` : '', opt: st.zopt||{},
       berater: [st.g.bn, st.g.bt, st.g.be].filter(Boolean) };
-    if(d.opt.cmp){ const T=tiers(), cur=curTier(); d.cmp=T.map((t,k)=>{ const Q=price(t); return {name:tierName(k), cur:k===cur, m:Q.m, once:Q.once, first:Q.m*12+Q.once}; }); }
-    if(d.opt.pot){ const q=qEff(), c=num(st.f.c), w=num(st.f.w), v=num(st.f.v), db=num(st.f.db), vis=num((st.f.vis||[])[i]);
-      const leads=q*vis/100*c/100, k=leads*w/100, Pm=P.m+P.once/P.lz; d.pot={q, vis, leads, kunden:k, ums:k*v, dbPer:db, deck:k*db, cost:Pm, net:k*db-Pm, breakEven:db>0?Math.ceil(Pm/db):null, v, src: volSum()>0 ? ((st.volMeta&&st.volMeta.source ? st.volMeta.source : 'Suchzahlen manuell eingetragen') + (st.volMeta&&st.volMeta.importedAt ? ' · importiert '+st.volMeta.importedAt : '') + (st.volMeta&&st.volMeta.region ? ' · Region: '+st.volMeta.region : '') + (st.volMeta&&!st.volMeta.confirmed ? ' · Region nicht bestätigt' : '')) : 'Manuelle Schätzung ohne verifizierte Keyword-Daten'}; }
+    if(d.opt.cmp){ const T=tiers(), cur=curTier(); d.cmp=T.map((t,k)=>{ const Q=price(t), S=priceSchedule(Q); return {name:tierName(k), cur:k===cur, m:S.years[0] ? S.years[0].monthly + (S.years[0].annual||0)/12 : Q.m, once:Q.once, first:S.years[0]?.total ?? (Q.m*12+Q.once)}; }); }
+
     return d;
   }
   function renderSum(){
@@ -1889,11 +2000,11 @@ svg.scene{min-width:640px}
     const d=sumData(), P=d.P;
     let h=`<img src="${LOGO_PNG}" alt="localsearch" style="height:26px;width:auto;display:block;margin-bottom:10px"><h3>Ihr digitales Haus</h3><div class="meta">${esc(d.kunde)}${d.datum?' · '+esc(d.datum):''}${d.berater.length?' · Beratung: '+esc(d.berater[0]):''}</div>`;
     if(d.region||d.orte) h+=`<h4>Wo möchten Sie gefunden werden?</h4><p style="margin:0">${esc(d.region||'Gewählte Orte')}${d.orte?` · ${fmt(d.orte,0)} Ortschaften`:''}</p>`;
+    if(d.digitalPotential) h+=`<h4>Digitaler Potenzialindex: ${d.digitalPotential.score}/100</h4><p style="margin:0"><b>${esc(d.digitalPotential.level)}</b> · Bewertet wird die Vollständigkeit der digitalen Grundlagen – nicht das tatsächliche Google-Suchvolumen.</p><p class="fine" style="margin-top:4px">${d.digitalPotential.parts.map(p=>esc(p.label)+': '+fmt(p.points,0)+'/'+fmt(p.max,0)).join(' · ')}</p>`;
     if(d.svc.length||d.kw.length) h+=`<h4>Wofür möchten Sie gefunden werden?</h4>${d.svc.length?`<p style="margin:0 0 4px"><b>Dienstleistungen:</b> ${esc(d.svc.join(', '))}</p>`:''}${d.kw.length?`<p style="margin:0"><b>Stichworte:</b> ${esc(d.kw.join(', '))}</p>`:''}`;
     h+=`<h4>Unsere Empfehlung: ${esc(d.pkg)}${d.sub?' ('+esc(d.sub)+')':''}</h4><ul>${d.feats.map(f=>`<li>${esc(f)}</li>`).join('')||'<li>Noch keine Produkte gewählt</li>'}</ul>`;
-    const S=priceSchedule(P); h+=`<h4>Kosten und Vertragslaufzeit</h4><p style="margin:0 0 6px">Laufzeit: ${S.months} Monate${S.termPct?` · Laufzeitrabatt ${fmt(S.termPct*100,0)} % auf laufende Produktkosten (ohne Werbebudget und Einmalkosten)`:''}</p><table><tr><th>Zeitraum</th><th>Monatlich¹</th><th>Jahres-/Zusatzkosten</th><th>Einmalig</th><th>Total</th></tr>${S.years.map(y=>`<tr${y.year===1?' class="b"':''}><td>${y.year}. Jahr</td><td>${chf(y.monthly)}</td><td>${chf(y.annual)}</td><td>${chf(y.setup)}</td><td>${chf(y.total)}</td></tr>`).join('')}<tr class="b"><td>Vertragsgesamtbetrag</td><td colspan="3">${S.months} Monate</td><td>${chf(S.total)}</td></tr></table><p class="fine" style="margin:6px 0 0">¹ Monatsbetrag ohne separat ausgewiesene Jahres- und Einmalkosten. Jahreskosten werden dem tatsächlichen Zahlungsjahr zugeordnet. Preisannahme gemäss gewählter Laufzeit; massgebend ist das konkrete Angebot.</p><p style="margin:8px 0 0"><b>Zahlungsweise:</b> ${payLines().map(esc).join(' · ')}</p>`;
+    const S=priceSchedule(P); h+=`<h4>Kosten und Vertragslaufzeit</h4><p style="margin:0 0 6px">Standardprodukte: ${S.baseMonths} Monate${S.adsMonths?` · advertiseONE: ${S.adsMonths} Monate`:``}${S.tikMonths?` · advertiseONE TikTok: ${S.tikMonths} Monate`:``}${S.termPct?` · Laufzeitrabatt ${fmt(S.termPct*100,0)} % auf laufende Produktkosten (ohne Werbebudget und Einmalkosten)`:''}</p><div class="cost-table-wrap"><table class="cost-table"><tr><th>Zeitraum</th><th>Monatlich¹</th><th>Jahres-/Zusatzkosten</th><th>Einmalig</th><th>Total</th></tr>${S.years.map(y=>`<tr${y.year===1?' class="b"':''}><td>${y.year}. Jahr</td><td>${chf(y.monthly)}</td><td>${chf(y.annual)}</td><td>${chf(y.setup)}</td><td>${chf(y.total)}</td></tr>`).join('')}<tr class="b total-row"><td colspan="4">Vertragsgesamtbetrag · ${S.months} Monate</td><td>${chf(S.total)}</td></tr></table></div><p class="fine" style="margin:6px 0 0">¹ Monatsbetrag ohne separat ausgewiesene Jahres- und Einmalkosten. Jahreskosten werden dem tatsächlichen Zahlungsjahr zugeordnet. Preisannahme gemäss gewählter Laufzeit; massgebend ist das konkrete Angebot.</p><p style="margin:8px 0 0"><b>Zahlungsweise:</b> ${payLines().map(esc).join(' · ')}</p>`;
     if(d.cmp) h+=`<h4>Die drei Stufen im Vergleich</h4><table><tr><td></td><td>pro Monat</td><td>1. Jahr</td></tr>${d.cmp.map(x=>`<tr${x.cur?' class="b"':''}><td>${esc(x.name)}</td><td>${chf(x.m)}</td><td>${chf(x.first)}</td></tr>`).join('')}</table>`;
-    if(d.pot) h+=`<h4>Potenzial und Wirtschaftlichkeit</h4><p style="margin:0">${fmt(d.pot.q,0)} Suchanfragen/Monat (Datenbasis: ${esc(d.pot.src)}) · angenommene Sichtbarkeit ${fmt(d.pot.vis,0)} % · ${fmt(d.pot.leads,0)} Anfragen · ${fmt(d.pot.kunden,1)} Neukunden · geschätzter Umsatz ${chf(d.pot.ums)}/Monat</p><p style="margin:6px 0 0">${d.pot.dbPer>0?`Deckungsbeitrag: ${chf(d.pot.deck)}/Monat · Paketkosten inkl. Setup-Anteil: ${chf(d.pot.cost)}/Monat · Deckungsbeitrag nach Paketkosten: ${chf(d.pot.net)}/Monat · Break-even: ${d.pot.breakEven} Neukunden/Monat`:'Deckungsbeitrag und Break-even nicht berechnet: Deckungsbeitrag pro Neukunde wurde nicht angegeben.'}</p><p class="fine" style="margin-top:4px">Sichtbarkeit, Kontaktquote, Abschlussquote und Kundenwert sind Annahmen, keine garantierten Ergebnisse. Suchdatenquelle: ${esc(d.pot.src)}. ${d.pot.src.includes('nicht bestätigt')?'Die regionale Übereinstimmung ist nicht bestätigt. ':''}Umsatz ist nicht Gewinn; Schätzungen sind keine Garantie.</p>`;
     if(d.pts.length) h+=`<h4>Was wir vereinbart haben</h4><ul>${d.pts.map(p=>`<li>${esc(p.t)}${p.d?` <span class="meta">(bis ${esc(dch(p.d))})</span>`:''}</li>`).join('')}</ul>`;
     if(d.next||d.topic) h+=`<h4>Nächster Termin</h4><p style="margin:0">${esc(d.next||'Datum folgt')}${d.topic?`<br>Thema: ${esc(d.topic)}`:''}</p>`;
     if(d.ki) h+=`<h4>Sichtbarkeit in KI-Assistenten</h4><p style="margin:0">${esc(d.ki)}</p>`;
@@ -1905,6 +2016,7 @@ svg.scene{min-width:640px}
     const d=sumData(), P=d.P, L=[];
     L.push(`Ihr digitales Haus – ${d.kunde}${d.datum?' ('+d.datum+')':''}`, '');
     if(d.region||d.orte) L.push('Wo möchten Sie gefunden werden?: '+(d.region||'Gewählte Orte')+(d.orte?`, ${d.orte} Ortschaften`:''));
+    if(d.digitalPotential){ L.push('', `Digitaler Potenzialindex: ${d.digitalPotential.score}/100 – ${d.digitalPotential.level}. Bewertet wird die Vollständigkeit der digitalen Grundlagen, nicht das tatsächliche Suchvolumen.`); d.digitalPotential.parts.forEach(p=>L.push('- '+p.label+': '+fmt(p.points,0)+'/'+fmt(p.max,0))); }
     if(d.svc.length) L.push('Dienstleistungen: '+d.svc.join(', '));
     if(d.kw.length) L.push('Stichworte: '+d.kw.join(', '));
     L.push('', `Unsere Empfehlung: ${d.pkg}${d.sub?' ('+d.sub+')':''}`); d.feats.forEach(f=>L.push('- '+f));
@@ -1913,7 +2025,7 @@ svg.scene{min-width:640px}
     L.push('', 'Zahlungsweise:'); payLines().forEach(x=>L.push('- '+x));
     if(d.pts.length){ L.push('', 'Was wir vereinbart haben:'); d.pts.forEach(p=>L.push('- '+p.t+(p.d?` (bis ${dch(p.d)})`:''))); }
     if(d.next||d.topic) L.push('', 'Nächster Termin: '+(d.next||'Datum folgt')+(d.topic?' – Thema: '+d.topic:''));
-    if(d.pot) L.push('', `Potenzial und Wirtschaftlichkeit: ${fmt(d.pot.q,0)} Suchanfragen/Monat (${d.pot.src}), angenommene Sichtbarkeit ${fmt(d.pot.vis,0)} %, ${fmt(d.pot.leads,0)} Anfragen, ${fmt(d.pot.kunden,1)} Neukunden, geschätzter Umsatz ${chf(d.pot.ums)}/Monat.`, d.pot.dbPer>0?`Deckungsbeitrag ${chf(d.pot.deck)}/Monat; Paketkosten inkl. Setup-Anteil ${chf(d.pot.cost)}/Monat; Deckungsbeitrag nach Paketkosten ${chf(d.pot.net)}/Monat; Break-even ${d.pot.breakEven} Neukunden/Monat.`:'Deckungsbeitrag und Break-even nicht berechnet, weil der Deckungsbeitrag pro Neukunde fehlt.', 'Annahmen, keine Garantie. Umsatz ist nicht Gewinn; Keyword-Volumen können sich überschneiden.');
+    if(d.pot) L.push('', `Potenzial und Wirtschaftlichkeit: Modellwert ${fmt(d.pot.q,0)} Nachfrageeinheiten/Monat (${d.pot.src}), angenommene Sichtbarkeit ${fmt(d.pot.vis,0)} %, modellierte Anfragen ${fmt(d.pot.leads,0)}, modellierte Neukunden ${fmt(d.pot.kunden,1)}, geschätzter Umsatz ${chf(d.pot.ums)}/Monat.`,  d.pot.dbPer>0?`Deckungsbeitrag ${chf(d.pot.deck)}/Monat; Paketkosten inkl. Setup-Anteil ${chf(d.pot.cost)}/Monat; Deckungsbeitrag nach Paketkosten ${chf(d.pot.net)}/Monat; Break-even ${d.pot.breakEven} Neukunden/Monat.`:'Deckungsbeitrag und Break-even nicht berechnet, weil der Deckungsbeitrag pro Neukunde fehlt.', 'Annahmen, keine Garantie. Umsatz ist nicht Gewinn; Keyword-Volumen können sich überschneiden.');
     if(d.ki) L.push('', 'Sichtbarkeit in KI-Assistenten: '+d.ki);
     L.push('', 'Alle Preise in CHF, exkl. MwSt. Unverbindliche Zusammenfassung, massgebend ist der Vertrag.');
     if(d.berater.length) L.push('', d.berater.join(' · '));
@@ -1951,12 +2063,13 @@ svg.scene{min-width:640px}
     doc.setFont('helvetica','bold'); doc.setFontSize(20); doc.setTextColor(...ink); doc.text('Ihr digitales Haus', M+1.5, y); y+=9;
     txt(`${d.kunde}${d.datum?' · '+d.datum:''}`, 11, 'normal', mut);
     if(d.region||d.orte){ head('Wo möchten Sie gefunden werden?'); txt((d.region||'Gewählte Orte')+(d.orte?` · ${fmt(d.orte,0)} Ortschaften`:''),10.5); }
+    if(d.digitalPotential){ head(`Digitaler Potenzialindex: ${d.digitalPotential.score}/100`); txt(`${d.digitalPotential.level}. Dieser Index bewertet die Vollständigkeit der digitalen Grundlagen und ist kein gemessenes Suchvolumen oder eine Nachfrageprognose.`,10.5); txt(d.digitalPotential.parts.map(p=>p.label+': '+fmt(p.points,0)+'/'+fmt(p.max,0)).join(' · '),9,'italic',mut); }
     if(d.svc.length||d.kw.length){ head('Wofür möchten Sie gefunden werden?'); if(d.svc.length) txt('Dienstleistungen: '+d.svc.join(', '),10.5); if(d.kw.length){ y+=1; txt('Stichworte: '+d.kw.join(', '),10.5); } }
     head(`Unsere Empfehlung: ${d.pkg}${d.sub?' ('+d.sub+')':''}`); bullets(d.feats.length?d.feats:['Noch keine Produkte gewählt']);
-    head('Kosten und Vertragslaufzeit'); const S=priceSchedule(P); txt(`Laufzeit: ${S.months} Monate${S.termPct?` · Laufzeitrabatt ${fmt(S.termPct*100,0)} % auf laufende Produktkosten (ohne Werbebudget und Einmalkosten)`:''}`,10.5); S.years.forEach(y=>row(`${y.year}. Jahr: monatlich ${chf(y.monthly)} + Jahreskosten ${chf(y.annual)} + einmalig ${chf(y.setup)}`,chf(y.total),y.year===1)); row('Vertragsgesamtbetrag',chf(S.total),true);
+    head('Kosten und Vertragslaufzeit'); const S=priceSchedule(P); txt(`Standardprodukte: ${S.baseMonths} Monate${S.adsMonths?` · advertiseONE: ${S.adsMonths} Monate`:``}${S.tikMonths?` · advertiseONE TikTok: ${S.tikMonths} Monate`:``}${S.termPct?` · Laufzeitrabatt ${fmt(S.termPct*100,0)} % auf laufende Produktkosten (ohne Werbebudget und Einmalkosten)`:''}`,10.5); S.years.forEach(y=>row(`${y.year}. Jahr: monatlich ${chf(y.monthly)} + Jahreskosten ${chf(y.annual)} + einmalig ${chf(y.setup)}`,chf(y.total),y.year===1)); row('Vertragsgesamtbetrag',chf(S.total),true);
     head('Zahlungsweise'); payLines().forEach(x=>txt(x,10.5));
     if(d.cmp){ head('Die drei Stufen im Vergleich'); d.cmp.forEach(x=>row(`${x.name}: ${chf(x.m)} pro Monat`, `1. Jahr ${chf(x.first)}`, x.cur)); }
-    if(d.pot){ head('Potenzial und Wirtschaftlichkeit'); txt(`${fmt(d.pot.q,0)} Suchanfragen pro Monat (${d.pot.src}); angenommene Sichtbarkeit ${fmt(d.pot.vis,0)} %. Daraus ergeben sich rund ${fmt(d.pot.leads,0)} Anfragen und ${fmt(d.pot.kunden,1)} Neukunden sowie ein geschätzter Umsatz von ${chf(d.pot.ums)} pro Monat.`,10.5); y+=1; if(d.pot.dbPer>0) txt(`Deckungsbeitrag ${chf(d.pot.deck)} / Monat; Paketkosten inkl. Setup-Anteil ${chf(d.pot.cost)} / Monat; Deckungsbeitrag nach Paketkosten ${chf(d.pot.net)} / Monat; Break-even bei ${d.pot.breakEven} Neukunden pro Monat.`,10.5); else txt('Deckungsbeitrag und Break-even nicht berechnet: Deckungsbeitrag pro Neukunde wurde nicht angegeben.',10.5); y+=1; txt(`Sichtbarkeit, Kontaktquote, Abschlussquote und Kundenwert sind Annahmen, keine garantierten Ergebnisse. Umsatz ist nicht Gewinn. Suchdatenquelle: ${d.pot.src}. Region und Aktualität vor einer Kundenentscheidung verifizieren.`,9,'italic',mut); }
+    if(d.pot){ head('Potenzial und Wirtschaftlichkeit'); txt(`Modellwert: ${fmt(d.pot.q,0)} Nachfrageeinheiten pro Monat (${d.pot.src}); dies sind keine gemessenen Google-Suchanfragen. Bei angenommener Sichtbarkeit von ${fmt(d.pot.vis,0)} % ergeben sich modellierte ${fmt(d.pot.leads,0)} Anfragen und ${fmt(d.pot.kunden,1)} Neukunden sowie ein geschätzter Umsatz von ${chf(d.pot.ums)} pro Monat.`,10.5); y+=1; if(d.pot.dbPer>0) txt(`Deckungsbeitrag ${chf(d.pot.deck)} / Monat; Paketkosten inkl. Setup-Anteil ${chf(d.pot.cost)} / Monat; Deckungsbeitrag nach Paketkosten ${chf(d.pot.net)} / Monat; Break-even bei ${d.pot.breakEven} Neukunden pro Monat.`,10.5); else txt('Deckungsbeitrag und Break-even nicht berechnet: Deckungsbeitrag pro Neukunde wurde nicht angegeben.',10.5); y+=1; txt(`Sichtbarkeit, Kontaktquote, Abschlussquote und Kundenwert sind Modellannahmen, keine gemessenen Werte oder garantierten Ergebnisse. Umsatz ist nicht Gewinn. Datenbasis: ${d.pot.src}. Region und Aktualität vor einer Kundenentscheidung verifizieren.`,9,'italic',mut); }
     if(d.pts.length){ head('Was wir vereinbart haben'); bullets(d.pts.map(p=>p.t+(p.d?` (bis ${dch(p.d)})`:''))); }
     if(d.next||d.topic){ head('Nächster Termin'); txt(d.next||'Datum folgt',10.5); if(d.topic){ y+=1; txt('Thema: '+d.topic,10.5); } }
     if(d.ki){ head('Sichtbarkeit in KI-Assistenten'); txt(d.ki,10.5); }
@@ -1997,13 +2110,7 @@ svg.scene{min-width:640px}
     clone.querySelectorAll('.el.off').forEach(g=>g.remove());
     clone.querySelectorAll('rect[fill="transparent"]').forEach(r=>r.remove());
     // Fremde Kundenlogos als Data-URL einbetten, damit PDF-/Canvas-Export nicht am CORS-Bild scheitert.
-    const logo=clone.querySelector('#customer-logo');
-    if(logo){
-      const source=logo.getAttribute('href')||logo.getAttribute('xlink:href')||'';
-      const embedded=await imageAsDataUrl(source);
-      if(embedded){ logo.setAttribute('href',embedded); logo.removeAttribute('xlink:href'); }
-      else logo.remove();
-    }
+    const logo=clone.querySelector('#customer-logo'); if(logo) logo.remove();
     let fonts=''; try{ const [f4,f7]=await Promise.all([fontB64('fonts/kalam-latin-400-normal.woff2'),fontB64('fonts/kalam-latin-700-normal.woff2')]);
       fonts=`@font-face{font-family:"Kalam";font-weight:400;src:url(data:font/woff2;base64,${f4}) format("woff2")}@font-face{font-family:"Kalam";font-weight:700;src:url(data:font/woff2;base64,${f7}) format("woff2")}`; }catch(e){}
     const st=document.createElementNS('http://www.w3.org/2000/svg','style'); st.textContent=fonts; clone.insertBefore(st, clone.firstChild);
@@ -2019,7 +2126,8 @@ svg.scene{min-width:640px}
     const wf = (d.svc.length||d.kw.length) ? `<div class="card"><h2>Wofür möchten Sie gefunden werden?</h2>${d.svc.length?`<div class="lbl">Dienstleistungen</div>${tags(d.svc)}`:''}${d.kw.length?`<div class="lbl">Stichworte</div>${tags(d.kw,true)}`:''}</div>` : '';
     if(wo||wf) B.push(wo&&wf?`<div class="two">${wo}${wf}</div>`:(wo||wf));
     B.push(`<div class="card"><h2>Unsere Empfehlung: ${esc(d.pkg)}</h2><ul class="f">${(d.feats.length?d.feats:['Noch keine Produkte gewählt']).map(f=>`<li>${esc(f)}</li>`).join('')}</ul></div>`);
-    B.push(`<div class="card"><h2>Kosten</h2><div class="two"><div><div class="big">${chf(P.m)} <small>pro Monat, alles inklusive</small></div>${P.disc>0?`<div class="meta"><span style="text-decoration:line-through">${chf(P.list)}</span> · inklusive ${fmt(P.pct,0)} % Sonderrabatt auf Abo-Kosten (− ${chf(P.disc)} pro Monat)</div>`:''}<div class="meta">+ ${chf(P.once)} einmalig · Total im 1. Jahr <b>${chf(P.m*12+P.once)}</b></div></div><div><div class="lbl" style="margin-top:0">Zahlungsweise</div>${payLines().map(x=>`<div>${esc(x)}</div>`).join('')}</div></div></div>`);
+    const S=priceSchedule(P);
+    B.push(`<div class="card"><h2>Kosten und Vertragslaufzeit</h2><div class="meta" style="margin-bottom:8px">Standardprodukte: ${S.baseMonths||'–'} Monate${S.adsMonths?` · advertiseONE: ${S.adsMonths} Monate`:''}${S.tikMonths?` · advertiseONE TikTok: ${S.tikMonths} Monate`:''}${S.termPct?` · Laufzeitrabatt ${fmt(S.termPct*100,0)} % auf laufende Produktkosten`:''}</div><table class="cost-table"><thead><tr><th>Zeitraum</th><th>Monatlich¹</th><th>Jahreskosten</th><th>Einmalig</th><th>Total</th></tr></thead><tbody>${S.years.map(y=>`<tr><td>${y.year}. Jahr</td><td>${chf(y.monthly)}</td><td>${chf(y.annual)}</td><td>${chf(y.setup)}</td><td><b>${chf(y.total)}</b></td></tr>`).join('')}<tr><td colspan="4"><b>Vertragsgesamtbetrag · ${S.months} Monate</b></td><td><b>${chf(S.total)}</b></td></tr></tbody></table><p class="fine">¹ Durchschnittlicher Monatsbetrag der in diesem Jahr aktiven monatlichen Produkte; Jahres- und Einmalkosten separat.</p><div class="lbl">Zahlungsweise</div>${payLines().map(x=>`<div>${esc(x)}</div>`).join('')}</div>`);
     if(d.cmp) B.push(`<div class="card soft"><h2>Die drei Stufen im Vergleich</h2><div class="three">${d.cmp.map(x=>`<div class="ptier${x.cur?' on':''}"><b>${esc(x.name)}</b>${chf(x.m)} / Monat<br><span class="meta">1. Jahr ${chf(x.first)}</span></div>`).join('')}</div></div>`);
     if(d.pot){ const p=d.pot, seen=p.q*p.vis/100;
       B.push(`<div class="card soft"><h2>Potenzial und Wirtschaftlichkeit</h2><div class="two"><div class="fun">
@@ -2047,10 +2155,10 @@ svg.scene{min-width:640px}
       const ms=document.createElement('div'); ms.className='ms'; wrap.appendChild(ms);
       const blocks=printBlocks(d, houseSrc).map(html=>{ const el=document.createElement('div'); el.innerHTML=html; ms.appendChild(el); return el; });
       await Promise.all([...ms.querySelectorAll('img')].map(img=>img.complete?0:new Promise(r=>{ img.onload=img.onerror=r; })));
-      const AV=1123-44-60, GAP=16, pages=[[]]; let h=0;
+      const AV=1123-36-52, GAP=13, pages=[[]]; let h=0;
       // Never crop a block or its illustration. Scale oversized images proportionally,
       // then paginate whole cards so the drawing remains complete in the PDF.
-      const maxBlock=Math.floor(AV*0.70);
+      const maxBlock=Math.floor(AV*0.76);
       blocks.forEach(el=>{
         const img=el.querySelector('img');
         if(img && (img.naturalWidth || img.width)){
@@ -2061,7 +2169,7 @@ svg.scene{min-width:640px}
           if(el.classList.contains('house')){
             // The scene SVG has a 5:3 viewBox. Constrain both dimensions instead of
             // forcing it into a full-width, fixed-height box that distorts the drawing.
-            img.style.maxHeight='220px';
+            img.style.maxHeight='300px';
             img.style.objectPosition='center';
             img.style.display='block';
             img.style.marginInline='auto';
@@ -2121,11 +2229,11 @@ svg.scene{min-width:640px}
     }
   });
 
-  const GMAP={'g-lz':'lz','g-op':'op','g-in':'in','g-loc':'loc','g-nl':'nl','g-sloc':'sloc','g-sshop':'sshop','g-aS':'aS','g-aM':'aM','g-aL':'aL','g-asS':'asS','g-asM':'asM','g-asL':'asL','g-tik':'tik','g-bn':'bn','g-bt':'bt','g-be':'be','g-tiks':'tiks','g-smsM':'smsM','g-smsL':'smsL'};
+  const GMAP={'g-lz':'lz','g-adsLz':'adsLz','g-tikLz':'tikLz','g-op':'op','g-in':'in','g-loc':'loc','g-nl':'nl','g-sloc':'sloc','g-sshop':'sshop','g-aS':'aS','g-aM':'aM','g-aL':'aL','g-asS':'asS','g-asM':'asM','g-asL':'asL','g-tik':'tik','g-bn':'bn','g-bt':'bt','g-be':'be','g-tiks':'tiks','g-smsM':'smsM','g-smsL':'smsL'};
 
   /* ---------- Supabase auth and private cloud storage ---------- */
   var DB=null, UID=null, saveT=null, setT=null, lastG='', LIST=[], cloudOk=false, cloudTried=false;
-  function stat(msg,cls){const el=$('s-stat');if(!msg){msg=!cloudOk?(cloudTried?'Bitte anmelden, um Gespräche geräteübergreifend zu speichern.':'Anmeldung wird geprüft …'):(st.cur.name.trim()?(st.cur.id?'Änderungen werden automatisch gespeichert.':'Noch nicht gespeichert.'):'Angemeldet. Kundennamen eintragen, dann speichern.');cls=cloudOk?'':(cloudTried?'bad':'');}if(el){el.textContent=msg;el.className='sstat'+(cls?' '+cls:'');}const cl=$('dh-cloud-label');if(cl&&cloudOk)cl.textContent='Cloud-Speicherung aktiv';}
+  function stat(msg,cls){const el=$('s-stat');if(!msg){msg=!cloudOk?(cloudTried?'Bitte anmelden, um Gespräche geräteübergreifend zu speichern.':'Anmeldung wird geprüft …'):(st.cur.name.trim()?(st.cur.id?'Änderungen werden automatisch gespeichert.':'Noch nicht gespeichert.'):'Angemeldet. Kundennamen eintragen, dann speichern.');cls=cloudOk?'':(cloudTried?'bad':'');}if(el){el.textContent=msg;el.className='sstat'+(cls?' '+cls:'');}const cl=$('dh-cloud-label');if(cl&&cloudOk)cl.textContent='Angemeldet';}
   function snapshot(){return JSON.parse(JSON.stringify({pk:st.pk,br:st.br,def:st.def,tier:st.tier,kw:st.kw,svc:st.svc||[],rub:st.rub||'',rabatt:st.rabatt||'',pts:st.pts||[],next:st.next||'',topic:st.topic||'',vol:st.vol||{},volMeta:st.volMeta||{},ki:st.ki||{q:'',r:''},zopt:st.zopt||{cmp:false,pot:false},pay:st.pay||{base:'12',ads:'1'},ana:st.ana||{url:'',hints:[],at:''},f:st.f,g:st.g,reg:st.reg,term:st.term}));}
   function scheduleCloud(){if(!cloudOk)return;clearTimeout(saveT);saveT=null;if(st.cur.name.trim())saveT=setTimeout(()=>{saveT=null;cloudSave();},1200);const gj=JSON.stringify(st.g);if(gj!==lastG){clearTimeout(setT);setT=setTimeout(saveSettings,1200);}}
   async function cloudSave(){
@@ -2144,19 +2252,23 @@ svg.scene{min-width:640px}
   async function openConv(id){const x=LIST.find(i=>i.id===id);if(!x)return;if(!x.state){if(!cloudOk||!UID)return;try{const {data,error}=await DB.from('conversations').select('analysis_data').eq('id',id).eq('user_id',UID).maybeSingle();if(error)throw error;if(!data||!data.analysis_data){stat('Kundendossier konnte nicht geladen werden.','bad');return;}x.state=data.analysis_data;}catch(e){console.error(e);stat('Kundendossier konnte nicht geladen werden.','bad');return;}}if(saveT){clearTimeout(saveT);saveT=null;if(st.cur.name.trim())cloudSave();}const s=JSON.parse(JSON.stringify(x.state));st.svc=[];st.kw=[];st.rub='';st.rabatt='';st.pts=[];st.next='';st.topic='';st.vol={};st.volMeta={};st.ki={q:'',r:''};st.zopt={cmp:false,pot:false};st.pay={base:'12',ads:'1'};st.ana={url:x.website_url||'',hints:[]};delete st.def;delete st.tier;Object.assign(st,s);migrate(st);st.cur={id:x.id,name:x.name||'',date:x.date||'',notes:x.notes||''};invalidate();refreshInputs();update();renderRegion();fitSel();try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}$('s-list').hidden=true;$('s-open').setAttribute('aria-expanded','false');stat('Geöffnet: '+st.cur.name,'ok');window.scrollTo({top:0,behavior:'smooth'});}
   $('s-name').addEventListener('input',e=>{st.cur.name=e.target.value;save();if(!cloudOk)stat();});$('s-date').addEventListener('input',e=>{st.cur.date=e.target.value;save();});$('s-notes').addEventListener('input',e=>{st.cur.notes=e.target.value;save();});$('s-save').addEventListener('click',()=>{clearTimeout(saveT);saveT=null;cloudSave();});$('s-open').addEventListener('click',async()=>{const l=$('s-list');l.hidden=!l.hidden;$('s-open').setAttribute('aria-expanded',String(!l.hidden));if(!l.hidden){$('s-items').innerHTML='<p class="note">Gespeicherte Kundendossiers werden geladen …</p>';try{await loadConversations(true);}catch(e){console.error(e);$('s-items').innerHTML='<p class="note">Kundendossiers konnten nicht geladen werden.</p>';stat('Kundendossiers konnten nicht geladen werden.','bad');}}});$('s-q').addEventListener('input',renderList);
   $('s-items').addEventListener('click',async e=>{const o=e.target.closest('button.open');if(o){await openConv(o.dataset.id);return;}const d=e.target.closest('button.del');if(!d||!cloudOk)return;if(!d.dataset.arm){d.dataset.arm='1';d.textContent='Wirklich löschen?';setTimeout(()=>{if(d.isConnected){delete d.dataset.arm;d.textContent='Löschen';}},4000);return;}try{const {error}=await DB.from('conversations').delete().eq('id',d.dataset.id).eq('user_id',UID);if(error)throw error;if(st.cur.id===d.dataset.id){st.cur.id=null;save();}await loadConversations();stat('Gespräch gelöscht.','ok');}catch(e){console.error(e);stat('Löschen hat nicht geklappt.','bad');}});
-  async function startUserSession(){const {data:{session}}=await DB.auth.getSession();const user=session&&session.user;UID=user?user.id:null;cloudOk=!!UID;$('dh-auth-fields').hidden=cloudOk;$('dh-account-view').hidden=!cloudOk;if(user)$('dh-account-email').textContent=user.email||'Angemeldetes Konto';if(!user){stat('Nicht angemeldet. Bitte anmelden oder ein Konto erstellen.');return;}stat('Angemeldet. Cloud-Daten werden geladen …');try{const {data,error}=await DB.from('user_settings').select('settings_data').eq('user_id',UID).maybeSingle();if(error)throw error;if(data&&data.settings_data){st.g=Object.assign({...DEF_G},data.settings_data);lastG=JSON.stringify(st.g);try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}refreshInputs();update();renderRegion();}else await saveSettings();LIST=[];$('s-count').textContent='';$('s-items').innerHTML='';stat('Angemeldet. Cloud-Speicherung aktiv. Kundendossiers werden erst beim Öffnen geladen.','ok');}catch(e){console.error(e);stat('Angemeldet, aber Daten konnten nicht geladen werden. RLS und Tabellenspalten prüfen.','bad');}}
-  $('dh-login').addEventListener('click',async()=>{const email=$('dh-email').value.trim(),password=$('dh-password').value;if(!email||!password){stat('Bitte E-Mail und Passwort eingeben.','bad');return;}$('dh-login').disabled=true;try{const {error}=await DB.auth.signInWithPassword({email,password});if(error)throw error;await startUserSession();}catch(e){stat('Anmeldung fehlgeschlagen. E-Mail und Passwort prüfen.','bad');}finally{$('dh-login').disabled=false;}});
-  $('dh-register').addEventListener('click',async()=>{const email=$('dh-email').value.trim(),password=$('dh-password').value;if(!email||password.length<8){stat('Bitte E-Mail und Passwort mit mindestens 8 Zeichen eingeben.','bad');return;}$('dh-register').disabled=true;try{const {data,error}=await DB.auth.signUp({email,password});if(error)throw error;if(data.session)await startUserSession();else stat('Konto erstellt. Bitte E-Mail bestätigen und danach anmelden.','ok');}catch(e){stat('Konto konnte nicht erstellt werden: '+e.message,'bad');}finally{$('dh-register').disabled=false;}});
+  async function startUserSession(){const {data:{session}}=await DB.auth.getSession();const user=session&&session.user;UID=user?user.id:null;cloudOk=!!UID;$('dh-auth-fields').hidden=cloudOk;$('dh-account-view').hidden=!cloudOk;if(user)$('dh-account-email').textContent=user.email||'Angemeldetes Konto';if(!user){stat('Nicht angemeldet. Bitte anmelden oder ein Konto erstellen.');return;}stat('Angemeldet. Cloud-Daten werden geladen …');try{const {data,error}=await DB.from('user_settings').select('settings_data').eq('user_id',UID).maybeSingle();if(error)throw error;if(data&&data.settings_data){st.g=Object.assign({...DEF_G},data.settings_data);lastG=JSON.stringify(st.g);try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}refreshInputs();update();renderRegion();}else await saveSettings();LIST=[];$('s-count').textContent='';$('s-items').innerHTML='';stat('Angemeldet. Cloud-Speicherung aktiv. Kundendossiers werden erst beim Öffnen geladen.','ok');}catch(e){console.error('Supabase-Daten konnten nach Anmeldung nicht geladen werden',e);const code=e&&e.code?' ['+e.code+']':'';const detail=e&&e.message?e.message:'Unbekannter Datenbankfehler';stat('Anmeldung erfolgreich, aber Cloud-Daten fehlen'+code+': '+detail+' · Supabase-Tabellen/RLS prüfen.','bad');}}
+  $('dh-login').addEventListener('click',async()=>{const email=$('dh-email').value.trim(),password=$('dh-password').value;if(!email||!password){stat('Bitte E-Mail und Passwort eingeben.','bad');return;}$('dh-login').disabled=true;try{if(!DB||!DB.auth||typeof DB.auth.signInWithPassword!=='function'){stat('Supabase-Verbindung wird initialisiert …');await initCloud();}if(!DB||!DB.auth||typeof DB.auth.signInWithPassword!=='function')throw new Error('Supabase-Verbindung fehlt. Bitte Netlify-Deploy und die Umgebungsvariablen SUPABASE_URL sowie SUPABASE_ANON_KEY prüfen.');const {error}=await DB.auth.signInWithPassword({email,password});if(error)throw error;await startUserSession();}catch(e){console.error('Supabase sign-in failed',e);stat('Anmeldung fehlgeschlagen: '+(e&&e.message?e.message:'Unbekannter Fehler')+' (Details in der Browser-Konsole).','bad');}finally{$('dh-login').disabled=false;}});
+  $('dh-register').addEventListener('click',async()=>{const email=$('dh-email').value.trim(),password=$('dh-password').value;if(!email||password.length<8){stat('Bitte E-Mail und Passwort mit mindestens 8 Zeichen eingeben.','bad');return;}$('dh-register').disabled=true;try{if(!DB||!DB.auth||typeof DB.auth.signUp!=='function')await initCloud();if(!DB||!DB.auth||typeof DB.auth.signUp!=='function')throw new Error('Supabase-Verbindung fehlt. Netlify-Konfiguration prüfen.');const {data,error}=await DB.auth.signUp({email,password});if(error)throw error;if(data.session)await startUserSession();else stat('Konto erstellt. Bitte E-Mail bestätigen und danach anmelden.','ok');}catch(e){console.error('Supabase sign-up failed',e);stat('Konto konnte nicht erstellt werden: '+e.message,'bad');}finally{$('dh-register').disabled=false;}});
   $('dh-logout').addEventListener('click',async()=>{try{if(st.cur.name.trim()&&cloudOk)await cloudSave();const {error}=await DB.auth.signOut();if(error)throw error;UID=null;cloudOk=false;LIST=[];renderList();$('dh-auth-fields').hidden=false;$('dh-account-view').hidden=true;$('dh-email').value='';$('dh-password').value='';stat('Abgemeldet.','ok');}catch(e){stat('Abmelden fehlgeschlagen: '+(e.message||'Bitte erneut versuchen.'),'bad');}});
-  async function initCloud(){try{if(!window.supabase||!window.supabase.createClient)throw new Error('Supabase-Bibliothek konnte nicht geladen werden.');const r=await fetch('/.netlify/functions/config',{cache:'no-store'});if(!r.ok)throw new Error('Netlify-Konfiguration fehlt ('+r.status+').');const cfg=await r.json();DB=window.supabase.createClient(cfg.url,cfg.anonKey);cloudTried=true;DB.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'){UID=null;cloudOk=false;LIST=[];renderList();$('dh-auth-fields').hidden=false;$('dh-account-view').hidden=true;stat('Abgemeldet.');}else if(event==='SIGNED_IN'&&session){UID=session.user.id;cloudOk=true;$('dh-auth-fields').hidden=true;$('dh-account-view').hidden=false;$('dh-account-email').textContent=session.user.email||'Angemeldetes Konto';}});await startUserSession();}catch(e){console.error('Supabase init failed',e);cloudTried=true;cloudOk=false;stat('Supabase-Verbindung fehlgeschlagen: '+e.message,'bad');}}
+  async function ensureSupabaseLibrary(){if(window.supabase&&window.supabase.createClient)return;await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='https://unpkg.com/@supabase/supabase-js@2';script.async=true;script.onload=()=>window.supabase&&window.supabase.createClient?resolve():reject(new Error('Supabase-Bibliothek konnte nicht initialisiert werden.'));script.onerror=()=>reject(new Error('Supabase-Bibliothek konnte über beide CDNs nicht geladen werden.'));document.head.appendChild(script);});}
+  async function initCloud(){try{await ensureSupabaseLibrary();const r=await fetch('/.netlify/functions/config',{cache:'no-store'});if(!r.ok){let detail='';try{const body=await r.json();detail=body&&body.error?' '+body.error:'';}catch(_){}throw new Error('Netlify-Konfiguration fehlt ('+r.status+').'+detail);}const cfg=await r.json();if(!cfg.url||!cfg.anonKey)throw new Error('Supabase-URL oder öffentlicher API-Key fehlt in der Netlify-Konfiguration.');DB=window.supabase.createClient(cfg.url,cfg.anonKey);cloudTried=true;DB.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'){UID=null;cloudOk=false;LIST=[];renderList();$('dh-auth-fields').hidden=false;$('dh-account-view').hidden=true;stat('Abgemeldet.');}else if(event==='SIGNED_IN'&&session){UID=session.user.id;cloudOk=true;$('dh-auth-fields').hidden=true;$('dh-account-view').hidden=false;$('dh-account-email').textContent=session.user.email||'Angemeldetes Konto';}});await startUserSession();}catch(e){console.error('Supabase init failed',e);cloudTried=true;cloudOk=false;stat('Supabase-Verbindung fehlgeschlagen: '+e.message,'bad');}}
     $('term').value=st.term;
   renderKw(); update(); renderRegion(); refreshSess(); renderPts(); renderAna(); initCloud();
 
-  fetch('mapdata.json').then(r=>r.json()).then(d=>{
+  fetch(new URL('/mapdata.json',window.location.origin),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('mapdata.json: HTTP '+r.status);return r.json();}).then(d=>{
+    if(!d||!Array.isArray(d.cantons)||!Array.isArray(d.lakes)||!Array.isArray(d.places))throw new Error('Karten-Daten haben ein ungültiges Format.');
+    if(!d.cantons.length||!d.places.length)throw new Error('Karten-Daten sind leer.');
     MAP=d; PLACES=d.places; PLACES.forEach(p=>BYKEY.set(pkey(p),p));
     if(applyOrte()) save();
     buildMap(); invalidate(); renderRegion(); fitSel(); update();
-  }).catch(()=>{ $('m-sum').textContent='Karte konnte nicht geladen werden. Seite neu laden.'; });
+    if(!$('m-cant').querySelector('path')||!$('m-d0').getAttribute('d'))throw new Error('Kartenflächen konnten nicht aufgebaut werden.');
+  }).catch(e=>{console.error('Map load failed',e);const map=$('map');if(map)map.innerHTML='<text x="470" y="280" text-anchor="middle" fill="currentColor" font-size="18">Karte konnte nicht geladen werden</text>';const sum=$('m-sum');if(sum)sum.textContent='Karte nicht verfügbar: '+(e&&e.message?e.message:'Unbekannter Fehler')+'. Seite neu laden.';});
 })();;
 </script>
 
